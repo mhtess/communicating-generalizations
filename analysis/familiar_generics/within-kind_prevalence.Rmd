@@ -1,0 +1,158 @@
+---
+title: "Prevalence of common features for familiar categories"
+author: "Michael Henry Tessler"
+date: "August 11, 2015"
+output: html_document
+---
+
+
+```{r helpers}
+library(coda)
+library(data.table)
+library(langcog)
+library(lme4)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+histToSamples <- function(df, samples){
+  rows <- rep.int(seq_len(nrow(df)), times = round(df$Probability * samples))
+  cols <- names(df) != "Probability"
+  df[rows, cols, drop = FALSE]
+}
+
+## for Bayesian credible intervals
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+
+
+upperFirst <- function(name){
+  return (paste(toupper(substr(name, 1, 1)), substr(name, 2, nchar(name)), sep=""))
+}
+
+removeS <- function(name.in){
+  exceptions = c("Turtles", "Bees", "Horses", "Giraffes","Whales","Beetles","Eagles","Snakes","Moles")
+  bluejays =  c("Blue jay","Blue Jay","Bluejay")
+  fleas = c("Flea", "Fly")
+  name<-removeSpace(name.in)
+  last<-substr(name,nchar(name),nchar(name))
+  last2<-substr(name,nchar(name)-1,nchar(name))
+  if (name%in%exceptions){
+    name.singular <- substr(name,1,nchar(name)-1)
+  } else if (name%in%bluejays){
+    name.singular <- "Bluejay"
+  } else if (name%in%fleas){
+    name.singular <- "Flea"
+  } else if (name=="Wolves") {
+    name.singular <- "Wolf"
+  } else if (name=='Dolpin') {
+    name.singular <- "Dolphin"
+  } else if (name=='Giraffs') {
+    name.singular <- "Giraffe"
+  }  else if (last2=='es') {
+    name.singular <- substr(name,1,nchar(name)-2)
+  } else if (last=='s') {
+    name.singular <- substr(name,1,nchar(name)-1)
+  } else {
+    name.singular <- name
+  }
+  
+return(name.singular)
+}
+
+substrRight <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
+}
+
+removeSpace <- function(name){
+  if (substrRight(name,1)==' ') {
+    name.edit <- substr(name,1, nchar(name)-1)
+  } else {
+    name.edit <- name
+  }
+  return(name.edit)
+}
+
+setwd(dir = '~/Documents/research/generics/analysis/')
+
+generics.of.interest <- data.frame(
+  animal=c("Robin","Leopard","Duck","Lion",
+           "Mosquito","Shark","Cardinal","Kangaroo",
+           "Peacock","Tiger","Tick","Swan"),
+  property=c("lay eggs", "have spots","have wings",
+             "have manes","carry malaria",
+              "attacks swimmers","are red","have pouches",
+             "have beautiful feathers","eat people",
+             "carry Lyme disease","are white"))
+
+
+
+
+options("scipen"=10)  
+
+setwd("~/Documents/research/generics-paper/")
+```
+
+# Human data
+
+```{r}
+
+d<- read.csv("~/Documents/research/generics/manuscript/data/naturalGenerics-prior-trials-n57.csv")
+
+#d[d$property=='are juveline',]$property<-'are juvenile' # typo in experiment
+
+d$animal.parsed<- factor(upperFirst(as.character(d$Category)))
+
+d.tidy <- d %>%
+  unite(sentence, Category, Property, sep =' ') %>%
+  mutate(sentence = paste(sentence, '.', sep='')) %>% 
+  filter(sentence %in% unique(tj.bs$sentence)) # NEED TO LOAD THE 30 SENTENCES SOMEHOW
+
+```
+
+
+```{r}
+ggplot(d.tidy, aes(x = prevalence))+
+  geom_histogram() + 
+  facet_wrap(~sentence)
+```
+
+
+```{r truthJudge.vs.prevalence}
+prevalence.est.path <- "model_results/familiar_generics/prior/within_kind_continuous/"
+
+# Load prevalence data
+prev.files <- list.files(prevalence.est.path)
+samples = 50000
+
+df.prev <- data.frame()
+for (i in prev.files){
+  item.prev <- as.data.frame(fread(paste(prevalence.est.path, i, sep = '')))
+  df.prev <- bind_rows(df.prev, histToSamples(item.prev, 50000))
+  print(i)
+}
+
+ggplot(df.prev, aes(x = Prevalence))+
+  geom_histogram() + 
+  facet_wrap(Property ~ Category)
+
+prev.summary<- df.prev %>%
+  group_by(Property, Category) %>%
+  summarise(map = estimate_mode(Prevalence),
+            credLow = hdi_lower(Prevalence),
+            credHigh= hdi_upper(Prevalence)) %>%
+  ungroup() %>%
+  unite(sentence, Category, Property, sep =' ') %>%
+  mutate(sentence = paste(sentence, '.', sep=''))
+```

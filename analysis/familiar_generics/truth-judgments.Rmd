@@ -1,0 +1,126 @@
+---
+title: "familiar-truthjudgments"
+author: "mht"
+date: "June 15, 2016"
+output: html_document
+---
+
+```{r helper_functions}
+histToSamples <- function(df, samples){
+  rows <- rep.int(seq_len(nrow(df)), times = round(df$Probability * samples))
+  cols <- names(df) != "Probability"
+  df[rows, cols, drop = FALSE]
+}
+
+#library(coda)
+#library(hydroGOF)
+```
+
+# Human judgments
+
+```{r human_data}
+setwd("~/Documents/research/generics-paper/")
+
+data.path <- "data/familiar_generics/"
+
+tj <-read.csv(file = paste(data.path,'truth-judgments.csv',sep=''))
+# catch trials
+c <- read.csv(file = paste(data.path,'truth-judgments_catch-trials.csv', sep=''))
+
+# subject info-- to find native language
+s<- read.csv(file = paste(data.path,'truth-judgments_subject-information.csv', sep=''))
+
+# excluding the nonenglish native speakers has no effect on results
+# nonenglish<-c(1,4,19,38,39)
+
+# participants who failed the catch trials
+catch.ids <- c[c$pass==0,]$workerid
+
+#tj <- tj %>% filter(!(workerid %in% c(nonenglish, catch)))
+tj <- tj %>% filter(!(workerid %in% catch.ids))
+```
+
+Bootstrap confidence intervals
+
+N.B.: uses functions from [library(langcog)] (https://github.com/langcog/langcog)
+
+```{r}
+tj.bs <- tj %>% 
+  mutate(response = as.numeric(response=='agree-key')) %>%
+  group_by(sentence) %>%
+  multi_boot_standard(column = "response")
+
+
+# adjust naming of sentence to correspond to that used in the prior data
+tj.bs$sentence <- gsub('&quotechar','', tj.bs$sentence)
+tj.bs$sentence <- gsub('lyme','Lyme', tj.bs$sentence)
+
+# order sentences by increasing endorsement
+tj.bs$sentence<-with(tj.bs, reorder(sentence, mean, function(x) x))
+
+
+ggplot(data=tj.bs, aes(x = sentence, y = mean-0.5,
+                       ymin = ci_lower-0.5,ymax = ci_upper-0.5))+
+  geom_bar(stat='identity',position=position_dodge(), alpha=0.8,
+           fill='grey19')+
+  geom_errorbar(width=0.5, size = 1.5,
+                color='black')+
+  xlab("")+
+  ylab("\n proportion of participants who agree")+
+  scale_y_continuous(breaks=c(-0.5,0,0.5),labels=c("0","0.5","1"))+
+  coord_flip()
+```
+
+Empirically, we observe a continuum of endorsements, consistent with similar tasks that use Likert scales (e.g. Prasada, et al. 2013). 
+
+
+
+
+
+# Model
+
+Load bootstrapped priors model results
+
+```{r}
+samples <- 10000
+
+m.path <- "~/Documents/research/generics-paper/model_results/familiar_generics/truth_judgments/bootstrap_prior/"
+
+prefix <- "generics-tj-bootstrapPrior-so1-so2-_IncrMH10000_burn5000_vi"
+model.files <- list.files(m.path)
+
+c <- 2 # which subset of 100 runs to examine (c = 1, 2, 3, 4, 5)
+
+# load data from 100 runs
+m.samp <- data.frame()
+for (i in seq(from = (c-1)*100+1, to = c*100)){
+  m.i <- as.data.frame(fread(paste(m.path, model.files[i], sep="")))
+  m.samp <- bind_rows(m.samp, histToSamples(m.i, samples))
+  print(i)
+}
+```
+
+
+## Posterior over model parameters
+
+```{r model.params}
+
+m.params <- m.samp %>% 
+  filter( Parameter %in% c("s1_optimality", "s2_optimality") )
+
+ggplot(m.params, aes(x=Value))+
+  theme_paper()+
+  geom_histogram(aes(y=..count../sum(..count..)), binwidth = 0.1)+
+  facet_wrap(~Parameter, scales='free')+
+  xlim(0,5)+
+  ylab("Posterior probability")
+
+#ggsave(file="~/Documents/research/generics/manuscript/figures/familiar-truthjudgments-parameters.pdf", width = 8, height =4)
+
+
+m.params %>% 
+  group_by(Parameter) %>%
+  summarise(postMode = estimate_mode(Value),
+            credHi = hdi_upper(Value),
+            credLo = hdi_lower(Value))
+```
