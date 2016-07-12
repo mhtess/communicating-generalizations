@@ -10,6 +10,7 @@ output: html_document
 library(tidyr)
 library(dplyr)
 library(langcog)
+library(Metrics)
 
 
 histToSamples <- function(df, samples){
@@ -49,7 +50,6 @@ ggplot(data=d.impItem, aes(x=stim_property, y=mean, fill= stim_type))+
 Load model results
 
 
-
 ```{r}
 m.samp <- data.frame()
 
@@ -57,6 +57,11 @@ for (i in 1:3) {
   mi <- as.data.frame(fread(paste("~/Documents/research/generics/manuscript/model-results/novel_generics/novel-interpretations-so1-integrateTheta_IncrMH100000_burn50000_c",i,".csv", sep="")))
   m.samp <- bind_rows(m.samp, histToSamples(mi, 100000))
 }
+```
+
+Posterior over s1 parameter
+
+```{r}
 
 m.samp %>% 
   filter(Parameter == "s1_optimality") %>%
@@ -79,6 +84,39 @@ m.samp %>%
             credLo = hdi_lower(Value))
 ```
 
+
+Posterior predictive
+
+```{r}
+m.pred <- m.samp %>% 
+  filter(Parameter == "implied_prevalence") %>%
+  group_by(Property) %>%
+  summarise(postMode = estimate_mode(Value),
+            credHi = hdi_upper(Value),
+            credLo = hdi_lower(Value))
+
+df.md <- left_join(
+  d.impItem %>%
+    rename(Property = stim_property),
+  m.pred)
+
+ggplot(df.md, aes(x = postMode, xmin = credLo, xmax = credHi,
+                  y = mean, ymin = ci_lower, ymax = ci_upper, color = stim_type))+
+  geom_abline(intercept = 0, slope = 1, lty = 2)+
+  theme_paper()+
+  geom_errorbar()+
+  geom_errorbarh()+
+  geom_point() +
+  xlim(0.25,1.01)+
+  ylim(0.25,1.01)+
+  coord_fixed()
+
+with(df.md, cor(postMode, mean))^2
+with(df.md, mse(mean, postMode))
+```
+
+
+# Add legend to correspond to Expt. 2c
 
 ### Analyze prior data
 
