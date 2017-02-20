@@ -1,0 +1,7 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+paper/generics-paper.tex
+paper/generics-paper_cache/
