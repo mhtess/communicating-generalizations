@@ -2,8 +2,8 @@
 
 var chain = last(process.argv) // load index as last command line index
 
-var targetUtterance = "some";
-// var targetUtterance = "most";
+// var targetUtterance = "some";
+var targetUtterance = "most";
 // var targetUtterance = "all";
 // var targetUtterance = "generics";
 
@@ -43,6 +43,9 @@ var meaning = function(utt,state, theta) {
          true
 }
 
+var noiseLink = function(dist, noise){
+	return Infer({model: function() { flip(noise) ? uniformDraw([0,1]) : sample(dist) }});
+}
 
 var model = function(){
 
@@ -50,6 +53,8 @@ var model = function(){
 		s1: uniformDrift({a:0,b:20,r:2}),
 		s2: uniformDrift({a:0,b:5,r:0.5})
 	};
+
+	var noise = uniformDrift({a:0,b:1,r:0.1});
 
 	foreach(properties, function(p){
 
@@ -115,7 +120,7 @@ var model = function(){
 			Infer({model: function(){
 				var utterance = sample(utterancePrior);
 		    var L1 = listener1(utterance)
-		    // factor(speakerOptimality.s2 * L1.score(prevalence))
+		    // factor(speakerOptimality.s2 * L1.score(speakerBeliefs))
 				var _kl = KL(speakerBeliefs, L1, speakerBeliefs.support());
 				factor(speakerOptimality.s2  * -1 * _kl)
 		    return utterance === targetUtterance ? 1 : 0
@@ -149,10 +154,12 @@ var model = function(){
 					})
 			}});
 
-			var s2prediction = speaker2(speakerBeliefs);
+			var s2prediction = noiseLink(speaker2(speakerBeliefs), noise);
+			// display(s2prediction.support())
 			var responseData = _.map(categoryData.speaker, "binaryResponse")
 
 			mapData({data:responseData}, function(d){
+				// display(s2prediction.score(d))
 				observe(s2prediction, d)
 			})
 
@@ -164,6 +171,7 @@ var model = function(){
 
 	query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s2","na"], speakerOptimality.s2)
+	query.add(["param","noise","na","na"], noise)
 	return query
 }
 
