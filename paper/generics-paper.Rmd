@@ -33,24 +33,67 @@ keywords:
     "generics, pragmatics, semantics, bayesian modeling"
 ---
 
+\newcommand{\denote}[1]{\mbox{ $[\![ #1 ]\!]$}}
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+<!-- \definecolor{Red}{RGB}{255,0,0} -->
+<!-- \definecolor{Green}{RGB}{10,200,100} -->
+<!-- \definecolor{Blue}{RGB}{10,100,200} -->
+<!-- \newcommand{\ndg}[1]{\textcolor{Green}{[ndg: $#1$]}}   -->
+<!-- \newcommand{\mht}[1]{\textcolor{Blue}{[mht: $#1$]}}   -->
+<!-- \newcommand{\red}[1]{\textcolor{Red}{$#1$}}   -->
+
 ```{r global_options, include=FALSE}
 rm(list=ls())
 knitr::opts_chunk$set(fig.width=6, fig.height=5, fig.crop = F, fig.path='figs/',
                       echo=FALSE, warning=FALSE, cache=T, message=FALSE, sanitize = T)
 ```
 
-\newcommand{\denote}[1]{\mbox{ $[\![ #1 ]\!]$}}
-\newcommand*\diff{\mathop{}\!\mathrm{d}}
 
 # Introduction 
 
+Figuring out that a category tends to have a property, an entity tends to exhibit a behavior, or a cause tends to produce an effect can be crucial and hard-won knowledge. 
+It is not surprising then that language provides simple ways to communicate such generalizations: *Dogs are friendly*, *Bill smokes cigarettes*, *Yeast makes bread rise*. 
+Generalizations are among the easiest forms of compositional linguistic expression.
+They appear everywhere in human conversation, pedagogy (*Blickets make the machine go.*), political and scientific discourse (*The President peddles falsehoods.*, *Psychology experiments don’t replicate.*), stereotypes [*Boys are good at math*; @GelmanEtAl2004; @Rhodes2012], motivation [*Big girls eat broccoli!*; @Cimpian2010motivation], emotion-regulation  (*Accidents happen.*), child-directed (*Mommy works late*) and child-produced speech [*Slides aren't for grown-ups!*; @Gelman2008], and many other facets of experience.
+
+Though the language of generalizations is found everywhere and in every language [@Behrens2005; @Carlson1995], the meaning of such linguistic expressions is philosophically puzzling and has resisted precise formalization.
+Intuition tells us that generalizations in language convey something about the propensity of an instance, property, or event, but exactly what is unclear.
+*Bill smokes cigarettes* seems to suggest a daily-habit, while *Susan writes novels* implies something much weaker, maybe a novel every few years.
+*Drinking moonshine makes you go blind* and so does *staring at the sun*, but neither causal statement tells you to precisely the increased relative risk.
+Existing work in both adults and children suggests that choosing to communicate a generalization can be used to exagerate evidence [@Cimpian2010; @Brandone2014].
+
+In addition to having manifold interpretations, what makes linguistic generalizations true or false (i.e., their truth conditions) is also a mystery.
+What animals lay eggs? 
+Well, *Birds lay eggs* even though only about half of them do (females).
+Half of birds are also female, and yet *Birds are female* sounds like a strange thing to say.
+*Mosquitos carry malaria* is a true statement despite the prevalence of carrying malaria among mosquitos being a just a fraction of 1\%, while *Canadians are right-handed* is also weird, even though the vast majority of them are. 
+
+How can generalizations in language have such flexible truth conditions while simultaneously carrying intuitive and, at times, very strong implications?
+This question has been investigated by psychologists, linguists, and philosophers since @Carlson1977, and has had the narrow focus of generalizations about *categories*, so-called *generic language*.
+Here, we provide a unified theory of all generalizations conveyed in language.
+We test out theory on 3 case studies: generalizations about categories, events, and causal forces.
+Our theory formalizes the idea that the core meaning of a linguistic generalization is simple, but underspecified, and that general principles of communication may be used to resolve the precise meaning in context. 
+To be precise, we develop a computational model that describes pragmatic reasoning about the propensity required to assert the generaization.  
+We find that this formalism resolves known philosophical and empirical puzzles.
+We also provide the first set of experimental results about linguistic generalizations about events and causal forces, so called *habitual* and *causal statements*.
+
+In Section 1, we introduce a unified formalism for generalizations and a information-theoric communicative theory of generalizations in language.
+In Section 2, we conduct a set of experiments to test the *truth conditions* of familiar generalizations about cagegories (generic statements), and find our model predicts key patterns in human judgments
+In Section 3, we conduct a set of experiments to test *interpretations* of novel generic sentences, again finding our model predicts human judgments with high quantitative accuracy.
+In Section 4, we begin to test the generality of the theory, examining the *truth conditions* of generalizations about events.
+In Section 5, we further probe our theory's generality, investing the *truth conditions* and *interpretations* of novel generalizations about causal forces. 
+In all cases, we provide formal comparison to simpler models and in all cases, find that only our communicative theory with an underspecified meaning function explains the pattern of human data.
+We also find that the prior beliefs used in our model reflect conceptual structure, and this provides an understanding of the conceptual implications of generics.
+Finally, we investigate the underlying semantic scale in more detail, and find that the core meaning of generalizations in language depends in a crucial way on subjective beliefs, not mere frequency.
+
+<!--
 Most would agree that \emph{Swans are white}, but certainly not every swan is.
 This type of utterance conveys a generalization about a category (i.e. \textsc{swans}) and is known as a generic utterance [@Carlson1977; @Leslie2008].
 Communicating generically about categories is useful because categories themselves are unobservable [@Markman1989].
-<!--Knowledge about categories, while central to human reasoning, is tricky to acquire because categories themselves are unobservable [Markman1989}.-->
+Knowledge about categories, while central to human reasoning, is tricky to acquire because categories themselves are unobservable [Markman1989}.
 It is believed that every language can express generic meaning [@Behrens2005; @Carlson1995], and that generics are essential to the growth of conceptual knowledge [@Gelman2004] and how kinds are represented in the mind [@Leslie2008].
 Generic language is ubiquitous in everyday conversation as well as in child-directed speech [@Gelman2008], and children as young as two or three understand that generics refer to categories and support generalization [@Cimpian2008].
-<!--% and though English and many other languages do not possess an unambiguous form devoted to generic meaning [@Behrens2000, @AlMalki2014]. -->
+and though English and many other languages do not possess an unambiguous form devoted to generic meaning [@Behrens2000, @AlMalki2014].
 Additionally, generics are the primary way by which speakers discuss social categories, making them key to propagating stereotypes [@GelmanEtAl2004; @Rhodes2012; @Leslie2015] and impacting motivation [@Cimpian2010motivation].
 Despite their psychological centrality, apparent simplicity, and ubiquity, a formal account of generic meaning remains elusive.
 
@@ -59,7 +102,7 @@ At first glance, generics feel like universally-quantified statements as in \emp
 Unlike universals, however, generics are resilient to counter-examples (e.g., \emph{Swans are white} even though there exist black swans). 
 Intuitions, then, fall back to something more vague like \emph{Swans, in general, are white} because indeed most swans are white.
 But mosquitos, in general, do not carry malaria, yet everyone agrees \emph{Mosquitos carry malaria}.
-<!--Interpreting the generic as meaning "most" (i.e. \emph{Most swans are white}) captures many cases, but cannot explain why \emph{Robins lay eggs} and \emph{Mosquitos carry malaria} are so intuitively compelling: Only adult female robins lay eggs and a very tiny fraction of mosquitos actually carry malaria.-->
+Interpreting the generic as meaning "most" (i.e. \emph{Most swans are white}) captures many cases, but cannot explain why \emph{Robins lay eggs} and \emph{Mosquitos carry malaria} are so intuitively compelling: Only adult female robins lay eggs and a very tiny fraction of mosquitos actually carry malaria.
 Indeed, it appears that any \emph{truth condition} stated in terms of how common the property is within the kind violates intuitions.
 Consider the birds: for a bird, being female practically implies you will lay eggs (the properties are present in the same proportion), yet we say things like \emph{Birds lay eggs} and we do not say things like \emph{Birds are female}.
 
@@ -74,13 +117,7 @@ How can generics have such flexible truth conditions while simultaneously carryi
 In this paper, we explore the idea that the core meaning of a generic statement is simple, but underspecified, and that general principles of communication may be used to resolve precise meaning in context. 
 In particular, we develop a mathematical model that describes pragmatic reasoning about the degree of prevalence required to assert the generic.  
 We find that this formalism resolves the philosophical and empirical puzzles.
-
-In Section 1, we review extant theories of generics from the linguistic and psychological literatures.
-In Section 2, we describe our pragmatic theory of generic language in formal terms and illustrate the model through simulation. 
-In Section 3, we conduct a set of experiments to test the \emph{truth conditions of generic statements}, and find our model predicts the patterns in human endorsement of familiar generic sentences.
-We also find that the prior beliefs used in the Bayesian model reflect conceptual structure, and this provides an understanding of the conceptual implications of generics.
-In Section 4, we conduct a set of experiments to test \emph{interpretations of novel generic sentences}, again finding our model predicts human judgments with high quantitative accuracy.
-In Section 5, we investigate the underlying semantic scale in more detail, and find that the core meaning of generic language depends in a crucial way on subjective beliefs, not mere frequency.
+-->
 
 
 # The Philosophical Puzzle of Generic Language: Truth Conditions

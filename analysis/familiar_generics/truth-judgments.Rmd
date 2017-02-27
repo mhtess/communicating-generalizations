@@ -6,20 +6,42 @@ output: html_document
 ---
 
 ```{r helper_functions}
+library(coda)
+library(data.table)
+library(langcog)
+library(lme4)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
 histToSamples <- function(df, samples){
   rows <- rep.int(seq_len(nrow(df)), times = round(df$Probability * samples))
   cols <- names(df) != "Probability"
   df[rows, cols, drop = FALSE]
 }
 
-#library(coda)
-#library(hydroGOF)
+## for Bayesian credible intervals
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+options("scipen"=10)  
+
+setwd("~/Documents/research/generics-paper/")
 ```
 
 # Human judgments
 
 ```{r human_data}
-setwd("~/Documents/research/generics-paper/")
 
 data.path <- "data/familiar_generics/"
 
@@ -74,6 +96,72 @@ ggplot(data=tj.bs, aes(x = sentence, y = mean-0.5,
 Empirically, we observe a continuum of endorsements, consistent with similar tasks that use Likert scales (e.g. Prasada, et al. 2013). 
 
 
+## Manipulation check
+
+Do true generics get endorsed more?
+```{r manipulation.check}
+
+# MHT's truth judgments of sentences
+sentence.class<- data.frame(sentence = levels(tj$sentence),
+                            class = c("t","t","t","f","i",'t',
+                                      'f','i','t','f','i','t',
+                                      'f','f','t','i','f','t',
+                                      'i','t','f','f','i','i',
+                                      't','t','f','f','t','f'))
+
+tj.s<-left_join(tj, sentence.class, by='sentence')
+tj.s$class<-factor(tj.s$class, levels=c('i','t','f'),
+                   labels = c("indeterminate", "true", "false"))
+
+rs0<-glmer(data=tj.s, response~ class + (1  | workerid), family='binomial')
+summary(rs0)
+```
+
+
+The 30 generic sentences fell into 3 categories as predicted: definitely true, definitely false, and neither true nor false. We entered participants' agreement judgments into a mixed-effect logistic regression with random by-participant effects of intercept. This \emph{a priori} distinction was a significant predictor of the eventual truth judgments: true generics were significantly more likely to be agreed with than the indeterminate generics ($\beta = 3.14; SE = 0.15; z = -20.9$) and false generics were significantly less likely to be agreed with than the indeterminate generics ($\beta = -2.07; SE = 0.15; z = -14.1$). Rather interesting, indeterminate generics were agreed with \emph{less} likely than chance ($\beta = -0.49; SE = 0.09; z = -5.3$).
+
+
+
+
+
+# Baseline hypothesis
+
+Does within-kind prevalence (e.g., the % of robins that lay eggs) predict truth judgment?
+
+```{r truthJudge.vs.prevalence}
+prevalence.est.path <- "model_results/familiar_generics/prior/within_kind_continuous/"
+
+# Load prevalence data
+prev.files <- list.files(prevalence.est.path)
+samples = 50000
+
+df.prev <- data.frame()
+for (i in prev.files){
+  item.prev <- as.data.frame(fread(paste(prevalence.est.path, i, sep = '')))
+  df.prev <- bind_rows(df.prev, histToSamples(item.prev, 50000))
+  print(i)
+}
+
+ggplot(df.prev, aes(x = Prevalence))+
+  geom_histogram() + 
+  facet_wrap(Property ~ Category)
+
+prev.summary<- df.prev %>%
+  group_by(Property, Category) %>%
+  summarise(map = estimate_mode(Prevalence),
+            credLow = hdi_lower(Prevalence),
+            credHigh= hdi_upper(Prevalence)) %>%
+  ungroup() %>%
+  unite(sentence, Category, Property, sep =' ') %>%
+  mutate(sentence = paste(sentence, '.', sep=''))
+
+tj.wPrev<-left_join(tj.bs, 
+                    m.summary %>% 
+                      rename(prev = map, 
+                             prevHigh = credHigh,
+                             prevLow = credLow), 
+                    by = "sentence")
+```
 
 
 

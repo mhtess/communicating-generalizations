@@ -123,9 +123,15 @@ d.tidy <- d %>%
 
 
 ```{r}
+table(d.tidy$sentence) ## properties of generics of interest were collected in participant
+
+
 ggplot(d.tidy, aes(x = prevalence))+
   geom_histogram() + 
-  facet_wrap(~sentence)
+  facet_wrap(~sentence, scales='fixed')
+
+
+ggsave("~/Documents/research/generics/analysis/figures/within_prevalence-histogram.pdf", width = 12)
 ```
 
 
@@ -143,9 +149,17 @@ for (i in prev.files){
   print(i)
 }
 
+df.prev <- df.prev %>%
+  unite(sentence, Category, Property, sep =' ') %>%
+  mutate(sentence = paste(sentence, '.', sep=''))
+
 ggplot(df.prev, aes(x = Prevalence))+
   geom_histogram() + 
-  facet_wrap(Property ~ Category)
+  facet_wrap(~sentence, scales = 'free')
+
+ggsave("~/Documents/research/generics/analysis/figures/within_prevalence-inferredBetas.pdf", width = 12)
+
+
 
 prev.summary<- df.prev %>%
   group_by(Property, Category) %>%
