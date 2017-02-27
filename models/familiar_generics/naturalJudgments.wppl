@@ -1,0 +1,227 @@
+// time webppl naturalJudgments.wppl --require mht --require webppl-json --require naturalUtils
+
+// var start_index = last(process.argv) // load index as last command line index
+
+var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
+
+var dataPath = "../../data/familiar_generics/"
+var truthJudgmentDataFile = dataPath + "naturalGenerics-trials-formatted.csv"
+var priorDataFile = dataPath + "naturalGenerics-prior-trials-n57.csv"
+
+var d0 = dataFrame(utils.readCSV(priorDataFile).data, ["prevalence"]);
+var d1 = dataFrame(utils.readCSV(truthJudgmentDataFile).data);
+// console.log(_.map(d0, "prevalence"))
+var data = {
+	speaker: map(function(d){
+			extend(d, {binaryResponse: responseDictionary[d.response]})
+		}, d1.slice(0, d1.length - 1)),
+	prior: map(function(d){
+		extend(d, {roundedPrevalence: avoidEnds(d.prevalence/100)})
+	}, d0.slice(0, d0.length - 1))
+};
+
+// console.log(_.filter(data.prior, {"roundedPrevalence":0.0001}))
+var properties = levels(data.speaker, "Property")
+// console.log(properties)
+// console.log(data.speaker)
+
+var utterancePrior = Infer({model: function(){return uniformDraw(["generic","silence"])}});
+var thetaPrior = Infer({model: function(){
+	return uniformDraw([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])}
+});
+var meaning = function(utt,state, theta) {
+  return utt=="generic"? state > theta :
+         utt=="generic is false"? state<=theta :
+         utt=='silence'? true :
+         utt=='some'? state>0:
+         utt=='most'? state>= 0.5:
+         utt=='all'? state >= 0.99:
+         true
+}
+
+
+var model = function(){
+
+	var speakerOptimality = {
+		s1: uniformDrift({a:0,b:20,r:2}),
+		s2: uniformDrift({a:0,b:5,r:0.5})
+	};
+
+	foreach(properties, function(p){
+
+		var propertyData = {
+			speaker: _.filter(data.speaker, {Property: p}),
+			prior: _.filter(data.prior, {Property: p})
+		}
+		// console.log(propertyData.prior)
+		// _.mapValues(
+		// 	data, function(x){ return _.filter(x, {Property: p})}
+		// );
+		// prior parameters
+		var theta = uniformDrift({a: 0, b: 1, width:0.2})
+		var g = uniform({a: 0, b: 1, width: 0.2})
+		var d = uniform({a: 0, b: 50, width: 5})
+		var priorParams = {a: shape_alpha(g, d), b: shape_beta(g, d)};
+
+		// observe structured prior data
+		mapData({data: propertyData.prior}, function(d){
+			var di = d.roundedPrevalence;
+			// console.log(di + "____" + Math.log(
+			// 	(di==0.01 ? 1 : 0)*(1-theta)+
+			// 	(di> 0.01 ? 1 : 0) * theta * Math.exp(Beta(priorParams).score(di))))
+			factor(Math.log(
+				(di==0.01 ? 1 : 0)*(1-theta)+
+				(di> 0.01 ? 1 : 0) * theta * Math.exp(Beta(priorParams).score(di))))
+		})
+		//
+		var statePrior = Infer({model: function(){
+			var component = flip(theta);
+			return component ?
+				categorical({
+					vs: bins,
+					ps: map(function(b) { return probability(b, Beta(priorParams)) }, bins )
+				}) : 0
+		}});
+
+		/// RSA model
+		var listener0 = cache(function(utterance, theta) {
+		  Infer({model: function(){
+		    var state = sample(statePrior)
+		    var m = meaning(utterance, state, theta)
+		    condition(m)
+		    return state
+		 }})}, 10000)
+
+		var speaker1 = cache(function(state, theta) {
+			Infer({model: function(){
+		    var utterance = sample(utterancePrior);
+		    var L0 = listener0(utterance, theta);
+		    factor(speakerOptimality.s1 * L0.score(state))
+		    return utterance
+			}})}, 10000)
+
+		var listener1 = cache(function(utterance) {
+			Infer({model: function(){
+		    var state = sample(statePrior);
+		    var theta = sample(thetaPrior);
+		    var S1 = speaker1(state, theta)
+		    observe(S1, utterance)
+		    return state
+			}})}, 10000)
+
+		var speaker2 = function(speakerBeliefs){
+			Infer({model: function(){
+				var utterance = sample(utterancePrior);
+		    var L1 = listener1(utterance)
+		    // factor(speakerOptimality.s2 * L1.score(prevalence))
+				var _kl = KL(speakerBeliefs, L1, speakerBeliefs.support());
+				factor(speakerOptimality.s2  * -1 * _kl)
+		    return utterance == "generic" ? 1 : 0
+		 }})}
+
+		var categories = levels(propertyData.speaker, "Category");
+		// console.log(categories)
+
+		foreach(categories, function(k){
+
+			var categoryData = {
+				speaker: _.filter(propertyData.speaker, {Category: k}),
+				prior: _.filter(propertyData.prior, {Category: k})
+			};
+
+			var g_k = uniformDrift({a: 0, b: 1, width: 0.2})
+			var d_k = uniformDrift({a: 0, b: 50, width: 5})
+			var withinKind_params = {a: shape_alpha(g_k, d_k), b: shape_beta(g_k, d_k)};
+
+			mapData({data: categoryData.prior}, function(d){
+				var di = d.roundedPrevalence;
+				observe(Beta(withinKind_params), di)
+			})
+
+			// var withinKind_prevalence = beta(withinKind_params);
+			var speakerBeliefs = Infer({model: function(){
+				return categorical({
+						vs:bins,
+						ps:map(function(b) { return Math.exp(Beta(withinKind_params).score(b)) }, bins )
+					})
+			}});
+
+			var s2prediction = speaker2(speakerBeliefs);
+			var responseData = _.map(categoryData.speaker, "binaryResponse")
+
+			mapData({data:responseData}, function(d){
+				// console.log("d = " + d + "__" + s2prediction.score(d))
+				observe(s2prediction, d)
+			})
+
+			     	// console.log(mht.isNumeric(sample(prior)))
+
+
+			     	//note, there must be at least a tiny amount of noise, otherwise for the items with 0 prevalence, the model crashes
+			    //  	var linkedERP = guessingLink(predictionERP, phi)
+					//
+					// var scr = sum(map(function(d) {
+					// 			    return linkedERP.score(d)
+					// 					}, responseData))
+					// // console.log(p + k + scr)
+					// factor(scr)
+
+			// query.add(["generic",p, k, "0"], expectation(linkedERP) )
+
+		})
+
+	})
+	// query.add(["s1_optimality","na","na","na"], s1_optimality)
+	// query.add(["s2_optimality","na","na","na"], s2_optimality)
+	// return query
+}
+
+Infer({method: "MCMC", samples: 10, verbose:true, model: model})
+// data.prior
+
+//
+// var Priordata = utils.readCSV("data/real-kinds-prior-2-trials-n57-formatted.csv").data
+// var df_prior0 = dataFrame(Priordata.slice(0, Priordata.length - 1), ["prevalence"] )
+// var df_prior = map(function(d){
+// 	return _.extend(d, {"roundedPrevalence": avoidEnds(d.prevalence/100)})
+// },df_prior0)
+
+
+// var prevalenceERPobject = _.fromPairs(map(function(p){
+// 	var categories = levels(_.filter(df_truth, {Property: p}), "Category"))
+// 	return [p, _.object(map(function(k){
+// 			var fpath = "../../models/prevalence_results/prevalence_"+p+"_"+k+".csv"
+// 			var df = readQueryERP(fpath)
+// 			return [k, df]
+// 		}, categories))]
+// },properties))
+//
+// console.log('prevalences loaded')
+//
+// var priorERPobject = _.object(map(function(p){
+// 		var fpath = "../../models/prior_results/prevalence_"+p+"_MH50kb.csv"
+// 		var df = readQueryERP(fpath)
+// 		return [p, df]
+// },properties))
+//
+// console.log('priors loaded')
+//
+// var guessingLink = function(myERP, phi){
+// 	Infer({method: "enumerate"}, function(){
+// 		var x = flip(1-phi) ?
+// 					sample(myERP) :
+// 					uniformDraw([1,0])
+// 		return x
+// 	})
+// }
+
+//
+
+//
+// var mhiter = 100
+// var burn = mhiter/2
+// var tfbt = Infer({method: "incrementalMH", samples: mhiter, burn: burn, verbose: true, verboseLag: 10}, model)
+// var header = "Parameter,Property,Category,Extra,Value"
+// var outfile = '../model-results/full-bayesian/generics-tj-bayesianPrior-so1-so2-_IncrMH'+ mhiter+'_burn'+burn+'_c'+start_index+'.csv'
+// mht.erpWriter(tfbt, outfile, header)
+// console.log('wrote to... ' + outfile )
