@@ -2,6 +2,11 @@
 
 var chain = last(process.argv) // load index as last command line index
 
+var targetUtterance = "some";
+// var targetUtterance = "most";
+// var targetUtterance = "all";
+// var targetUtterance = "generics";
+
 var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
 
 var dataPath = "../../data/familiar_generics/"
@@ -10,7 +15,7 @@ var priorDataFile = dataPath + "naturalGenerics-prior-trials-n57.csv"
 
 var d0 = dataFrame(utils.readCSV(priorDataFile).data, ["prevalence"]);
 var d1 = dataFrame(utils.readCSV(truthJudgmentDataFile).data);
-// console.log(_.map(d0, "prevalence"))
+
 var data = {
 	speaker: map(function(d){
 			extend(d, {binaryResponse: responseDictionary[d.response]})
@@ -20,14 +25,10 @@ var data = {
 	}, d0.slice(0, d0.length - 1))
 };
 
-// console.log(_.filter(data.prior, {"roundedPrevalence":0.0001}))
 var properties = levels(data.speaker, "Property")
-// console.log(properties)
-// console.log(data.speaker)
 
-var utterancePrior = Infer({model: function(){return uniformDraw(["generic","silence"])}});
+var utterancePrior = Infer({model: function(){return uniformDraw([targetUtterance,"silence"])}});
 var thetaPrior = Infer({model: function(){
-	// return uniformDraw([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])}
 	return uniformDraw([0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
 		0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95])}
 });
@@ -56,10 +57,7 @@ var model = function(){
 			speaker: _.filter(data.speaker, {Property: p}),
 			prior: _.filter(data.prior, {Property: p})
 		}
-		// console.log(propertyData.prior)
-		// _.mapValues(
-		// 	data, function(x){ return _.filter(x, {Property: p})}
-		// );
+
 		// prior parameters
 		var theta = uniformDrift({a: 0, b: 1, width:0.2})
 		var g = uniform({a: 0, b: 1, width: 0.2})
@@ -69,9 +67,6 @@ var model = function(){
 		// observe structured prior data
 		mapData({data: propertyData.prior}, function(d){
 			var di = d.roundedPrevalence;
-			// console.log(di + "____" + Math.log(
-			// 	(di==0.01 ? 1 : 0)*(1-theta)+
-			// 	(di> 0.01 ? 1 : 0) * theta * Math.exp(Beta(priorParams).score(di))))
 			factor(Math.log(
 				(di==0.01 ? 1 : 0)*(1-theta)+
 				(di> 0.01 ? 1 : 0) * theta * Math.exp(Beta(priorParams).score(di))))
@@ -81,7 +76,6 @@ var model = function(){
 		query.add(["prior","prevalenceGivenPresent", p, "na"],
 		 beta(priorParams))
 
-		//
 		var statePrior = Infer({model: function(){
 			var component = flip(theta);
 			return component ?
@@ -111,7 +105,7 @@ var model = function(){
 		var listener1 = cache(function(utterance) {
 			Infer({model: function(){
 		    var state = sample(statePrior);
-		    var theta = sample(thetaPrior);
+		    var theta = targetUtterance === "generic" ? sample(thetaPrior) : -99;
 		    var S1 = speaker1(state, theta)
 		    observe(S1, utterance)
 		    return state
@@ -124,7 +118,7 @@ var model = function(){
 		    // factor(speakerOptimality.s2 * L1.score(prevalence))
 				var _kl = KL(speakerBeliefs, L1, speakerBeliefs.support());
 				factor(speakerOptimality.s2  * -1 * _kl)
-		    return utterance == "generic" ? 1 : 0
+		    return utterance === targetUtterance ? 1 : 0
 		 }})}
 
 		var categories = levels(propertyData.speaker, "Category");
@@ -159,11 +153,10 @@ var model = function(){
 			var responseData = _.map(categoryData.speaker, "binaryResponse")
 
 			mapData({data:responseData}, function(d){
-				// console.log("d = " + d + "__" + s2prediction.score(d))
 				observe(s2prediction, d)
 			})
 
-			query.add(["predictive","generic", p, k], expectation(s2prediction) )
+			query.add(["predictive",targetUtterance, p, k], expectation(s2prediction) )
 
 		})
 
@@ -185,7 +178,7 @@ var posterior = Infer({
   verboseLag: mhiter / 20
 })
 
-var outfile = 'results-fullModel-'+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+var outfile = 'results-fullModel-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 utils.writeQueryERP(posterior, "results/" + outfile,
 	["type", "param", "property", "category", "val"])
