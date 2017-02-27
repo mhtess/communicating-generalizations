@@ -1,4 +1,4 @@
-// time ~/webppl-infer/webppl asymmetry.wppl --require mht --require asymUtils 1
+// time webppl novel-L1-S2.wppl --require utils 0
 
 var chain = last(process.argv) // load index as last command line index
 
@@ -63,12 +63,12 @@ var model = function(){
 		}
 
 		var gs = {
-			across: sample(UniformDrift({a:0,b:1,r:0.3})),
-			within: sample(UniformDrift({a:0,b:1,r:0.3}))
+			across: uniform({a: 0, b: 1, width: 0.2}),
+			within: uniform({a: 0, b: 1, width: 0.2})
 		}
 		var ds = {
-			across: sample(UniformDrift({a:0,b:50,r:5})),
-			within: sample(UniformDrift({a:0,b:50,r:5}))
+			across: uniform({a: 0, b: 50, width: 5}),
+			within: uniform({a: 0, b: 50, width: 5})
 		}
 
 		var priorParams = {
@@ -145,13 +145,11 @@ var model = function(){
 
 		})
 
-		query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
-
-	})
+	query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	return query
 }
 
-var mhiter = 5000;
+var mhiter = 100;
 
 var burn = mhiter / 2;
 var posterior = Infer({
