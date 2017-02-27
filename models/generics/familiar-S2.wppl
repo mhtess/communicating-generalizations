@@ -5,9 +5,8 @@ var chain = last(process.argv) // load index as last command line index
 // var targetUtterance = "some";
 // var targetUtterance = "most";
 // var targetUtterance = "all";
-var targetUtterance = "generics";
+var targetUtterance = "generic";
 
-var displayObj =  function(x){display(JSON.stringify(x))};
 var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
 
 var dataPath = "../../data/familiar_generics/"

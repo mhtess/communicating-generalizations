@@ -1,0 +1,170 @@
+// time ~/webppl-infer/webppl asymmetry.wppl --require mht --require asymUtils 1
+
+var chain = last(process.argv) // load index as last command line index
+
+// var targetUtterance = "some";
+// var targetUtterance = "most";
+// var targetUtterance = "all";
+var targetUtterance = "generic";
+var utterancePrior = Infer({model: function(){return uniformDraw([targetUtterance,"silence"])}});
+var thetaPrior = Infer({model: function(){
+	return uniformDraw([0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
+		0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95])}
+});
+
+var meaning = function(utt,state, theta) {
+  return utt=="generic"? state > theta :
+         utt=="generic is false"? state<=theta :
+         utt=='silence'? true :
+         utt=='some'? state>0:
+         utt=='most'? state>= 0.5:
+         utt=='all'? state >= 0.99:
+         true
+}
+
+var dataPath = "../../data/unfamiliar_generics/"
+
+var interpretationsDataFile = dataPath + "interpretations-trials.csv"
+// var truthJudgmentDataFile = dataPath + "truth-conditions-2-trials.csv"
+var priorDataFile = dataPath + "unfamiliar-priors.csv"
+
+
+var d0 = dataFrame(utils.readCSV(priorDataFile).data,
+			["prevAcross", "prevWithin"]);
+var d1 = dataFrame(utils.readCSV(interpretationsDataFile).data,
+ 			["response"]);
+
+
+var data = {
+	listener: map(function(d){
+			extend(d, {roundedPrevalence: alignPrevalence(d.response)})
+		}, d1.slice(0, d1.length - 1)),
+	prior: map(function(d){
+		extend(d, {
+			roundedAcross: avoidEnds(d.prevAcross),
+			roundedWithin: avoidEnds(d.prevWithin),
+		})
+	}, d0.slice(0, d0.length - 1))
+};
+
+var items = levels(data.prior, "stim_property");
+
+var model = function(){
+
+	var speakerOptimality = {
+		s1: uniformDrift({a:0,b:20,r:2})
+	};
+
+	foreach(items, function(item){
+
+		var propertyData = {
+			listener: _.filter(data.listener, {stim_property: item}),
+			prior: _.filter(data.prior, {stim_property: item})
+		}
+
+		var gs = {
+			across: sample(UniformDrift({a:0,b:1,r:0.3})),
+			within: sample(UniformDrift({a:0,b:1,r:0.3}))
+		}
+		var ds = {
+			across: sample(UniformDrift({a:0,b:50,r:5})),
+			within: sample(UniformDrift({a:0,b:50,r:5}))
+		}
+
+		var priorParams = {
+			across: {
+				a: shape_alpha(gs.across,ds.across),
+				b: shape_beta(gs.across,ds.across)
+			},
+			within: {
+				a: shape_alpha(gs.within,ds.within),
+				b: shape_beta(gs.within,ds.within)
+			}
+		};
+
+		mapData({data: propertyData.prior}, function(d){
+			observe(Beta(priorParams.across), d.roundedAcross);
+			observe(Beta(priorParams.within), d.roundedWithin);
+		});
+
+		// var theta = beta(priorParams.across);
+		query.add(["prior","isPresent", item, "na"], beta(priorParams.across))
+		query.add(["prior","prevalenceGivenPresent", item, "na"],
+		 beta(priorParams.within))
+
+		var statePrior = Infer({model: function(){
+			var theta = categorical({
+				vs: bins,
+				ps: map(function(b) {
+					return probability(b, Beta(priorParams.across))
+				}, bins )
+			});
+ 			var component = flip(theta);
+ 			return component ?
+ 				categorical({
+ 					vs: bins,
+ 					ps: map(function(b) {
+						return probability(b, Beta(priorParams.within))
+					}, bins )
+ 				}) : 0
+ 		}});
+
+		/// RSA model
+		var listener0 = cache(function(utterance, theta) {
+			Infer({model: function(){
+				var state = sample(statePrior)
+				var m = meaning(utterance, state, theta)
+				condition(m)
+				return state
+		 }})}, 10000)
+
+		var speaker1 = cache(function(state, theta) {
+			Infer({model: function(){
+				var utterance = sample(utterancePrior);
+				var L0 = listener0(utterance, theta);
+				factor(speakerOptimality.s1 * L0.score(state))
+				return utterance
+			}})}, 10000)
+
+		var listener1 = cache(function(utterance) {
+			Infer({model: function(){
+				var state = sample(statePrior);
+				var theta = targetUtterance === "generic" ? sample(thetaPrior) : -99;
+				var S1 = speaker1(state, theta)
+				observe(S1, utterance)
+				return state
+			}})}, 10000)
+
+		var l1prediction = listener1(targetUtterance);
+
+		mapData({data: propertyData.listener}, function(d){
+			observe(l1prediction, d.roundedPrevalence)
+		})
+
+		query.add(["predictive","listener",targetUtterance, item], expectation(l1prediction) )
+
+		})
+
+		query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
+
+	})
+	return query
+}
+
+var mhiter = 5000;
+
+var burn = mhiter / 2;
+var posterior = Infer({
+  model: model,
+  method: "incrementalMH",
+  samples: mhiter, burn: burn,
+  verbose: T,
+  verboseLag: mhiter / 20
+})
+
+var outfile = 'results-novelL1-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+
+utils.writeQueryERP(posterior, "results/" + outfile,
+	["type", "param", "property", "category", "val"])
+
+display("written to " + outfile)
