@@ -1,6 +1,6 @@
-// time webppl naturalJudgments.wppl --require mht --require webppl-json --require naturalUtils
+// time webppl naturalJudgments.wppl --require utils
 
-// var start_index = last(process.argv) // load index as last command line index
+var chain = last(process.argv) // load index as last command line index
 
 var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
 
@@ -27,8 +27,11 @@ var properties = levels(data.speaker, "Property")
 
 var utterancePrior = Infer({model: function(){return uniformDraw(["generic","silence"])}});
 var thetaPrior = Infer({model: function(){
-	return uniformDraw([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])}
+	// return uniformDraw([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])}
+	return uniformDraw([0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
+		0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95])}
 });
+
 var meaning = function(utt,state, theta) {
   return utt=="generic"? state > theta :
          utt=="generic is false"? state<=theta :
@@ -73,6 +76,11 @@ var model = function(){
 				(di==0.01 ? 1 : 0)*(1-theta)+
 				(di> 0.01 ? 1 : 0) * theta * Math.exp(Beta(priorParams).score(di))))
 		})
+
+		query.add(["prior","isPresent", p, "na"], theta)
+		query.add(["prior","prevalenceGivenPresent", p, "na"],
+		 beta(priorParams))
+
 		//
 		var statePrior = Infer({model: function(){
 			var component = flip(theta);
@@ -120,7 +128,6 @@ var model = function(){
 		 }})}
 
 		var categories = levels(propertyData.speaker, "Category");
-		// console.log(categories)
 
 		foreach(categories, function(k){
 
@@ -138,7 +145,9 @@ var model = function(){
 				observe(Beta(withinKind_params), di)
 			})
 
-			// var withinKind_prevalence = beta(withinKind_params);
+			query.add(["withinKind","prevalence", p, k],
+			 				beta(withinKind_params))
+
 			var speakerBeliefs = Infer({model: function(){
 				return categorical({
 						vs:bins,
@@ -154,74 +163,31 @@ var model = function(){
 				observe(s2prediction, d)
 			})
 
-			     	// console.log(mht.isNumeric(sample(prior)))
-
-
-			     	//note, there must be at least a tiny amount of noise, otherwise for the items with 0 prevalence, the model crashes
-			    //  	var linkedERP = guessingLink(predictionERP, phi)
-					//
-					// var scr = sum(map(function(d) {
-					// 			    return linkedERP.score(d)
-					// 					}, responseData))
-					// // console.log(p + k + scr)
-					// factor(scr)
-
-			// query.add(["generic",p, k, "0"], expectation(linkedERP) )
+			query.add(["predictive","generic", p, k], expectation(s2prediction) )
 
 		})
 
 	})
-	// query.add(["s1_optimality","na","na","na"], s1_optimality)
-	// query.add(["s2_optimality","na","na","na"], s2_optimality)
-	// return query
+
+	query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
+	query.add(["param","speakerOptimality","s2","na"], speakerOptimality.s2)
+	return query
 }
 
-Infer({method: "MCMC", samples: 10, verbose:true, model: model})
-// data.prior
+var mhiter = 5000;
 
-//
-// var Priordata = utils.readCSV("data/real-kinds-prior-2-trials-n57-formatted.csv").data
-// var df_prior0 = dataFrame(Priordata.slice(0, Priordata.length - 1), ["prevalence"] )
-// var df_prior = map(function(d){
-// 	return _.extend(d, {"roundedPrevalence": avoidEnds(d.prevalence/100)})
-// },df_prior0)
+var burn = mhiter / 2;
+var posterior = Infer({
+  model: model,
+  method: "incrementalMH",
+  samples: mhiter, burn: burn,
+  verbose: T,
+  verboseLag: mhiter / 20
+})
 
+var outfile = 'results-fullModel-'+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
-// var prevalenceERPobject = _.fromPairs(map(function(p){
-// 	var categories = levels(_.filter(df_truth, {Property: p}), "Category"))
-// 	return [p, _.object(map(function(k){
-// 			var fpath = "../../models/prevalence_results/prevalence_"+p+"_"+k+".csv"
-// 			var df = readQueryERP(fpath)
-// 			return [k, df]
-// 		}, categories))]
-// },properties))
-//
-// console.log('prevalences loaded')
-//
-// var priorERPobject = _.object(map(function(p){
-// 		var fpath = "../../models/prior_results/prevalence_"+p+"_MH50kb.csv"
-// 		var df = readQueryERP(fpath)
-// 		return [p, df]
-// },properties))
-//
-// console.log('priors loaded')
-//
-// var guessingLink = function(myERP, phi){
-// 	Infer({method: "enumerate"}, function(){
-// 		var x = flip(1-phi) ?
-// 					sample(myERP) :
-// 					uniformDraw([1,0])
-// 		return x
-// 	})
-// }
+utils.writeQueryERP(posterior, "results/" + outfile,
+	["type", "param", "property", "category", "val"])
 
-//
-
-//
-// var mhiter = 100
-// var burn = mhiter/2
-// var tfbt = Infer({method: "incrementalMH", samples: mhiter, burn: burn, verbose: true, verboseLag: 10}, model)
-// var header = "Parameter,Property,Category,Extra,Value"
-// var outfile = '../model-results/full-bayesian/generics-tj-bayesianPrior-so1-so2-_IncrMH'+ mhiter+'_burn'+burn+'_c'+start_index+'.csv'
-// mht.erpWriter(tfbt, outfile, header)
-// console.log('wrote to... ' + outfile )
+display("written to " + outfile)
