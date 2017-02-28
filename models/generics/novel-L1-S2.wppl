@@ -2,10 +2,10 @@
 
 var chain = last(process.argv) // load index as last command line index
 
-// var targetUtterance = "some";
+var targetUtterance = "some";
 // var targetUtterance = "most";
 // var targetUtterance = "all";
-var targetUtterance = "generic";
+// var targetUtterance = "generic";
 var utterancePrior = Infer({model: function(){return uniformDraw([targetUtterance,"silence"])}});
 var thetaPrior = Infer({model: function(){
 	return uniformDraw([0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
@@ -96,7 +96,7 @@ var model = function(){
 			var theta = categorical({
 				vs: bins,
 				ps: map(function(b) {
-					return probability(b, Beta(priorParams.across))
+					return probability(Beta(priorParams.across), b)
 				}, bins )
 			});
  			var component = flip(theta);
@@ -104,7 +104,7 @@ var model = function(){
  				categorical({
  					vs: bins,
  					ps: map(function(b) {
-						return probability(b, Beta(priorParams.within))
+						return probability(Beta(priorParams.within), b)
 					}, bins )
  				}) : 0
  		}});
