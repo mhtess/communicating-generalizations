@@ -1,7 +1,10 @@
-// time webppl habituals.wppl --require utils
-var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
+// time webppl habituals.wppl --require utils 0
+
+var chain = last(process.argv) // load index as last command line index
+
 
 var dataPath = "data/"
+var targetUtterance = "habitual"
 
 var prior_existenceFile = dataPath + "prior2-existence.csv";
 var prior_waitFile = dataPath + "prior2-timesper5yr.csv";
@@ -12,10 +15,17 @@ var d1 = dataFrame(utils.readCSV(prior_waitFile).data, ["val", "logval"]);
 var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data,
 				["n_instances","past_logfreq", "future_logfreq"]);
 
+
+var bins = {
+	state: _.range(-1, 9, 0.5),
+	threshold: _.range(-0.75,8.75,0.5),
+	coin: _.range(0.05, 1.0, 0.1)
+}
+
 var data = {
 	speaker: map(function(d){
 			extend(d, {
-				roundedFreq: nearestPriorBin(d.log_times, priorBins),
+				roundedFreq: nearestPriorBin(d.log_times, bins.state),
 				alignedResponse : responseDictionary[d.response]
 			})
 		}, d2.slice(0, d2.length - 1)),
@@ -31,16 +41,9 @@ var data = {
 	}
 };
 
-
 var items = levels(data.speaker, "habitual");
 var genders = levels(data.prior.existence, "gender");
 var priorQuestions = ["Q1","Q2"];
-
-var bins = {
-	state: _.range(-1, 9, 0.5),
-	threshold: _.range(-0.75,8.75,0.5),
-	coin: _.range(0.05, 1.0, 0.1)
-}
 
 var utterancePrior = Infer({model: function(){
 	return uniformDraw([targetUtterance,"silence"])
@@ -51,12 +54,10 @@ var thetaPrior = Infer({model: function(){
 });
 
 var meaning = function(utt,state, theta) {
-  return utt=="generic"? state > theta :
-         utt=="generic is false"? state<=theta :
+  return utt=="habitual"? state > theta :
+         utt=="habitual is false"? state<=theta :
          utt=='silence'? true :
-         utt=='some'? state>0:
-         utt=='most'? state>= 0.5:
-         utt=='all'? state >= 0.99:
+         utt=='some'? state > 0 :
          true
 }
 
@@ -67,13 +68,9 @@ var model = function(){
 		s1: uniformDrift({a:0,b:20,r:2}),
 		s2: uniformDrift({a:0,b:5,r:0.5})
 	}
-	// var speaker2_optimality = 1//speaker1_optimality//uniform(0,20)
-	// var phi = uniform(0,1)
+
 	var phi = 0
 	var propFemale = 0.5
-
-	// console.log("so " + speaker_optimality)
-	// console.log("phi " + phi)
 
 	foreach(items, function(i){
 
@@ -81,7 +78,7 @@ var model = function(){
 			speaker: _.filter(data.speaker, {habitual: i}),
 			prior: {
 				existence: _.filter(data.prior.existence, {item: i}),
-				frequency _.filter(data.prior.frequency, {item: i})
+				frequency: _.filter(data.prior.frequency, {item: i})
 			}
 		};
 
@@ -99,11 +96,11 @@ var model = function(){
 
 		/// frequency given done it before
 		var mus = {
-			male: uniformDrift({a:0, b:10, width: 0.75});
+			male: uniformDrift({a:0, b:10, width: 0.75}),
 			female: uniformDrift({a:0, b:10, width: 0.75})
 		};
 		var sigmas = {
-			male: uniformDrift({a:0, b:10, width: 0.75});
+			male: uniformDrift({a:0, b:10, width: 0.75}),
 			female: uniformDrift({a:0, b:10, width: 0.75})
 		};
 
@@ -122,18 +119,26 @@ var model = function(){
 					b: shape_beta(gs.female, ds.female)
 				},
 				frequency: {
-					mu: mus.female, sigmas.female
+					mu: mus.female, sigma: sigmas.female
 				}
 			}
 		};
 
 		mapData({data: itemData.prior.existence}, function(d){
+			// display(Beta(priorParams[d.gender]["existence"]).score(d.avoided_endval))
 			observe(Beta(priorParams[d.gender]["existence"]), d.avoided_endval)
 		})
 
 		mapData({data: itemData.prior.frequency}, function(d){
+			// display(Gaussian(priorParams[d.gender]["frequency"]).score(d.logval))
 			observe(Gaussian(priorParams[d.gender]["frequency"]), d.logval)
 		})
+
+		query.add(["prior","isPresent", i, "male"], beta(priorParams.male.existence))
+		query.add(["prior","isPresent", i, "female"], beta(priorParams.female.existence))
+
+		query.add(["prior","frequencyGivenPresent", i, "male"], gaussian(priorParams.male.frequency))
+		query.add(["prior","frequencyGivenPresent", i, "female"], gaussian(priorParams.female.frequency))
 
 		// posterior predictive on prior questions
 		// var existenceProb = {
@@ -152,28 +157,28 @@ var model = function(){
 					categorical({
 					vs: bins.coin,
 					ps: map(function(b) {
-						return probability(Beta(priorParams.female.existence), b)
+						return probability(Beta(priorParams.female.existence), b) + eps
 					}, bins.coin )
 					})
 				) ?
 				categorical({
 					vs: bins.state,
 					ps: map(function(b){
-						return probability(Gaussian(priorParams.female.frequency), b)
+						return probability(Gaussian(priorParams.female.frequency), b) + eps
 					}, bins.state)
 				}) : minBin :
 				flip(
 					categorical({
 					vs: bins.coin,
 					ps: map(function(b) {
-						return probability(Beta(priorParams.male.existence), b)
+						return probability(Beta(priorParams.male.existence), b) + eps
 					}, bins.coin )
 					})
 				) ?
 				categorical({
 					vs: bins.state,
 					ps: map(function(b){
-						return probability(Gaussian(priorParams.male.frequency), b)
+						return probability(Gaussian(priorParams.male.frequency), b) + eps
 					}, bins.state)
 				}) : minBin
 		}})
@@ -204,134 +209,56 @@ var model = function(){
 		    return state
 			}})}, 10000)
 
-		var speaker2 = function(speakerBeliefs){
+		var speaker2 = function(freq){
 			Infer({model: function(){
 				var utterance = sample(utterancePrior);
 		    var L1 = listener1(utterance)
-		    // factor(speakerOptimality.s2 * L1.score(speakerBeliefs))
-				var _kl = KL(speakerBeliefs, L1, speakerBeliefs.support());
-				factor(speakerOptimality.s2  * -1 * _kl)
+		    factor(speakerOptimality.s2 * L1.score(freq))
+				// var _kl = KL(speakerBeliefs, L1, speakerBeliefs.support());
+				// factor(speakerOptimality.s2  * -1 * _kl)
 		    return utterance === targetUtterance ? 1 : 0
 		 }})}
 
+		var observedFrequencies = levels(itemData.speaker, "roundedFreq");
 
-		// var pr_exist_m = sample(priorERPobject[i]["male"]["Q1"]); //exist params
-	 	// 	var pr_exist_f = sample(priorERPobject[i]["female"]["Q1"]);
+		foreach(observedFrequencies, function(freq){
 
-		// var pp_m = sample(priorERPobject[i]["male"]["Q2"]); // freq params.
-		// 	var pp_f = sample(priorERPobject[i]["female"]["Q2"]);
-		// 	// console.log(pr_exist_m)
-		// 	// console.log(pr_exist_f)
-		// 	// console.log(pp_m)
-		// 	// console.log(pp_f)
-		// var prior = mix2GaussiansWithDelta(prop_male, pr_exist_m, pr_exist_f,
-		// 										 pp_m[0], pp_m[1],
-		// 										 pp_f[0], pp_f[1],
-		// 										 item_bins["state_bins"]);
+			var freqData = _.filter(itemData.speaker, {roundedFreq: freq});
+			var responseData = _.map(freqData, "alignedResponse");
 
-		// console.log('after prior')
-		var itemData = subset(df_tj_wRounded, "habitual", i)
-		var freqLevels = _.uniq(_.pluck(itemData, "roundedFreq"))
+			var s2prediction = speaker2(freq);
 
-		// console.log("e = " + pr_exist)
-		// console.log("pp = " + pp.join(' '))
+			mapData({data:responseData}, function(d){
+				// display("speaker score = " + s2prediction.score(d))
+				observe(s2prediction, d)
+			})
 
-		// // EXPERIMENT 2
-		// foreach(freqLevels, function(f){
-
-		// 	var freqData = subset(itemData, "roundedFreq", f)
-		// 	var responseData = _.pluck(freqData, "alignedResponse")
-
-		// 	var grossLevel = freqData[0]["time_period"]
-		// 	// display(f + i + speaker1_optimality +" " + speaker2_optimality)
-		// 	// console.log(item_bins["theta_bins"])
-		// 	// var s2 = speaker2(f)
-		// 	var s2 = speaker2(f, prior, speaker1_optimality, speaker2_optimality, item_bins["theta_bins"])
-		// 	// var s2 = speaker2(f, prior, speaker_optimality, item_bins["theta_bins"])
-		// 	// var s2_plusGuess = guessingLink(s2, phi)
-
-		// 	var scr = reduce(function(response, memo) {
-		// 					    return memo + s2.score(response)
-		// 					    // return memo + s2.score([], response)
-		// 						}, 0, responseData)
-
-		// 	// console.log(i + f + scr)
-		// 	// console.log("S2 prob = " + Math.exp(s2.score([], "habitual")))
-		// 	// display(scr)
-		// 	factor(scr)
-
-		// 	// var L1 = listener1("habitual", prior, speaker_optimality, item_bins["theta_bins"])
-		// 	// print L1 posterior
-		// 	// foreach(L1.support(), function(s){
-		// 	// 	query.add([s, i, f, grossLevel], Math.exp(L1.score([], s)))
-		// 	// })
-
-		// 	// query.add(["L1_predictive", i, f, grossLevel], sample(L1))
-		// 	query.add(["predictive", i, f, grossLevel], Math.exp(s2.score("habitual")))
-		// 	// query.add(["predictive", i, f, grossLevel], Math.exp(s2.score([], "habitual")))
-
-		// })
-
-
-		// EXPERIMENT 3
-		foreach(["baseline","preventative","enabling"], function(c){
-			// console.log(c)
-			var freqData = subset(itemData, "condition", c)
-			// console.log(freqData)
-			var f = _.pluck(freqData,"roundedFreq")[0]
-			// console.log(f)
-			// console.log(item_bins["theta_bins"])
-			var responseData = _.pluck(freqData, "alignedResponse")
-			var s2 = speaker2(f, prior, speaker1_optimality, speaker2_optimality, item_bins["theta_bins"])
-			// var s2 = speaker2(f, prior, speaker_optimality, item_bins["theta_bins"])
-			// console.log(f + i + c + Math.exp(s2.score([], "habitual")))
-
-			var scr = reduce(function(response, memo) {
-							    return memo + s2.score(response)
-								}, 0, responseData)
-
-			// console.log(i + f + scr)
-			// console.log("S2 prob = " + Math.exp(s2_plusGuess.score([], "habitual")))
-			factor(scr)
-			query.add(["predictive", i, f, c], Math.exp(s2.score("habitual")))
+			query.add(["predictive",targetUtterance, i, freq], expectation(s2prediction) )
 
 		})
 
 	})
 
-	query.add(["parameter", "global", "speaker1_optimality", "NA"], speaker1_optimality)
-	query.add(["parameter", "global", "speaker2_optimality", "NA"], speaker2_optimality)
-	// query.add(["parameter", "global", "phi", "NA"], phi)
-	// query.add(["parameter", "global", "prop_male", "NA"], prop_male)
+	query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
+	query.add(["param","speakerOptimality","s2","na"], speakerOptimality.s2)
+
 	return query
 }
 
-var samples = 100000
-var burn = samples/2
-var resultsERP = IncrementalMH(model,  {samples: samples, verbose: true, verboseLag: samples/50, burn: burn})
-// var resultsERP = MCMC(model, {samples: samples, verbose: true, burn: burn})
-// var steps = 5
-// var stepSize = 0.01
-// var resultsERP = MCMC(model, {
-// 	samples: samples/2,
-// 	verbose: true,
-// 	burn: burn,
-// 	kernel: { HMC: { steps: steps, stepSize: stepSize }}
-// })
+var mhiter = 100;
 
-// var outputFile = "results/tj2-RSA-log_ntimes_2so-HMC" +
-// 	samples/1000 +"k_burn" + burn/1000 +"k_st"+steps+"stsi"+stepSize+"_prior-mixGenders0.5-"+
-// 	prior_samples/1000 + "k_burn" + prior_burn/1000 + "k_discretize-1-8.5-0.5-a.csv"
+var burn = mhiter / 2;
+var posterior = Infer({
+  model: model,
+  method: "incrementalMH",
+  samples: mhiter, burn: burn,
+  verbose: T,
+  verboseLag: mhiter / 20
+})
 
-var outputFile = "results/tj3-RSA-log_ntimes_2so-iMH" +
-	samples/1000 +"k_burn" + burn/1000 +"k_prior-mixGenders0.5-"+
-	prior_samples/1000 + "k_burn" + prior_burn/1000 + "k_discretize-1-8.5-0.5-a.csv"
+var outfile = 'results/results-habituals-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
-// var outputFile = "results/tj3-RSA-past-log_ntimes_2so-iMH" +
-// 	samples/1000 +"k_burn" + burn/1000 +"k_prior-mixGenders0.5-"+
-// 	prior_samples/1000 + "k_burn" + prior_burn/1000 + "k_discretize-1-8.5-0.5-b.csv"
+utils.writeQueryERP(posterior, outfile,
+	["type", "param", "property", "category", "val"])
 
-var header = "Type,Item,Level,Period,Value"
-tjUtils.erpWriter(resultsERP, outputFile, header)
-console.log("written to " + outputFile)
-// resultsERP
+display("written to " + outfile)
