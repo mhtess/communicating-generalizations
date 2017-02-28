@@ -112,7 +112,8 @@ var model = function(){
 					vs: bins,
 					ps:map(function(b) {
 						return probability(Binomial({n:100,
-							p: g}), Math.round(b*100))
+							p: g}), Math.round(b*100)) +
+          Number.EPSILON
 						}, bins )
 				}) : 0
 		}});
@@ -193,7 +194,8 @@ var model = function(){
 						vs:bins,
 						ps:map(function(b) {
 							return probability(Binomial({n:100,
-								p: withinKind_prev}), Math.round(b*100))
+								p: withinKind_prev}), Math.round(b*100)) +
+          Number.EPSILON
 							}, bins )
 					})
 			}});
@@ -232,7 +234,7 @@ var posterior = Infer({
   verboseLag: mhiter / 20
 })
 
-var outfile = 'results-fullModel-bernprior-'+'smtncs'+targetUtterance+"-"+ mhiter++'_burn'+burn+'_chain'+chain+'.csv'
+var outfile = 'results-fullModel-bernprior-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 utils.writeQueryERP(posterior, "results/" + outfile,
 	["type", "param", "property", "category", "val"])
