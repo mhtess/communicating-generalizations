@@ -1,4 +1,4 @@
-// time webppl habituals.wppl --require utils 0
+// time webppl habituals-S1.wppl --require utils 0
 
 var chain = last(process.argv) // load index as last command line index
 
@@ -12,7 +12,8 @@ var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
 
 var d0 = dataFrame(utils.readCSV(prior_existenceFile).data, ["val"]);
 var d1 = dataFrame(utils.readCSV(prior_waitFile).data, ["val", "logval"]);
-var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data, ["n_times", "log_times"]);
+var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data,
+				["n_times", "log_times"]);
 
 
 var bins = {
@@ -64,12 +65,10 @@ var meaning = function(utt,state, theta) {
 var model = function(){
 
 	var speakerOptimality = {
-		s1: uniformDrift({a:0,b:20,r:2}),
-		s2: uniformDrift({a:0,b:5,r:0.5})
+		s1: uniformDrift({a:0,b:20,r:2})
 	}
 
-	var phi = 0
-	var propFemale = 0.5
+	var propFemale = 0.5;
 
 	foreach(items, function(i){
 
@@ -183,40 +182,22 @@ var model = function(){
 		}})
 
 		/// RSA model
-		var listener0 = cache(function(utterance, theta) {
+		var listener0 = cache(function(utterance) {
 		  Infer({model: function(){
 		    var state = sample(statePrior)
+				var theta = sample(thetaPrior);
 		    var m = meaning(utterance, state, theta)
 		    condition(m)
 		    return state
 		 }})}, 10000)
 
-		var speaker1 = cache(function(state, theta) {
+		var speaker1 = cache(function(freq) {
 			Infer({model: function(){
 		    var utterance = sample(utterancePrior);
-		    var L0 = listener0(utterance, theta);
-		    factor(speakerOptimality.s1 * L0.score(state))
-		    return utterance
-			}})}, 10000)
-
-		var listener1 = cache(function(utterance) {
-			Infer({model: function(){
-		    var state = sample(statePrior);
-		    var theta = targetUtterance === "habitual" ? sample(thetaPrior) : -99;
-		    var S1 = speaker1(state, theta)
-		    observe(S1, utterance)
-		    return state
-			}})}, 10000)
-
-		var speaker2 = function(freq){
-			Infer({model: function(){
-				var utterance = sample(utterancePrior);
-		    var L1 = listener1(utterance)
-		    factor(speakerOptimality.s2 * L1.score(freq))
-				// var _kl = KL(speakerBeliefs, L1, speakerBeliefs.support());
-				// factor(speakerOptimality.s2  * -1 * _kl)
+		    var L0 = listener0(utterance);
+		    factor(speakerOptimality.s1 * L0.score(freq))
 		    return utterance === targetUtterance ? 1 : 0
-		 }})}
+			}})}, 10000)
 
 		var observedFrequencies = levels(itemData.speaker, "roundedFreq");
 
@@ -225,21 +206,20 @@ var model = function(){
 			var freqData = _.filter(itemData.speaker, {roundedFreq: freq});
 			var responseData = _.map(freqData, "alignedResponse");
 
-			var s2prediction = speaker2(freq);
+			var s1prediction = speaker1(freq);
 
 			mapData({data:responseData}, function(d){
 				// display("speaker score = " + s2prediction.score(d))
-				observe(s2prediction, d)
+				observe(s1prediction, d)
 			})
 
-			query.add(["predictive",targetUtterance, i, freq], expectation(s2prediction) )
+			query.add(["predictive",targetUtterance, i, freq], expectation(s1prediction) )
 
 		})
 
 	})
 
 	query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
-	query.add(["param","speakerOptimality","s2","na"], speakerOptimality.s2)
 
 	return query
 }
@@ -255,7 +235,7 @@ var posterior = Infer({
   verboseLag: mhiter / 20
 })
 
-var outfile = 'results/results-habituals-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+var outfile = 'results/results-habituals-s1-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 utils.writeQueryERP(posterior, outfile,
 	["type", "param", "property", "category", "val"])
