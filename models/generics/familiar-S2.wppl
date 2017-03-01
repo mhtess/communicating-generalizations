@@ -68,8 +68,8 @@ var model = function(){
 
 		// prior parameters
 		var theta = uniformDrift({a: 0, b: 1, width:0.2})
-		var g = uniform({a: 0, b: 1, width: 0.2})
-		var d = uniform({a: 0, b: 50, width: 5})
+		var g = uniformDrift({a: 0, b: 1, width: 0.2})
+		var d = uniformDrift({a: 0, b: 50, width: 5})
 		var priorParams = {a: shape_alpha(g, d), b: shape_beta(g, d)};
 
 		// observe structured prior data
@@ -89,8 +89,9 @@ var model = function(){
 		// })
 
 		query.add(["prior","isPresent", p, "na"], theta)
-		query.add(["prior","prevalenceGivenPresent", p, "na"], g)
-		//  beta(priorParams))
+		query.add(["prior","prevalenceGivenPresent", p, "na"], beta(priorParams))
+		query.add(["prior","prevalencePrior", p, "na"], flip(theta) ? beta(priorParams) : 0)
+
 
 		var statePrior = Infer({model: function(){
 			var component = flip(theta);
