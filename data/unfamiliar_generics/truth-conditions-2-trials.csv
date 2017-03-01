@@ -1,0 +1,1001 @@
+workerid,rt,trial_type,stim_type,trial_num,stim_determiner,stim_prevalence,stim_property,response,stim_category
+0,4112,truth_conditions,part,0,generic,30,skin,Disagree,morseths
+0,2727,truth_conditions,disease,1,generic,10,broken legs,Disagree,blins
+0,2767,truth_conditions,accidental,2,generic,70,sore teeth,Disagree,pangolins
+0,2584,truth_conditions,color,3,generic,50,violet skin,Disagree,krivels
+0,2712,truth_conditions,part,4,generic,10,ears,Disagree,javs
+0,2480,truth_conditions,disease,5,generic,50,infected ears,Disagree,wugs
+0,4696,truth_conditions,accidental,6,generic,90,sore legs,Disagree,cheebas
+0,6200,truth_conditions,color,7,generic,70,silver legs,Agree,ackles
+0,1448,truth_conditions,color,8,generic,30,blue claws,Disagree,daiths
+0,1608,truth_conditions,vague,9,generic,70,small ears,Agree,grinks
+0,2768,truth_conditions,part,10,generic,50,feathers,Disagree,trufts
+0,2536,truth_conditions,part,11,generic,70,tails,Agree,ollers
+0,1480,truth_conditions,disease,12,generic,30,worn-out claws,Disagree,stups
+0,1672,truth_conditions,disease,13,generic,70,burned skin,Agree,frams
+0,1288,truth_conditions,color,14,generic,90,yellow fur,Agree,moxes
+0,1192,truth_conditions,accidental,15,generic,50,muddy feathers,Disagree,zoovs
+0,1272,truth_conditions,color,16,generic,10,orange tails,Disagree,reesles
+0,1240,truth_conditions,vague,17,generic,90,curly fur,Agree,mooks
+0,1544,truth_conditions,vague,18,generic,30,big claws,Disagree,sapers
+0,2184,truth_conditions,disease,19,generic,90,rotten teeth,Agree,crullets
+0,1328,truth_conditions,accidental,20,generic,10,itchy tails,Disagree,dorbs
+0,2032,truth_conditions,vague,21,generic,50,smooth feathers,Disagree,thups
+0,2000,truth_conditions,part,22,generic,90,teeth,Agree,elleps
+0,1128,truth_conditions,accidental,23,generic,30,wet fur,Disagree,zorbs
+0,1216,truth_conditions,vague,24,generic,10,long teeth,Disagree,taifels
+1,7095,truth_conditions,disease,0,generic,30,infected ears,Disagree,reesles
+1,2704,truth_conditions,accidental,1,generic,10,dusty skin,Disagree,ollers
+1,1463,truth_conditions,disease,2,generic,70,burned skin,Agree,elleps
+1,1976,truth_conditions,vague,3,generic,50,long tails,Agree,mooks
+1,1684,truth_conditions,disease,4,generic,90,worn-out claws,Agree,dorbs
+1,1985,truth_conditions,accidental,5,generic,90,wet fur,Agree,krivels
+1,1641,truth_conditions,color,6,generic,70,orange ears,Agree,cheebas
+1,2001,truth_conditions,color,7,generic,50,yellow fur,Agree,plovs
+1,1835,truth_conditions,accidental,8,generic,30,sore legs,Disagree,taifels
+1,1776,truth_conditions,disease,9,generic,50,broken legs,Agree,lorches
+1,1500,truth_conditions,color,10,generic,30,orange tails,Disagree,javs
+1,1873,truth_conditions,part,11,generic,30,tails,Disagree,trufts
+1,2059,truth_conditions,color,12,generic,10,purple feathers,Disagree,kazzes
+1,1800,truth_conditions,part,13,generic,50,claws,Agree,luzaks
+1,1730,truth_conditions,part,14,generic,10,legs,Disagree,frams
+1,1655,truth_conditions,part,15,generic,70,teeth,Agree,moxes
+1,1338,truth_conditions,accidental,16,generic,70,muddy feathers,Agree,zoovs
+1,1191,truth_conditions,vague,17,generic,90,rough skin,Agree,zorbs
+1,1620,truth_conditions,disease,18,generic,10,torn tails,Disagree,pangolins
+1,2210,truth_conditions,vague,19,generic,10,curly fur,Disagree,sapers
+1,1647,truth_conditions,part,20,generic,90,feathers,Agree,stups
+1,1464,truth_conditions,color,21,generic,90,violet skin,Agree,morseths
+1,1809,truth_conditions,vague,22,generic,30,big claws,Disagree,wugs
+1,1441,truth_conditions,accidental,23,generic,50,cracked claws,Agree,feps
+1,1630,truth_conditions,vague,24,generic,70,long teeth,Agree,glippets
+2,8170,truth_conditions,part,0,generic,70,claws,Agree,reesles
+2,5316,truth_conditions,color,1,generic,50,orange tails,Agree,morseths
+2,2920,truth_conditions,disease,2,generic,70,torn feathers,Agree,grinks
+2,3315,truth_conditions,vague,3,generic,70,small ears,Agree,luzaks
+2,4573,truth_conditions,accidental,4,generic,30,wet fur,Disagree,kazzes
+2,3687,truth_conditions,part,5,generic,90,fur,Agree,plovs
+2,3631,truth_conditions,color,6,generic,70,yellow fur,Agree,feps
+2,3000,truth_conditions,disease,7,generic,10,torn tails,Disagree,zoovs
+2,3512,truth_conditions,vague,8,generic,10,curly fur,Disagree,ackles
+2,7280,truth_conditions,part,9,generic,10,legs,Disagree,dorbs
+2,3823,truth_conditions,vague,10,generic,50,big claws,Agree,javs
+2,3208,truth_conditions,accidental,11,generic,10,sore teeth,Disagree,frams
+2,4216,truth_conditions,vague,12,generic,30,long legs,Disagree,mooks
+2,2719,truth_conditions,vague,13,generic,90,long teeth,Agree,glippets
+2,3967,truth_conditions,accidental,14,generic,70,sore legs,Agree,thups
+2,4816,truth_conditions,disease,15,generic,50,worn-out claws,Agree,daiths
+2,4055,truth_conditions,accidental,16,generic,50,dusty skin,Agree,crullets
+2,2505,truth_conditions,color,17,generic,90,pink teeth,Agree,taifels
+2,3071,truth_conditions,accidental,18,generic,90,swollen ears,Agree,moxes
+2,3759,truth_conditions,disease,19,generic,90,fungus-covered fur,Agree,lorches
+2,5688,truth_conditions,part,20,generic,30,teeth,Disagree,cheebas
+2,4489,truth_conditions,color,21,generic,30,orange ears,Disagree,ollers
+2,5264,truth_conditions,disease,22,generic,30,burned skin,Disagree,zorbs
+2,4127,truth_conditions,part,23,generic,50,skin,Agree,krivels
+2,2295,truth_conditions,color,24,generic,10,blue claws,Disagree,blins
+3,6732,truth_conditions,part,0,generic,10,tails,Agree,reesles
+3,5106,truth_conditions,vague,1,generic,90,long tails,Agree,daiths
+3,5049,truth_conditions,accidental,2,generic,90,sore teeth,Agree,crullets
+3,5942,truth_conditions,color,3,generic,10,blue claws,Agree,grinks
+3,3660,truth_conditions,part,4,generic,70,teeth,Agree,javs
+3,4015,truth_conditions,color,5,generic,70,yellow fur,Agree,kweps
+3,4253,truth_conditions,accidental,6,generic,50,wet fur,Agree,dorbs
+3,3868,truth_conditions,vague,7,generic,50,smooth feathers,Agree,krivels
+3,3167,truth_conditions,vague,8,generic,70,long legs,Agree,kazzes
+3,4683,truth_conditions,part,9,generic,90,legs,Agree,moxes
+3,4064,truth_conditions,disease,10,generic,30,torn tails,Agree,ollers
+3,4164,truth_conditions,color,11,generic,90,orange ears,Agree,elleps
+3,3567,truth_conditions,disease,12,generic,90,torn feathers,Agree,cheebas
+3,5003,truth_conditions,color,13,generic,50,purple feathers,Agree,zoovs
+3,2990,truth_conditions,disease,14,generic,50,broken legs,Agree,thups
+3,3319,truth_conditions,part,15,generic,50,fur,Agree,glippets
+3,3320,truth_conditions,accidental,16,generic,30,itchy tails,Agree,luzaks
+3,3185,truth_conditions,accidental,17,generic,70,dusty skin,Agree,lorches
+3,5555,truth_conditions,vague,18,generic,10,long teeth,Agree,trufts
+3,3049,truth_conditions,vague,19,generic,30,rough skin,Agree,feps
+3,3845,truth_conditions,accidental,20,generic,10,muddy feathers,Agree,wugs
+3,4100,truth_conditions,part,21,generic,30,feathers,Agree,morseths
+3,3804,truth_conditions,disease,22,generic,70,fungus-covered fur,Agree,zorbs
+3,2764,truth_conditions,disease,23,generic,10,rotten teeth,Agree,stups
+3,5637,truth_conditions,color,24,generic,30,pink teeth,Agree,pangolins
+4,12827,truth_conditions,disease,0,generic,10,burned skin,Disagree,ackles
+4,8801,truth_conditions,vague,1,generic,50,smooth feathers,Agree,stups
+4,3344,truth_conditions,accidental,2,generic,70,cracked claws,Agree,sapers
+4,5921,truth_conditions,part,3,generic,70,claws,Agree,reesles
+4,4044,truth_conditions,accidental,4,generic,90,swollen ears,Agree,cheebas
+4,3726,truth_conditions,part,5,generic,50,teeth,Agree,zoovs
+4,5002,truth_conditions,color,6,generic,70,purple feathers,Agree,morseths
+4,3906,truth_conditions,vague,7,generic,90,long tails,Agree,wugs
+4,3913,truth_conditions,color,8,generic,10,orange tails,Disagree,krivels
+4,4267,truth_conditions,disease,9,generic,30,worn-out claws,Disagree,pangolins
+4,3864,truth_conditions,color,10,generic,30,pink teeth,Disagree,crullets
+4,3531,truth_conditions,color,11,generic,50,violet skin,Agree,taifels
+4,4101,truth_conditions,disease,12,generic,90,rotten teeth,Agree,kazzes
+4,4070,truth_conditions,disease,13,generic,70,fungus-covered fur,Agree,frams
+4,3858,truth_conditions,accidental,14,generic,10,muddy feathers,Disagree,daiths
+4,3570,truth_conditions,vague,15,generic,10,curly fur,Disagree,plovs
+4,5079,truth_conditions,disease,16,generic,50,infected ears,Agree,kweps
+4,7175,truth_conditions,part,17,generic,10,skin,Disagree,elleps
+4,3267,truth_conditions,vague,18,generic,30,long legs,Disagree,dorbs
+4,4039,truth_conditions,accidental,19,generic,30,itchy tails,Disagree,luzaks
+4,3899,truth_conditions,part,20,generic,30,tails,Disagree,moxes
+4,3330,truth_conditions,part,21,generic,90,feathers,Agree,feps
+4,2970,truth_conditions,color,22,generic,90,silver legs,Agree,mooks
+4,4078,truth_conditions,accidental,23,generic,50,wet fur,Agree,grinks
+4,3499,truth_conditions,vague,24,generic,70,long teeth,Agree,ollers
+5,7602,truth_conditions,part,0,generic,30,feathers,Agree,frams
+5,8281,truth_conditions,part,1,generic,90,tails,Agree,thups
+5,4518,truth_conditions,vague,2,generic,10,long tails,Disagree,ollers
+5,13424,truth_conditions,disease,3,generic,70,burned skin,Disagree,trufts
+5,17816,truth_conditions,disease,4,generic,30,torn tails,Agree,sapers
+5,8864,truth_conditions,color,5,generic,30,violet skin,Disagree,javs
+5,3840,truth_conditions,color,6,generic,70,purple feathers,Agree,reesles
+5,3745,truth_conditions,disease,7,generic,90,infected ears,Agree,moxes
+5,35403,truth_conditions,vague,8,generic,50,big claws,Agree,pangolins
+5,5100,truth_conditions,vague,9,generic,30,long legs,Agree,ackles
+5,5607,truth_conditions,accidental,10,generic,70,swollen ears,Agree,kazzes
+5,4482,truth_conditions,color,11,generic,90,orange tails,Agree,luzaks
+5,4110,truth_conditions,part,12,generic,50,claws,Agree,kweps
+5,14415,truth_conditions,disease,13,generic,10,torn feathers,Disagree,mooks
+5,4456,truth_conditions,disease,14,generic,50,fungus-covered fur,Agree,feps
+5,6632,truth_conditions,part,15,generic,10,ears,Disagree,zoovs
+5,4911,truth_conditions,part,16,generic,70,teeth,Agree,krivels
+5,4512,truth_conditions,accidental,17,generic,10,sore legs,Disagree,lorches
+5,3287,truth_conditions,color,18,generic,10,yellow fur,Disagree,taifels
+5,2865,truth_conditions,accidental,19,generic,30,muddy feathers,Disagree,plovs
+5,3247,truth_conditions,color,20,generic,50,pink teeth,Agree,cheebas
+5,3135,truth_conditions,vague,21,generic,90,rough skin,Agree,stups
+5,2612,truth_conditions,accidental,22,generic,90,dusty skin,Agree,blins
+5,2465,truth_conditions,accidental,23,generic,50,wet fur,Agree,daiths
+5,2425,truth_conditions,vague,24,generic,70,curly fur,Agree,zorbs
+6,8235,truth_conditions,color,0,generic,30,pink teeth,Agree,morseths
+6,2737,truth_conditions,part,1,generic,70,feathers,Agree,zorbs
+6,3363,truth_conditions,disease,2,generic,30,burned skin,Agree,crullets
+6,2821,truth_conditions,disease,3,generic,10,torn feathers,Disagree,ackles
+6,2611,truth_conditions,accidental,4,generic,30,wet fur,Agree,grinks
+6,2040,truth_conditions,disease,5,generic,70,torn tails,Agree,mooks
+6,3730,truth_conditions,color,6,generic,50,violet skin,Agree,ollers
+6,1886,truth_conditions,vague,7,generic,90,long legs,Agree,feps
+6,1884,truth_conditions,accidental,8,generic,50,dusty skin,Agree,zoovs
+6,2183,truth_conditions,vague,9,generic,70,small ears,Agree,plovs
+6,2035,truth_conditions,part,10,generic,30,ears,Agree,wugs
+6,3893,truth_conditions,color,11,generic,90,yellow fur,Agree,pangolins
+6,2667,truth_conditions,disease,12,generic,90,worn-out claws,Agree,thups
+6,3026,truth_conditions,part,13,generic,90,tails,Agree,luzaks
+6,7570,truth_conditions,part,14,generic,10,skin,Disagree,trufts
+6,2227,truth_conditions,accidental,15,generic,70,sore legs,Agree,kazzes
+6,2548,truth_conditions,color,16,generic,70,orange tails,Agree,javs
+6,1952,truth_conditions,accidental,17,generic,90,muddy feathers,Agree,lorches
+6,19300,truth_conditions,vague,18,generic,10,big claws,Disagree,dorbs
+6,1958,truth_conditions,vague,19,generic,30,curly fur,Agree,stups
+6,2042,truth_conditions,vague,20,generic,50,long teeth,Agree,daiths
+6,3271,truth_conditions,part,21,generic,50,fur,Agree,elleps
+6,2787,truth_conditions,accidental,22,generic,10,swollen ears,Disagree,glippets
+6,1831,truth_conditions,disease,23,generic,50,rotten teeth,Agree,moxes
+6,1825,truth_conditions,color,24,generic,10,blue claws,Disagree,kweps
+7,22975,truth_conditions,accidental,0,generic,30,sore teeth,Agree,grinks
+7,17915,truth_conditions,vague,1,generic,70,big claws,Disagree,reesles
+7,13259,truth_conditions,accidental,2,generic,50,itchy tails,Disagree,javs
+7,10128,truth_conditions,part,3,generic,30,tails,Disagree,stups
+7,9687,truth_conditions,part,4,generic,50,claws,Disagree,zorbs
+7,8127,truth_conditions,color,5,generic,10,violet skin,Disagree,kweps
+7,9902,truth_conditions,vague,6,generic,90,long tails,Disagree,sapers
+7,7375,truth_conditions,accidental,7,generic,70,sore legs,Disagree,blins
+7,6735,truth_conditions,disease,8,generic,50,broken legs,Disagree,cheebas
+7,5513,truth_conditions,part,9,generic,70,skin,Disagree,plovs
+7,6927,truth_conditions,part,10,generic,90,legs,Disagree,moxes
+7,7374,truth_conditions,accidental,11,generic,10,swollen ears,Disagree,zoovs
+7,9344,truth_conditions,accidental,12,generic,90,muddy feathers,Disagree,frams
+7,5904,truth_conditions,color,13,generic,50,pink teeth,Disagree,crullets
+7,5993,truth_conditions,color,14,generic,30,purple feathers,Disagree,lorches
+7,7775,truth_conditions,vague,15,generic,30,curly fur,Disagree,trufts
+7,7561,truth_conditions,disease,16,generic,30,worn-out claws,Disagree,taifels
+7,9112,truth_conditions,color,17,generic,70,silver legs,Disagree,ackles
+7,13119,truth_conditions,part,18,generic,10,feathers,Disagree,krivels
+7,11592,truth_conditions,disease,19,generic,90,burned skin,Disagree,dorbs
+7,7696,truth_conditions,disease,20,generic,70,infected ears,Disagree,daiths
+7,5312,truth_conditions,color,21,generic,90,blue claws,Disagree,ollers
+7,7040,truth_conditions,vague,22,generic,50,small ears,Disagree,morseths
+7,6535,truth_conditions,disease,23,generic,10,rotten teeth,Disagree,thups
+7,10231,truth_conditions,vague,24,generic,10,long teeth,Disagree,wugs
+8,5140,truth_conditions,color,0,generic,90,violet skin,Agree,ackles
+8,5593,truth_conditions,part,1,generic,50,skin,Disagree,zoovs
+8,3268,truth_conditions,disease,2,generic,50,broken legs,Disagree,wugs
+8,6111,truth_conditions,color,3,generic,30,yellow fur,Disagree,thups
+8,3092,truth_conditions,vague,4,generic,50,long legs,Disagree,daiths
+8,4806,truth_conditions,disease,5,generic,70,torn feathers,Agree,trufts
+8,2505,truth_conditions,accidental,6,generic,30,swollen ears,Disagree,kazzes
+8,6241,truth_conditions,disease,7,generic,90,infected ears,Agree,plovs
+8,2335,truth_conditions,color,8,generic,70,orange tails,Agree,krivels
+8,6041,truth_conditions,accidental,9,generic,70,wet fur,Agree,mooks
+8,3690,truth_conditions,part,10,generic,70,teeth,Agree,moxes
+8,2533,truth_conditions,vague,11,generic,10,smooth feathers,Disagree,lorches
+8,7485,truth_conditions,color,12,generic,10,pink teeth,Disagree,stups
+8,2069,truth_conditions,accidental,13,generic,50,sore teeth,Disagree,javs
+8,2069,truth_conditions,part,14,generic,10,feathers,Disagree,blins
+8,1900,truth_conditions,vague,15,generic,90,small ears,Agree,feps
+8,2156,truth_conditions,accidental,16,generic,90,dusty skin,Agree,glippets
+8,1688,truth_conditions,disease,17,generic,30,worn-out claws,Disagree,crullets
+8,1685,truth_conditions,vague,18,generic,30,curly fur,Disagree,pangolins
+8,1820,truth_conditions,part,19,generic,30,ears,Disagree,ollers
+8,2430,truth_conditions,color,20,generic,50,blue claws,Disagree,zorbs
+8,1949,truth_conditions,accidental,21,generic,10,itchy tails,Disagree,elleps
+8,1781,truth_conditions,part,22,generic,90,claws,Agree,morseths
+8,1408,truth_conditions,disease,23,generic,10,torn tails,Disagree,sapers
+8,1442,truth_conditions,vague,24,generic,70,big claws,Agree,reesles
+9,4947,truth_conditions,part,0,generic,50,teeth,Agree,trufts
+9,2681,truth_conditions,vague,1,generic,90,small ears,Agree,dorbs
+9,3397,truth_conditions,vague,2,generic,50,rough skin,Disagree,kweps
+9,1902,truth_conditions,disease,3,generic,70,torn tails,Agree,zorbs
+9,2396,truth_conditions,accidental,4,generic,10,itchy tails,Disagree,luzaks
+9,2049,truth_conditions,accidental,5,generic,90,sore legs,Agree,grinks
+9,1551,truth_conditions,accidental,6,generic,30,swollen ears,Disagree,feps
+9,2385,truth_conditions,part,7,generic,70,fur,Agree,ackles
+9,2383,truth_conditions,part,8,generic,90,tails,Agree,mooks
+9,1376,truth_conditions,part,9,generic,10,ears,Disagree,morseths
+9,1579,truth_conditions,disease,10,generic,10,broken legs,Disagree,krivels
+9,1373,truth_conditions,accidental,11,generic,70,sore teeth,Agree,daiths
+9,2583,truth_conditions,disease,12,generic,50,infected ears,Agree,blins
+9,1577,truth_conditions,vague,13,generic,30,smooth feathers,Disagree,stups
+9,1154,truth_conditions,vague,14,generic,70,long legs,Agree,reesles
+9,1770,truth_conditions,color,15,generic,90,orange ears,Agree,frams
+9,1582,truth_conditions,accidental,16,generic,50,dusty skin,Agree,pangolins
+9,1347,truth_conditions,vague,17,generic,10,long tails,Disagree,lorches
+9,1610,truth_conditions,disease,18,generic,90,rotten teeth,Agree,javs
+9,2506,truth_conditions,disease,19,generic,30,torn feathers,Disagree,thups
+9,1495,truth_conditions,part,20,generic,30,feathers,Disagree,ollers
+9,1397,truth_conditions,color,21,generic,50,orange tails,Agree,sapers
+9,1260,truth_conditions,color,22,generic,70,blue claws,Agree,moxes
+9,1340,truth_conditions,color,23,generic,30,violet skin,Disagree,zoovs
+9,1388,truth_conditions,color,24,generic,10,yellow fur,Disagree,glippets
+10,6456,truth_conditions,disease,0,generic,10,broken legs,Disagree,javs
+10,1517,truth_conditions,color,1,generic,30,yellow fur,Disagree,dorbs
+10,2351,truth_conditions,vague,2,generic,10,big claws,Disagree,elleps
+10,2369,truth_conditions,part,3,generic,50,fur,Agree,trufts
+10,1800,truth_conditions,color,4,generic,90,orange ears,Agree,plovs
+10,2463,truth_conditions,vague,5,generic,70,long tails,Agree,zorbs
+10,1056,truth_conditions,vague,6,generic,30,smooth feathers,Disagree,stups
+10,2336,truth_conditions,accidental,7,generic,10,sore teeth,Disagree,morseths
+10,1807,truth_conditions,vague,8,generic,50,small ears,Agree,kweps
+10,1352,truth_conditions,color,9,generic,50,orange tails,Agree,glippets
+10,1688,truth_conditions,color,10,generic,70,violet skin,Agree,moxes
+10,1328,truth_conditions,part,11,generic,90,ears,Agree,cheebas
+10,1776,truth_conditions,accidental,12,generic,70,muddy feathers,Agree,pangolins
+10,1641,truth_conditions,accidental,13,generic,30,swollen ears,Disagree,grinks
+10,1097,truth_conditions,accidental,14,generic,50,wet fur,Agree,blins
+10,1831,truth_conditions,color,15,generic,10,purple feathers,Disagree,zoovs
+10,6783,truth_conditions,accidental,16,generic,90,dusty skin,Agree,krivels
+10,1295,truth_conditions,disease,17,generic,70,infected ears,Agree,ackles
+10,1232,truth_conditions,disease,18,generic,30,torn feathers,Disagree,wugs
+10,1120,truth_conditions,disease,19,generic,90,rotten teeth,Agree,daiths
+10,1120,truth_conditions,part,20,generic,70,legs,Agree,crullets
+10,944,truth_conditions,part,21,generic,10,teeth,Disagree,mooks
+10,1472,truth_conditions,disease,22,generic,50,burned skin,Agree,ollers
+10,1159,truth_conditions,part,23,generic,30,claws,Disagree,taifels
+10,1376,truth_conditions,vague,24,generic,90,long teeth,Agree,feps
+11,9083,truth_conditions,disease,0,generic,70,infected ears,Disagree,stups
+11,3185,truth_conditions,accidental,1,generic,70,itchy tails,Disagree,crullets
+11,3608,truth_conditions,vague,2,generic,70,curly fur,Agree,blins
+11,2903,truth_conditions,part,3,generic,30,ears,Disagree,javs
+11,4393,truth_conditions,color,4,generic,10,orange tails,Disagree,daiths
+11,2048,truth_conditions,accidental,5,generic,50,sore teeth,Disagree,mooks
+11,1974,truth_conditions,part,6,generic,70,legs,Agree,taifels
+11,2688,truth_conditions,color,7,generic,30,purple feathers,Disagree,lorches
+11,3225,truth_conditions,disease,8,generic,50,burned skin,Agree,wugs
+11,1896,truth_conditions,vague,9,generic,90,long legs,Agree,glippets
+11,3599,truth_conditions,part,10,generic,90,teeth,Agree,pangolins
+11,4704,truth_conditions,part,11,generic,50,claws,Disagree,cheebas
+11,2559,truth_conditions,color,12,generic,50,silver legs,Disagree,frams
+11,3888,truth_conditions,vague,13,generic,50,long teeth,Agree,krivels
+11,1703,truth_conditions,vague,14,generic,30,long tails,Agree,zoovs
+11,2327,truth_conditions,color,15,generic,70,pink teeth,Agree,elleps
+11,2489,truth_conditions,accidental,16,generic,10,muddy feathers,Agree,zorbs
+11,1721,truth_conditions,disease,17,generic,10,rotten teeth,Agree,trufts
+11,1542,truth_conditions,vague,18,generic,10,small ears,Agree,ollers
+11,2256,truth_conditions,part,19,generic,10,tails,Agree,plovs
+11,3800,truth_conditions,color,20,generic,90,orange ears,Agree,grinks
+11,4247,truth_conditions,accidental,21,generic,90,dusty skin,Agree,thups
+11,1777,truth_conditions,disease,22,generic,30,torn tails,Agree,kazzes
+11,1968,truth_conditions,accidental,23,generic,30,cracked claws,Agree,ackles
+11,4367,truth_conditions,disease,24,generic,90,broken legs,Disagree,luzaks
+12,8672,truth_conditions,accidental,0,generic,90,sore legs,Agree,morseths
+12,4748,truth_conditions,part,1,generic,10,claws,Disagree,grinks
+12,4541,truth_conditions,part,2,generic,50,legs,Disagree,wugs
+12,5663,truth_conditions,color,3,generic,10,orange ears,Disagree,ackles
+12,3101,truth_conditions,color,4,generic,70,pink teeth,Agree,glippets
+12,5834,truth_conditions,part,5,generic,70,skin,Agree,plovs
+12,2455,truth_conditions,color,6,generic,50,blue claws,Disagree,luzaks
+12,1518,truth_conditions,vague,7,generic,50,big claws,Disagree,kweps
+12,3210,truth_conditions,disease,8,generic,90,worn-out claws,Agree,elleps
+12,4335,truth_conditions,vague,9,generic,70,curly fur,Agree,thups
+12,2462,truth_conditions,accidental,10,generic,50,cracked claws,Disagree,kazzes
+12,2775,truth_conditions,vague,11,generic,10,small ears,Disagree,lorches
+12,3114,truth_conditions,disease,12,generic,70,burned skin,Agree,sapers
+12,2190,truth_conditions,vague,13,generic,90,long legs,Agree,reesles
+12,5224,truth_conditions,accidental,14,generic,30,sore teeth,Disagree,trufts
+12,1952,truth_conditions,part,15,generic,30,fur,Disagree,cheebas
+12,3590,truth_conditions,accidental,16,generic,70,muddy feathers,Agree,blins
+12,1436,truth_conditions,disease,17,generic,50,torn feathers,Disagree,crullets
+12,1806,truth_conditions,part,18,generic,90,tails,Agree,mooks
+12,3678,truth_conditions,vague,19,generic,30,rough skin,Disagree,taifels
+12,2191,truth_conditions,disease,20,generic,10,fungus-covered fur,Disagree,javs
+12,2744,truth_conditions,accidental,21,generic,10,itchy tails,Disagree,moxes
+12,2291,truth_conditions,color,22,generic,30,orange tails,Disagree,pangolins
+12,1718,truth_conditions,color,23,generic,90,purple feathers,Agree,dorbs
+12,3703,truth_conditions,disease,24,generic,30,rotten teeth,Disagree,stups
+13,4375,truth_conditions,accidental,0,generic,70,sore legs,Agree,ackles
+13,2757,truth_conditions,color,1,generic,10,violet skin,Agree,reesles
+13,2920,truth_conditions,part,2,generic,70,fur,Agree,mooks
+13,2832,truth_conditions,color,3,generic,90,orange ears,Agree,lorches
+13,2816,truth_conditions,color,4,generic,70,purple feathers,Agree,morseths
+13,5601,truth_conditions,part,5,generic,10,tails,Disagree,luzaks
+13,3503,truth_conditions,disease,6,generic,30,torn tails,Agree,trufts
+13,2471,truth_conditions,vague,7,generic,10,curly fur,Disagree,thups
+13,7672,truth_conditions,vague,8,generic,30,long legs,Agree,javs
+13,2239,truth_conditions,color,9,generic,50,pink teeth,Agree,taifels
+13,2481,truth_conditions,vague,10,generic,90,smooth feathers,Agree,elleps
+13,2070,truth_conditions,disease,11,generic,10,infected ears,Disagree,krivels
+13,3041,truth_conditions,disease,12,generic,90,fungus-covered fur,Agree,stups
+13,4158,truth_conditions,accidental,13,generic,90,dusty skin,Agree,grinks
+13,2951,truth_conditions,disease,14,generic,70,rotten teeth,Agree,kweps
+13,2985,truth_conditions,vague,15,generic,50,small ears,Agree,crullets
+13,5000,truth_conditions,accidental,16,generic,30,swollen ears,Disagree,pangolins
+13,2214,truth_conditions,part,17,generic,50,skin,Agree,wugs
+13,2448,truth_conditions,disease,18,generic,50,burned skin,Agree,blins
+13,2896,truth_conditions,vague,19,generic,70,long teeth,Agree,dorbs
+13,2214,truth_conditions,part,20,generic,90,teeth,Agree,daiths
+13,3029,truth_conditions,accidental,21,generic,50,itchy tails,Agree,feps
+13,3202,truth_conditions,color,22,generic,30,yellow fur,Disagree,zorbs
+13,7631,truth_conditions,part,23,generic,30,feathers,Disagree,kazzes
+13,2727,truth_conditions,accidental,24,generic,10,cracked claws,Disagree,plovs
+14,8059,truth_conditions,part,0,generic,30,claws,Disagree,zorbs
+14,6659,truth_conditions,disease,1,generic,70,burned skin,Agree,luzaks
+14,4583,truth_conditions,vague,2,generic,50,long teeth,Agree,daiths
+14,3959,truth_conditions,color,3,generic,50,yellow fur,Agree,blins
+14,3897,truth_conditions,disease,4,generic,30,fungus-covered fur,Disagree,pangolins
+14,2592,truth_conditions,vague,5,generic,70,long tails,Agree,dorbs
+14,3727,truth_conditions,part,6,generic,10,feathers,Disagree,thups
+14,5273,truth_conditions,color,7,generic,90,purple feathers,Agree,morseths
+14,3311,truth_conditions,disease,8,generic,90,rotten teeth,Agree,ackles
+14,2951,truth_conditions,color,9,generic,10,blue claws,Disagree,grinks
+14,2888,truth_conditions,disease,10,generic,50,broken legs,Agree,wugs
+14,3752,truth_conditions,vague,11,generic,90,big claws,Agree,sapers
+14,3632,truth_conditions,color,12,generic,30,orange tails,Disagree,stups
+14,3441,truth_conditions,accidental,13,generic,70,itchy tails,Agree,plovs
+14,4191,truth_conditions,disease,14,generic,10,torn feathers,Disagree,moxes
+14,4128,truth_conditions,accidental,15,generic,90,cracked claws,Agree,cheebas
+14,3191,truth_conditions,vague,16,generic,30,rough skin,Disagree,ollers
+14,3050,truth_conditions,vague,17,generic,10,smooth feathers,Disagree,crullets
+14,2761,truth_conditions,color,18,generic,70,pink teeth,Agree,kweps
+14,3054,truth_conditions,part,19,generic,50,ears,Agree,krivels
+14,2776,truth_conditions,part,20,generic,90,teeth,Agree,kazzes
+14,4169,truth_conditions,accidental,21,generic,30,muddy feathers,Disagree,taifels
+14,3055,truth_conditions,part,22,generic,70,tails,Agree,frams
+14,2897,truth_conditions,accidental,23,generic,10,wet fur,Disagree,trufts
+14,2800,truth_conditions,accidental,24,generic,50,swollen ears,Agree,feps
+15,4319,truth_conditions,accidental,0,generic,50,cracked claws,Agree,grinks
+15,2768,truth_conditions,color,1,generic,90,violet skin,Disagree,reesles
+15,3337,truth_conditions,part,2,generic,90,ears,Agree,elleps
+15,2908,truth_conditions,color,3,generic,30,orange ears,Disagree,mooks
+15,2344,truth_conditions,vague,4,generic,70,smooth feathers,Agree,lorches
+15,2552,truth_conditions,vague,5,generic,90,long tails,Agree,wugs
+15,2629,truth_conditions,vague,6,generic,30,curly fur,Disagree,taifels
+15,2205,truth_conditions,part,7,generic,10,claws,Agree,blins
+15,3332,truth_conditions,disease,8,generic,90,torn tails,Disagree,kweps
+15,3004,truth_conditions,part,9,generic,70,skin,Agree,zoovs
+15,16548,truth_conditions,disease,10,generic,10,broken legs,Disagree,luzaks
+15,3037,truth_conditions,color,11,generic,50,blue claws,Agree,crullets
+15,5920,truth_conditions,disease,12,generic,30,burned skin,Disagree,sapers
+15,1840,truth_conditions,part,13,generic,50,tails,Agree,kazzes
+15,2769,truth_conditions,disease,14,generic,70,rotten teeth,Disagree,stups
+15,2569,truth_conditions,color,15,generic,10,yellow fur,Agree,javs
+15,3062,truth_conditions,vague,16,generic,50,long legs,Agree,krivels
+15,2075,truth_conditions,vague,17,generic,10,big claws,Agree,daiths
+15,2091,truth_conditions,accidental,18,generic,70,swollen ears,Disagree,feps
+15,2186,truth_conditions,accidental,19,generic,90,sore legs,Disagree,frams
+15,4124,truth_conditions,disease,20,generic,50,worn-out claws,Disagree,pangolins
+15,3158,truth_conditions,accidental,21,generic,10,wet fur,Agree,ollers
+15,2292,truth_conditions,part,22,generic,30,teeth,Agree,dorbs
+15,1787,truth_conditions,color,23,generic,70,purple feathers,Agree,ackles
+15,3045,truth_conditions,accidental,24,generic,30,muddy feathers,Agree,trufts
+16,6880,truth_conditions,part,0,generic,30,fur,Agree,frams
+16,6865,truth_conditions,accidental,1,generic,10,sore legs,Agree,sapers
+16,5082,truth_conditions,color,2,generic,10,violet skin,Disagree,daiths
+16,5620,truth_conditions,accidental,3,generic,30,dusty skin,Agree,zorbs
+16,4698,truth_conditions,color,4,generic,50,silver legs,Agree,kazzes
+16,3619,truth_conditions,accidental,5,generic,70,swollen ears,Disagree,crullets
+16,3414,truth_conditions,vague,6,generic,90,small ears,Agree,plovs
+16,7434,truth_conditions,disease,7,generic,10,broken legs,Disagree,thups
+16,7380,truth_conditions,accidental,8,generic,90,muddy feathers,Agree,javs
+16,4149,truth_conditions,color,9,generic,70,orange ears,Agree,morseths
+16,7432,truth_conditions,part,10,generic,90,skin,Disagree,dorbs
+16,6299,truth_conditions,disease,11,generic,30,torn feathers,Agree,ackles
+16,5552,truth_conditions,vague,12,generic,10,smooth feathers,Agree,reesles
+16,5752,truth_conditions,vague,13,generic,30,big claws,Disagree,trufts
+16,4368,truth_conditions,vague,14,generic,70,long legs,Agree,taifels
+16,2750,truth_conditions,part,15,generic,70,teeth,Agree,glippets
+16,4396,truth_conditions,color,16,generic,30,blue claws,Disagree,luzaks
+16,2939,truth_conditions,color,17,generic,90,orange tails,Agree,kweps
+16,3796,truth_conditions,part,18,generic,50,claws,Agree,moxes
+16,5081,truth_conditions,disease,19,generic,90,burned skin,Disagree,mooks
+16,5419,truth_conditions,disease,20,generic,70,torn tails,Disagree,elleps
+16,3297,truth_conditions,part,21,generic,10,feathers,Agree,zoovs
+16,7736,truth_conditions,accidental,22,generic,50,wet fur,Disagree,lorches
+16,3950,truth_conditions,disease,23,generic,50,rotten teeth,Agree,blins
+16,2449,truth_conditions,vague,24,generic,50,long tails,Agree,wugs
+17,13588,truth_conditions,disease,0,generic,90,infected ears,Disagree,krivels
+17,4542,truth_conditions,color,1,generic,90,orange tails,Agree,mooks
+17,9270,truth_conditions,vague,2,generic,10,big claws,Disagree,frams
+17,5618,truth_conditions,part,3,generic,10,fur,Disagree,lorches
+17,7464,truth_conditions,disease,4,generic,30,torn feathers,Disagree,reesles
+17,4661,truth_conditions,accidental,5,generic,50,swollen ears,Agree,thups
+17,4405,truth_conditions,vague,6,generic,50,long legs,Agree,trufts
+17,4622,truth_conditions,color,7,generic,10,blue claws,Disagree,blins
+17,6233,truth_conditions,part,8,generic,70,legs,Agree,morseths
+17,4995,truth_conditions,accidental,9,generic,70,itchy tails,Agree,cheebas
+17,5179,truth_conditions,disease,10,generic,70,fungus-covered fur,Agree,kweps
+17,4318,truth_conditions,accidental,11,generic,30,muddy feathers,Disagree,javs
+17,4489,truth_conditions,color,12,generic,30,silver legs,Disagree,luzaks
+17,3228,truth_conditions,part,13,generic,30,skin,Disagree,sapers
+17,3006,truth_conditions,vague,14,generic,70,rough skin,Agree,stups
+17,5259,truth_conditions,accidental,15,generic,10,cracked claws,Disagree,elleps
+17,3375,truth_conditions,color,16,generic,50,pink teeth,Agree,kazzes
+17,3227,truth_conditions,color,17,generic,70,violet skin,Agree,feps
+17,3510,truth_conditions,part,18,generic,50,ears,Agree,pangolins
+17,3029,truth_conditions,disease,19,generic,10,torn tails,Disagree,dorbs
+17,3974,truth_conditions,disease,20,generic,50,broken legs,Agree,glippets
+17,3348,truth_conditions,vague,21,generic,30,curly fur,Disagree,grinks
+17,2944,truth_conditions,vague,22,generic,90,smooth feathers,Agree,ollers
+17,3275,truth_conditions,part,23,generic,90,teeth,Agree,wugs
+17,2933,truth_conditions,accidental,24,generic,90,sore legs,Agree,taifels
+18,3843,truth_conditions,color,0,generic,50,violet skin,Disagree,kazzes
+18,5737,truth_conditions,vague,1,generic,50,long teeth,Disagree,lorches
+18,4054,truth_conditions,accidental,2,generic,90,dusty skin,Disagree,reesles
+18,3240,truth_conditions,color,3,generic,30,silver legs,Disagree,daiths
+18,4503,truth_conditions,part,4,generic,90,claws,Agree,taifels
+18,2399,truth_conditions,disease,5,generic,50,fungus-covered fur,Disagree,elleps
+18,3280,truth_conditions,vague,6,generic,90,big claws,Agree,stups
+18,3384,truth_conditions,accidental,7,generic,10,itchy tails,Disagree,ackles
+18,3583,truth_conditions,part,8,generic,10,legs,Disagree,trufts
+18,2327,truth_conditions,accidental,9,generic,50,sore legs,Disagree,zorbs
+18,3408,truth_conditions,vague,10,generic,30,rough skin,Agree,grinks
+18,4247,truth_conditions,disease,11,generic,10,infected ears,Disagree,moxes
+18,2760,truth_conditions,disease,12,generic,70,worn-out claws,Disagree,krivels
+18,2943,truth_conditions,part,13,generic,50,teeth,Disagree,thups
+18,6984,truth_conditions,vague,14,generic,70,long tails,Agree,glippets
+18,2527,truth_conditions,part,15,generic,70,ears,Disagree,javs
+18,3400,truth_conditions,color,16,generic,90,purple feathers,Disagree,mooks
+18,3543,truth_conditions,color,17,generic,10,orange tails,Disagree,zoovs
+18,6272,truth_conditions,vague,18,generic,10,smooth feathers,Agree,kweps
+18,2591,truth_conditions,disease,19,generic,90,rotten teeth,Disagree,pangolins
+18,3391,truth_conditions,accidental,20,generic,30,cracked claws,Disagree,ollers
+18,2095,truth_conditions,part,21,generic,30,skin,Disagree,feps
+18,3240,truth_conditions,disease,22,generic,30,broken legs,Disagree,luzaks
+18,5559,truth_conditions,color,23,generic,70,yellow fur,Agree,wugs
+18,2240,truth_conditions,accidental,24,generic,70,swollen ears,Disagree,cheebas
+19,18186,truth_conditions,vague,0,generic,30,curly fur,Disagree,zorbs
+19,8347,truth_conditions,part,1,generic,50,legs,Agree,feps
+19,6397,truth_conditions,vague,2,generic,10,long legs,Disagree,plovs
+19,5099,truth_conditions,accidental,3,generic,50,itchy tails,Agree,grinks
+19,4451,truth_conditions,color,4,generic,10,orange tails,Disagree,elleps
+19,7700,truth_conditions,disease,5,generic,90,worn-out claws,Agree,blins
+19,3520,truth_conditions,disease,6,generic,30,burned skin,Disagree,cheebas
+19,3967,truth_conditions,color,7,generic,90,silver legs,Agree,pangolins
+19,2463,truth_conditions,accidental,8,generic,10,muddy feathers,Disagree,dorbs
+19,5583,truth_conditions,disease,9,generic,10,infected ears,Disagree,wugs
+19,4138,truth_conditions,vague,10,generic,70,small ears,Agree,mooks
+19,2857,truth_conditions,color,11,generic,70,yellow fur,Agree,reesles
+19,2955,truth_conditions,accidental,12,generic,90,swollen ears,Agree,sapers
+19,3410,truth_conditions,part,13,generic,30,tails,Disagree,luzaks
+19,8064,truth_conditions,vague,14,generic,90,rough skin,Agree,kweps
+19,2663,truth_conditions,part,15,generic,90,teeth,Agree,taifels
+19,3000,truth_conditions,accidental,16,generic,30,sore legs,Disagree,morseths
+19,2938,truth_conditions,vague,17,generic,50,long teeth,Agree,zoovs
+19,2464,truth_conditions,disease,18,generic,70,broken legs,Agree,glippets
+19,2414,truth_conditions,color,19,generic,30,violet skin,Disagree,moxes
+19,3657,truth_conditions,disease,20,generic,50,torn feathers,Agree,kazzes
+19,2647,truth_conditions,color,21,generic,50,orange ears,Agree,crullets
+19,3654,truth_conditions,part,22,generic,10,feathers,Disagree,daiths
+19,4260,truth_conditions,accidental,23,generic,70,sore teeth,Agree,stups
+19,2709,truth_conditions,part,24,generic,70,fur,Agree,thups
+20,4536,truth_conditions,accidental,0,generic,10,dusty skin,Disagree,dorbs
+20,3729,truth_conditions,color,1,generic,70,purple feathers,Agree,glippets
+20,1994,truth_conditions,color,2,generic,10,yellow fur,Disagree,lorches
+20,1867,truth_conditions,vague,3,generic,30,rough skin,Disagree,moxes
+20,1785,truth_conditions,disease,4,generic,50,worn-out claws,Disagree,reesles
+20,3079,truth_conditions,part,5,generic,70,legs,Agree,krivels
+20,2422,truth_conditions,accidental,6,generic,70,itchy tails,Agree,elleps
+20,1717,truth_conditions,disease,7,generic,30,infected ears,Disagree,luzaks
+20,1608,truth_conditions,vague,8,generic,70,big claws,Agree,ackles
+20,1689,truth_conditions,vague,9,generic,90,long legs,Agree,taifels
+20,3672,truth_conditions,accidental,10,generic,90,muddy feathers,Agree,kazzes
+20,2859,truth_conditions,accidental,11,generic,50,wet fur,Disagree,javs
+20,2343,truth_conditions,part,12,generic,50,ears,Disagree,morseths
+20,1865,truth_conditions,vague,13,generic,10,small ears,Disagree,pangolins
+20,1778,truth_conditions,disease,14,generic,10,torn feathers,Disagree,feps
+20,2298,truth_conditions,color,15,generic,90,silver legs,Agree,trufts
+20,2361,truth_conditions,disease,16,generic,70,broken legs,Agree,daiths
+20,2364,truth_conditions,color,17,generic,50,orange ears,Disagree,plovs
+20,1634,truth_conditions,vague,18,generic,50,long teeth,Disagree,blins
+20,2069,truth_conditions,part,19,generic,90,skin,Agree,zoovs
+20,1854,truth_conditions,part,20,generic,30,teeth,Disagree,wugs
+20,1389,truth_conditions,part,21,generic,10,fur,Disagree,frams
+20,1541,truth_conditions,accidental,22,generic,30,cracked claws,Disagree,zorbs
+20,2628,truth_conditions,disease,23,generic,90,rotten teeth,Agree,thups
+20,1995,truth_conditions,color,24,generic,30,violet skin,Disagree,sapers
+21,9097,truth_conditions,vague,0,generic,90,big claws,Agree,pangolins
+21,4951,truth_conditions,vague,1,generic,30,small ears,Disagree,dorbs
+21,3559,truth_conditions,part,2,generic,10,claws,Disagree,javs
+21,4444,truth_conditions,disease,3,generic,90,burned skin,Agree,thups
+21,3833,truth_conditions,accidental,4,generic,10,cracked claws,Disagree,cheebas
+21,5064,truth_conditions,part,5,generic,70,skin,Agree,kweps
+21,3097,truth_conditions,part,6,generic,30,teeth,Disagree,sapers
+21,3906,truth_conditions,color,7,generic,30,purple feathers,Disagree,feps
+21,3309,truth_conditions,disease,8,generic,50,fungus-covered fur,Agree,krivels
+21,2923,truth_conditions,vague,9,generic,10,long teeth,Disagree,mooks
+21,3800,truth_conditions,disease,10,generic,70,worn-out claws,Agree,grinks
+21,2563,truth_conditions,disease,11,generic,30,rotten teeth,Disagree,lorches
+21,3124,truth_conditions,accidental,12,generic,70,sore legs,Agree,moxes
+21,3611,truth_conditions,color,13,generic,50,yellow fur,Agree,crullets
+21,3743,truth_conditions,disease,14,generic,10,infected ears,Disagree,ackles
+21,4671,truth_conditions,color,15,generic,10,violet skin,Disagree,reesles
+21,2527,truth_conditions,part,16,generic,90,legs,Agree,blins
+21,4772,truth_conditions,accidental,17,generic,30,swollen ears,Disagree,zoovs
+21,2290,truth_conditions,color,18,generic,90,blue claws,Agree,wugs
+21,2661,truth_conditions,accidental,19,generic,90,itchy tails,Agree,taifels
+21,3126,truth_conditions,color,20,generic,70,silver legs,Agree,kazzes
+21,2526,truth_conditions,accidental,21,generic,50,dusty skin,Agree,luzaks
+21,3232,truth_conditions,vague,22,generic,50,curly fur,Agree,morseths
+21,2524,truth_conditions,part,23,generic,50,tails,Agree,plovs
+21,2543,truth_conditions,vague,24,generic,70,smooth feathers,Agree,frams
+22,17014,truth_conditions,part,0,generic,70,legs,Disagree,daiths
+22,4649,truth_conditions,part,1,generic,30,feathers,Disagree,stups
+22,5642,truth_conditions,accidental,2,generic,50,muddy feathers,Disagree,morseths
+22,3630,truth_conditions,disease,3,generic,90,infected ears,Agree,plovs
+22,4053,truth_conditions,disease,4,generic,30,torn feathers,Disagree,elleps
+22,3366,truth_conditions,color,5,generic,70,violet skin,Agree,luzaks
+22,2842,truth_conditions,part,6,generic,10,fur,Disagree,krivels
+22,3431,truth_conditions,vague,7,generic,30,long legs,Disagree,sapers
+22,3130,truth_conditions,vague,8,generic,50,smooth feathers,Disagree,cheebas
+22,2670,truth_conditions,vague,9,generic,10,curly fur,Disagree,blins
+22,2681,truth_conditions,accidental,10,generic,70,cracked claws,Agree,dorbs
+22,2713,truth_conditions,vague,11,generic,90,long tails,Agree,javs
+22,2193,truth_conditions,disease,12,generic,50,burned skin,Disagree,glippets
+22,2288,truth_conditions,accidental,13,generic,10,sore teeth,Disagree,wugs
+22,2535,truth_conditions,disease,14,generic,70,fungus-covered fur,Agree,kweps
+22,2702,truth_conditions,color,15,generic,10,pink teeth,Disagree,crullets
+22,2362,truth_conditions,color,16,generic,30,orange ears,Disagree,trufts
+22,2759,truth_conditions,color,17,generic,90,yellow fur,Agree,ackles
+22,3187,truth_conditions,part,18,generic,50,tails,Disagree,taifels
+22,2369,truth_conditions,accidental,19,generic,90,dusty skin,Agree,kazzes
+22,2129,truth_conditions,accidental,20,generic,30,itchy tails,Disagree,mooks
+22,2544,truth_conditions,part,21,generic,90,teeth,Agree,grinks
+22,2518,truth_conditions,vague,22,generic,70,big claws,Agree,pangolins
+22,2107,truth_conditions,disease,23,generic,10,rotten teeth,Disagree,zorbs
+22,2478,truth_conditions,color,24,generic,50,blue claws,Disagree,feps
+23,4817,truth_conditions,accidental,0,generic,90,sore legs,Agree,kweps
+23,4821,truth_conditions,disease,1,generic,70,burned skin,Agree,stups
+23,4391,truth_conditions,part,2,generic,30,claws,Agree,cheebas
+23,2951,truth_conditions,disease,3,generic,50,rotten teeth,Agree,trufts
+23,3361,truth_conditions,disease,4,generic,90,torn tails,Agree,zoovs
+23,3288,truth_conditions,part,5,generic,50,fur,Agree,plovs
+23,3599,truth_conditions,color,6,generic,30,violet skin,Disagree,sapers
+23,2656,truth_conditions,color,7,generic,10,yellow fur,Disagree,reesles
+23,3536,truth_conditions,accidental,8,generic,10,muddy feathers,Disagree,ackles
+23,2584,truth_conditions,vague,9,generic,50,big claws,Agree,wugs
+23,3864,truth_conditions,vague,10,generic,30,smooth feathers,Disagree,pangolins
+23,2624,truth_conditions,color,11,generic,90,orange ears,Agree,javs
+23,4032,truth_conditions,disease,12,generic,10,infected ears,Agree,zorbs
+23,7288,truth_conditions,disease,13,generic,30,fungus-covered fur,Agree,kazzes
+23,3112,truth_conditions,vague,14,generic,90,long teeth,Agree,frams
+23,2448,truth_conditions,accidental,15,generic,70,sore teeth,Disagree,taifels
+23,2888,truth_conditions,part,16,generic,90,ears,Agree,moxes
+23,4432,truth_conditions,vague,17,generic,10,rough skin,Disagree,feps
+23,2967,truth_conditions,part,18,generic,10,skin,Disagree,mooks
+23,3352,truth_conditions,color,19,generic,70,purple feathers,Agree,grinks
+23,2449,truth_conditions,accidental,20,generic,50,swollen ears,Agree,daiths
+23,2367,truth_conditions,vague,21,generic,70,small ears,Agree,elleps
+23,2833,truth_conditions,color,22,generic,50,silver legs,Agree,luzaks
+23,3520,truth_conditions,part,23,generic,70,tails,Agree,lorches
+23,4069,truth_conditions,accidental,24,generic,30,itchy tails,Agree,blins
+24,7254,truth_conditions,part,0,generic,30,legs,Disagree,feps
+24,5566,truth_conditions,disease,1,generic,30,fungus-covered fur,Disagree,trufts
+24,2343,truth_conditions,vague,2,generic,90,long legs,Agree,pangolins
+24,1959,truth_conditions,accidental,3,generic,50,swollen ears,Disagree,javs
+24,2827,truth_conditions,color,4,generic,90,violet skin,Agree,mooks
+24,2649,truth_conditions,color,5,generic,30,silver legs,Disagree,crullets
+24,2139,truth_conditions,part,6,generic,10,ears,Disagree,zoovs
+24,1922,truth_conditions,accidental,7,generic,30,dusty skin,Disagree,thups
+24,1492,truth_conditions,color,8,generic,50,orange tails,Disagree,luzaks
+24,1328,truth_conditions,part,9,generic,50,feathers,Disagree,reesles
+24,1249,truth_conditions,color,10,generic,70,orange ears,Agree,moxes
+24,2139,truth_conditions,accidental,11,generic,90,sore legs,Agree,kweps
+24,1696,truth_conditions,disease,12,generic,70,burned skin,Agree,taifels
+24,1524,truth_conditions,color,13,generic,10,yellow fur,Disagree,grinks
+24,2218,truth_conditions,vague,14,generic,70,curly fur,Agree,cheebas
+24,1844,truth_conditions,vague,15,generic,30,rough skin,Disagree,wugs
+24,2148,truth_conditions,accidental,16,generic,70,wet fur,Agree,kazzes
+24,1913,truth_conditions,part,17,generic,70,fur,Agree,zorbs
+24,2062,truth_conditions,vague,18,generic,50,big claws,Disagree,dorbs
+24,1470,truth_conditions,vague,19,generic,10,long tails,Disagree,daiths
+24,1633,truth_conditions,part,20,generic,90,tails,Agree,stups
+24,1461,truth_conditions,disease,21,generic,10,infected ears,Disagree,frams
+24,2000,truth_conditions,disease,22,generic,90,broken legs,Agree,elleps
+24,5796,truth_conditions,disease,23,generic,50,worn-out claws,Disagree,ollers
+24,1782,truth_conditions,accidental,24,generic,10,cracked claws,Disagree,ackles
+25,9368,truth_conditions,vague,0,generic,30,big claws,Disagree,morseths
+25,4012,truth_conditions,accidental,1,generic,10,itchy tails,Disagree,javs
+25,3454,truth_conditions,disease,2,generic,70,fungus-covered fur,Agree,feps
+25,3287,truth_conditions,vague,3,generic,10,long tails,Disagree,krivels
+25,2976,truth_conditions,part,4,generic,50,claws,Agree,wugs
+25,2969,truth_conditions,accidental,5,generic,50,sore legs,Agree,pangolins
+25,2123,truth_conditions,disease,6,generic,50,worn-out claws,Agree,dorbs
+25,1953,truth_conditions,vague,7,generic,90,curly fur,Agree,lorches
+25,2140,truth_conditions,accidental,8,generic,90,dusty skin,Agree,kweps
+25,1721,truth_conditions,accidental,9,generic,70,wet fur,Agree,ackles
+25,1844,truth_conditions,disease,10,generic,30,broken legs,Disagree,kazzes
+25,2178,truth_conditions,part,11,generic,10,legs,Disagree,trufts
+25,2618,truth_conditions,color,12,generic,90,purple feathers,Agree,thups
+25,1468,truth_conditions,disease,13,generic,90,burned skin,Agree,frams
+25,1773,truth_conditions,vague,14,generic,50,long legs,Agree,elleps
+25,4631,truth_conditions,disease,15,generic,10,infected ears,Disagree,plovs
+25,3565,truth_conditions,color,16,generic,50,blue claws,Agree,grinks
+25,2960,truth_conditions,color,17,generic,30,pink teeth,Disagree,blins
+25,1344,truth_conditions,part,18,generic,30,fur,Disagree,luzaks
+25,1062,truth_conditions,accidental,19,generic,30,sore teeth,Disagree,crullets
+25,1094,truth_conditions,color,20,generic,10,orange ears,Disagree,ollers
+25,2048,truth_conditions,part,21,generic,90,tails,Agree,glippets
+25,1349,truth_conditions,part,22,generic,70,ears,Agree,reesles
+25,1101,truth_conditions,vague,23,generic,70,long teeth,Agree,sapers
+25,1039,truth_conditions,color,24,generic,70,silver legs,Agree,moxes
+26,5406,truth_conditions,disease,0,generic,30,fungus-covered fur,Disagree,ackles
+26,2032,truth_conditions,accidental,1,generic,70,itchy tails,Disagree,glippets
+26,2731,truth_conditions,vague,2,generic,90,curly fur,Agree,dorbs
+26,2775,truth_conditions,part,3,generic,90,legs,Agree,krivels
+26,2201,truth_conditions,color,4,generic,10,pink teeth,Disagree,taifels
+26,1550,truth_conditions,part,5,generic,70,ears,Agree,kweps
+26,1899,truth_conditions,vague,6,generic,30,rough skin,Disagree,plovs
+26,3113,truth_conditions,disease,7,generic,50,infected ears,Disagree,sapers
+26,1956,truth_conditions,vague,8,generic,70,long tails,Agree,zoovs
+26,2403,truth_conditions,accidental,9,generic,10,sore legs,Disagree,pangolins
+26,2062,truth_conditions,accidental,10,generic,90,dusty skin,Agree,reesles
+26,1314,truth_conditions,disease,11,generic,90,rotten teeth,Agree,lorches
+26,1243,truth_conditions,part,12,generic,30,teeth,Disagree,ollers
+26,2844,truth_conditions,disease,13,generic,10,worn-out claws,Disagree,mooks
+26,2331,truth_conditions,part,14,generic,50,feathers,Agree,feps
+26,1840,truth_conditions,color,15,generic,30,orange ears,Disagree,grinks
+26,1745,truth_conditions,color,16,generic,70,yellow fur,Agree,stups
+26,1746,truth_conditions,vague,17,generic,10,long teeth,Disagree,morseths
+26,2799,truth_conditions,vague,18,generic,50,big claws,Agree,javs
+26,1670,truth_conditions,color,19,generic,90,orange tails,Agree,blins
+26,2829,truth_conditions,accidental,20,generic,50,wet fur,Disagree,thups
+26,2808,truth_conditions,color,21,generic,50,blue claws,Disagree,daiths
+26,10126,truth_conditions,part,22,generic,10,skin,Disagree,zorbs
+26,1954,truth_conditions,disease,23,generic,70,torn tails,Agree,frams
+26,2285,truth_conditions,accidental,24,generic,30,swollen ears,Disagree,kazzes
+27,8813,truth_conditions,accidental,0,generic,90,muddy feathers,Disagree,crullets
+27,4336,truth_conditions,disease,1,generic,50,torn feathers,Disagree,elleps
+27,5218,truth_conditions,part,2,generic,90,claws,Agree,morseths
+27,2317,truth_conditions,vague,3,generic,90,long tails,Agree,krivels
+27,3016,truth_conditions,disease,4,generic,90,fungus-covered fur,Agree,cheebas
+27,2000,truth_conditions,disease,5,generic,70,rotten teeth,Disagree,mooks
+27,2168,truth_conditions,part,6,generic,70,ears,Disagree,moxes
+27,2470,truth_conditions,part,7,generic,10,tails,Disagree,zorbs
+27,2103,truth_conditions,vague,8,generic,30,long legs,Disagree,ollers
+27,1826,truth_conditions,accidental,9,generic,10,dusty skin,Disagree,zoovs
+27,1466,truth_conditions,disease,10,generic,30,burned skin,Disagree,frams
+27,2001,truth_conditions,color,11,generic,50,pink teeth,Disagree,daiths
+27,1484,truth_conditions,color,12,generic,30,silver legs,Disagree,luzaks
+27,1348,truth_conditions,vague,13,generic,10,small ears,Disagree,glippets
+27,1152,truth_conditions,color,14,generic,10,orange tails,Disagree,reesles
+27,2118,truth_conditions,color,15,generic,70,purple feathers,Disagree,kweps
+27,1110,truth_conditions,accidental,16,generic,30,cracked claws,Disagree,sapers
+27,1289,truth_conditions,vague,17,generic,70,smooth feathers,Disagree,dorbs
+27,1684,truth_conditions,accidental,18,generic,70,swollen ears,Disagree,taifels
+27,1332,truth_conditions,accidental,19,generic,50,itchy tails,Disagree,ackles
+27,2017,truth_conditions,color,20,generic,90,orange ears,Agree,pangolins
+27,1417,truth_conditions,part,21,generic,30,teeth,Disagree,trufts
+27,1242,truth_conditions,disease,22,generic,10,worn-out claws,Disagree,kazzes
+27,1515,truth_conditions,vague,23,generic,50,long teeth,Disagree,thups
+27,1114,truth_conditions,part,24,generic,50,fur,Disagree,blins
+28,16219,truth_conditions,accidental,0,generic,50,sore teeth,Agree,grinks
+28,8398,truth_conditions,vague,1,generic,70,long tails,Agree,frams
+28,5480,truth_conditions,accidental,2,generic,70,wet fur,Agree,wugs
+28,24691,truth_conditions,disease,3,generic,90,infected ears,Disagree,krivels
+28,7601,truth_conditions,disease,4,generic,30,burned skin,Disagree,ackles
+28,5201,truth_conditions,vague,5,generic,10,smooth feathers,Disagree,dorbs
+28,5737,truth_conditions,color,6,generic,90,blue claws,Agree,pangolins
+28,8144,truth_conditions,part,7,generic,90,teeth,Agree,plovs
+28,6673,truth_conditions,vague,8,generic,50,long teeth,Agree,blins
+28,5624,truth_conditions,disease,9,generic,50,broken legs,Agree,ollers
+28,4762,truth_conditions,color,10,generic,30,orange tails,Disagree,zoovs
+28,5657,truth_conditions,disease,11,generic,10,torn feathers,Disagree,sapers
+28,6040,truth_conditions,accidental,12,generic,10,dusty skin,Disagree,elleps
+28,4904,truth_conditions,part,13,generic,70,fur,Agree,cheebas
+28,6497,truth_conditions,disease,14,generic,70,fungus-covered fur,Agree,kweps
+28,8913,truth_conditions,color,15,generic,10,yellow fur,Disagree,zorbs
+28,6153,truth_conditions,vague,16,generic,90,curly fur,Agree,daiths
+28,7898,truth_conditions,color,17,generic,70,violet skin,Agree,moxes
+28,6640,truth_conditions,part,18,generic,50,skin,Agree,trufts
+28,4344,truth_conditions,accidental,19,generic,90,cracked claws,Agree,feps
+28,4081,truth_conditions,accidental,20,generic,30,swollen ears,Disagree,morseths
+28,4113,truth_conditions,vague,21,generic,30,small ears,Disagree,glippets
+28,5944,truth_conditions,part,22,generic,10,feathers,Disagree,luzaks
+28,7712,truth_conditions,part,23,generic,30,claws,Disagree,reesles
+28,8345,truth_conditions,color,24,generic,50,pink teeth,Disagree,taifels
+29,131652,truth_conditions,accidental,0,generic,70,wet fur,Agree,frams
+29,10439,truth_conditions,part,1,generic,10,tails,Disagree,ackles
+29,5956,truth_conditions,accidental,2,generic,10,dusty skin,Disagree,pangolins
+29,2940,truth_conditions,accidental,3,generic,90,swollen ears,Agree,taifels
+29,7581,truth_conditions,color,4,generic,10,pink teeth,Disagree,thups
+29,2832,truth_conditions,disease,5,generic,90,burned skin,Agree,zoovs
+29,2811,truth_conditions,accidental,6,generic,50,sore legs,Agree,lorches
+29,2153,truth_conditions,part,7,generic,90,claws,Agree,daiths
+29,5747,truth_conditions,vague,8,generic,30,curly fur,Agree,zorbs
+29,2583,truth_conditions,disease,9,generic,70,worn-out claws,Agree,cheebas
+29,2031,truth_conditions,vague,10,generic,10,small ears,Disagree,feps
+29,3013,truth_conditions,disease,11,generic,30,torn feathers,Disagree,ollers
+29,2067,truth_conditions,color,12,generic,90,blue claws,Agree,plovs
+29,3266,truth_conditions,vague,13,generic,70,long legs,Agree,sapers
+29,3357,truth_conditions,part,14,generic,30,teeth,Disagree,glippets
+29,2340,truth_conditions,part,15,generic,50,legs,Agree,wugs
+29,2051,truth_conditions,disease,16,generic,50,torn tails,Agree,javs
+29,1785,truth_conditions,vague,17,generic,50,big claws,Agree,crullets
+29,2869,truth_conditions,accidental,18,generic,30,itchy tails,Disagree,stups
+29,1660,truth_conditions,color,19,generic,50,silver legs,Agree,elleps
+29,2604,truth_conditions,color,20,generic,30,yellow fur,Disagree,krivels
+29,2563,truth_conditions,disease,21,generic,10,broken legs,Disagree,moxes
+29,2454,truth_conditions,part,22,generic,70,ears,Agree,reesles
+29,2226,truth_conditions,vague,23,generic,90,smooth feathers,Agree,kazzes
+29,2855,truth_conditions,color,24,generic,70,orange ears,Agree,dorbs
+30,15742,truth_conditions,accidental,0,generic,50,itchy tails,Agree,wugs
+30,3673,truth_conditions,color,1,generic,10,purple feathers,Disagree,grinks
+30,2685,truth_conditions,disease,2,generic,10,torn feathers,Disagree,kazzes
+30,2128,truth_conditions,part,3,generic,50,skin,Agree,feps
+30,2081,truth_conditions,color,4,generic,90,violet skin,Disagree,trufts
+30,1692,truth_conditions,disease,5,generic,30,infected ears,Agree,lorches
+30,1425,truth_conditions,part,6,generic,70,ears,Agree,daiths
+30,2006,truth_conditions,disease,7,generic,90,worn-out claws,Agree,morseths
+30,1445,truth_conditions,vague,8,generic,90,curly fur,Agree,plovs
+30,1351,truth_conditions,accidental,9,generic,10,sore legs,Agree,sapers
+30,3048,truth_conditions,disease,10,generic,50,torn tails,Disagree,reesles
+30,2940,truth_conditions,color,11,generic,50,orange tails,Disagree,taifels
+30,2447,truth_conditions,disease,12,generic,70,rotten teeth,Disagree,zoovs
+30,2403,truth_conditions,vague,13,generic,30,long teeth,Agree,zorbs
+30,2907,truth_conditions,accidental,14,generic,90,swollen ears,Disagree,krivels
+30,2214,truth_conditions,vague,15,generic,70,smooth feathers,Agree,moxes
+30,2719,truth_conditions,vague,16,generic,50,long legs,Agree,crullets
+30,3263,truth_conditions,accidental,17,generic,30,muddy feathers,Disagree,javs
+30,2448,truth_conditions,color,18,generic,70,silver legs,Disagree,blins
+30,3211,truth_conditions,part,19,generic,90,tails,Agree,pangolins
+30,2855,truth_conditions,accidental,20,generic,70,dusty skin,Agree,elleps
+30,1862,truth_conditions,part,21,generic,10,teeth,Disagree,frams
+30,2405,truth_conditions,part,22,generic,30,feathers,Agree,luzaks
+30,2864,truth_conditions,color,23,generic,30,yellow fur,Agree,cheebas
+30,2968,truth_conditions,vague,24,generic,10,long tails,Disagree,kweps
+31,7889,truth_conditions,part,0,generic,50,fur,Disagree,blins
+31,3748,truth_conditions,color,1,generic,30,purple feathers,Disagree,glippets
+31,3862,truth_conditions,vague,2,generic,10,long legs,Disagree,morseths
+31,4361,truth_conditions,vague,3,generic,90,big claws,Agree,luzaks
+31,2645,truth_conditions,color,4,generic,50,silver legs,Disagree,stups
+31,5231,truth_conditions,disease,5,generic,70,torn feathers,Disagree,ollers
+31,3496,truth_conditions,disease,6,generic,30,worn-out claws,Disagree,taifels
+31,4624,truth_conditions,vague,7,generic,30,rough skin,Disagree,trufts
+31,2744,truth_conditions,part,8,generic,10,legs,Disagree,pangolins
+31,2822,truth_conditions,color,9,generic,70,blue claws,Disagree,frams
+31,2927,truth_conditions,color,10,generic,10,orange ears,Disagree,crullets
+31,2517,truth_conditions,part,11,generic,30,claws,Disagree,thups
+31,2765,truth_conditions,vague,12,generic,70,small ears,Disagree,kweps
+31,2427,truth_conditions,accidental,13,generic,10,swollen ears,Disagree,krivels
+31,3262,truth_conditions,accidental,14,generic,90,dusty skin,Agree,sapers
+31,2847,truth_conditions,color,15,generic,90,yellow fur,Agree,lorches
+31,2663,truth_conditions,disease,16,generic,10,fungus-covered fur,Disagree,wugs
+31,2837,truth_conditions,accidental,17,generic,50,wet fur,Disagree,ackles
+31,2907,truth_conditions,part,18,generic,90,ears,Agree,javs
+31,3141,truth_conditions,vague,19,generic,50,long teeth,Disagree,feps
+31,2996,truth_conditions,accidental,20,generic,70,sore teeth,Disagree,elleps
+31,2924,truth_conditions,disease,21,generic,90,infected ears,Agree,kazzes
+31,2248,truth_conditions,part,22,generic,70,teeth,Disagree,moxes
+31,2308,truth_conditions,disease,23,generic,50,broken legs,Disagree,grinks
+31,2390,truth_conditions,accidental,24,generic,30,sore legs,Disagree,plovs
+32,32115,truth_conditions,disease,0,generic,10,torn tails,Agree,zoovs
+32,14185,truth_conditions,vague,1,generic,30,big claws,Disagree,reesles
+32,8495,truth_conditions,part,2,generic,70,legs,Agree,taifels
+32,5753,truth_conditions,part,3,generic,50,tails,Agree,kweps
+32,4656,truth_conditions,accidental,4,generic,90,cracked claws,Agree,pangolins
+32,10664,truth_conditions,disease,5,generic,30,worn-out claws,Agree,crullets
+32,4271,truth_conditions,accidental,6,generic,30,muddy feathers,Agree,grinks
+32,5960,truth_conditions,accidental,7,generic,70,dusty skin,Agree,javs
+32,4975,truth_conditions,vague,8,generic,90,rough skin,Agree,frams
+32,4832,truth_conditions,color,9,generic,10,silver legs,Disagree,ollers
+32,4151,truth_conditions,color,10,generic,90,yellow fur,Agree,daiths
+32,4336,truth_conditions,disease,11,generic,90,fungus-covered fur,Agree,morseths
+32,4392,truth_conditions,accidental,12,generic,10,swollen ears,Agree,krivels
+32,3760,truth_conditions,vague,13,generic,70,long legs,Agree,trufts
+32,3784,truth_conditions,color,14,generic,50,pink teeth,Agree,luzaks
+32,3927,truth_conditions,disease,15,generic,70,broken legs,Agree,sapers
+32,3128,truth_conditions,color,16,generic,30,violet skin,Disagree,plovs
+32,3432,truth_conditions,accidental,17,generic,50,sore teeth,Agree,glippets
+32,2760,truth_conditions,color,18,generic,70,purple feathers,Agree,mooks
+32,18040,truth_conditions,part,19,generic,10,skin,Disagree,wugs
+32,6495,truth_conditions,part,20,generic,90,teeth,Agree,feps
+32,3800,truth_conditions,part,21,generic,30,claws,Disagree,thups
+32,14712,truth_conditions,vague,22,generic,10,curly fur,Disagree,elleps
+32,2656,truth_conditions,disease,23,generic,50,rotten teeth,Disagree,moxes
+32,3240,truth_conditions,vague,24,generic,50,long teeth,Disagree,cheebas
+33,28733,truth_conditions,disease,0,generic,90,torn feathers,Disagree,wugs
+33,5482,truth_conditions,disease,1,generic,30,broken legs,Disagree,trufts
+33,9015,truth_conditions,part,2,generic,90,fur,Disagree,feps
+33,5384,truth_conditions,vague,3,generic,30,curly fur,Disagree,ollers
+33,4233,truth_conditions,vague,4,generic,70,rough skin,Disagree,sapers
+33,4100,truth_conditions,disease,5,generic,70,fungus-covered fur,Disagree,thups
+33,4033,truth_conditions,part,6,generic,70,feathers,Disagree,dorbs
+33,3993,truth_conditions,disease,7,generic,50,infected ears,Disagree,cheebas
+33,4017,truth_conditions,color,8,generic,90,yellow fur,Disagree,grinks
+33,4046,truth_conditions,color,9,generic,30,silver legs,Disagree,kweps
+33,4088,truth_conditions,vague,10,generic,50,smooth feathers,Disagree,javs
+33,3633,truth_conditions,vague,11,generic,10,long legs,Disagree,zorbs
+33,3690,truth_conditions,color,12,generic,70,violet skin,Disagree,morseths
+33,3160,truth_conditions,part,13,generic,50,legs,Disagree,mooks
+33,3759,truth_conditions,accidental,14,generic,30,sore teeth,Disagree,taifels
+33,3570,truth_conditions,color,15,generic,50,purple feathers,Disagree,glippets
+33,3558,truth_conditions,accidental,16,generic,10,dusty skin,Disagree,moxes
+33,2602,truth_conditions,part,17,generic,30,tails,Disagree,luzaks
+33,3110,truth_conditions,disease,18,generic,10,rotten teeth,Disagree,plovs
+33,3173,truth_conditions,accidental,19,generic,50,itchy tails,Disagree,reesles
+33,3050,truth_conditions,part,20,generic,10,claws,Disagree,crullets
+33,2758,truth_conditions,accidental,21,generic,70,wet fur,Disagree,lorches
+33,2845,truth_conditions,color,22,generic,10,orange tails,Disagree,blins
+33,3280,truth_conditions,vague,23,generic,90,big claws,Disagree,krivels
+33,2907,truth_conditions,accidental,24,generic,90,swollen ears,Disagree,daiths
+34,5498,truth_conditions,color,0,generic,30,violet skin,Disagree,lorches
+34,4636,truth_conditions,vague,1,generic,50,curly fur,Agree,wugs
+34,4126,truth_conditions,vague,2,generic,70,smooth feathers,Agree,taifels
+34,3410,truth_conditions,vague,3,generic,90,big claws,Agree,dorbs
+34,6250,truth_conditions,disease,4,generic,50,infected ears,Disagree,frams
+34,3751,truth_conditions,part,5,generic,70,legs,Agree,kweps
+34,3823,truth_conditions,accidental,6,generic,10,cracked claws,Disagree,glippets
+34,5520,truth_conditions,disease,7,generic,70,rotten teeth,Agree,trufts
+34,4703,truth_conditions,accidental,8,generic,70,sore teeth,Agree,plovs
+34,4072,truth_conditions,accidental,9,generic,30,itchy tails,Disagree,stups
+34,2439,truth_conditions,disease,10,generic,90,broken legs,Agree,thups
+34,6048,truth_conditions,disease,11,generic,30,burned skin,Disagree,javs
+34,2431,truth_conditions,color,12,generic,90,orange ears,Agree,sapers
+34,3503,truth_conditions,color,13,generic,50,blue claws,Agree,grinks
+34,2328,truth_conditions,color,14,generic,10,orange tails,Disagree,daiths
+34,2330,truth_conditions,accidental,15,generic,90,dusty skin,Agree,crullets
+34,2564,truth_conditions,part,16,generic,10,claws,Disagree,mooks
+34,2895,truth_conditions,part,17,generic,50,feathers,Agree,reesles
+34,2856,truth_conditions,part,18,generic,30,ears,Disagree,morseths
+34,4119,truth_conditions,vague,19,generic,10,long tails,Disagree,zoovs
+34,2393,truth_conditions,color,20,generic,70,purple feathers,Agree,feps
+34,3551,truth_conditions,disease,21,generic,10,torn feathers,Disagree,kazzes
+34,3614,truth_conditions,vague,22,generic,30,rough skin,Disagree,pangolins
+34,2079,truth_conditions,part,23,generic,90,skin,Agree,cheebas
+34,9524,truth_conditions,accidental,24,generic,50,wet fur,Disagree,moxes
+35,5396,truth_conditions,part,0,generic,30,tails,Agree,lorches
+35,2497,truth_conditions,accidental,1,generic,70,dusty skin,Disagree,sapers
+35,2451,truth_conditions,accidental,2,generic,30,wet fur,Disagree,javs
+35,4416,truth_conditions,vague,3,generic,50,long tails,Agree,luzaks
+35,2888,truth_conditions,accidental,4,generic,10,sore legs,Disagree,ackles
+35,2126,truth_conditions,disease,5,generic,50,burned skin,Disagree,feps
+35,2369,truth_conditions,disease,6,generic,10,broken legs,Disagree,stups
+35,2262,truth_conditions,disease,7,generic,30,fungus-covered fur,Disagree,kazzes
+35,2051,truth_conditions,disease,8,generic,70,torn tails,Disagree,crullets
+35,3537,truth_conditions,part,9,generic,50,fur,Disagree,zoovs
+35,3500,truth_conditions,color,10,generic,10,violet skin,Agree,wugs
+35,2597,truth_conditions,vague,11,generic,10,long teeth,Agree,elleps
+35,3346,truth_conditions,color,12,generic,50,blue claws,Agree,pangolins
+35,5370,truth_conditions,part,13,generic,70,claws,Disagree,trufts
+35,3583,truth_conditions,accidental,14,generic,50,swollen ears,Disagree,thups
+35,2920,truth_conditions,color,15,generic,90,orange tails,Disagree,taifels
+35,3261,truth_conditions,vague,16,generic,70,big claws,Disagree,mooks
+35,4007,truth_conditions,color,17,generic,70,pink teeth,Disagree,zorbs
+35,7677,truth_conditions,vague,18,generic,30,rough skin,Disagree,morseths
+35,2149,truth_conditions,color,19,generic,30,purple feathers,Agree,kweps
+35,3404,truth_conditions,part,20,generic,90,legs,Agree,plovs
+35,3054,truth_conditions,vague,21,generic,90,long legs,Agree,blins
+35,3712,truth_conditions,part,22,generic,10,teeth,Disagree,dorbs
+35,1968,truth_conditions,accidental,23,generic,90,itchy tails,Disagree,glippets
+35,2320,truth_conditions,disease,24,generic,90,torn feathers,Disagree,reesles
+36,5465,truth_conditions,color,0,generic,90,orange ears,Agree,reesles
+36,1795,truth_conditions,color,1,generic,50,orange tails,Disagree,glippets
+36,2134,truth_conditions,color,2,generic,30,silver legs,Disagree,daiths
+36,2104,truth_conditions,part,3,generic,10,legs,Disagree,ollers
+36,2151,truth_conditions,color,4,generic,10,yellow fur,Disagree,zorbs
+36,1690,truth_conditions,vague,5,generic,30,curly fur,Disagree,sapers
+36,2823,truth_conditions,disease,6,generic,30,worn-out claws,Disagree,pangolins
+36,1503,truth_conditions,part,7,generic,70,tails,Agree,kazzes
+36,2135,truth_conditions,accidental,8,generic,30,muddy feathers,Disagree,lorches
+36,1383,truth_conditions,part,9,generic,90,ears,Agree,elleps
+36,1639,truth_conditions,part,10,generic,30,claws,Disagree,mooks
+36,1903,truth_conditions,vague,11,generic,70,long teeth,Agree,stups
+36,1815,truth_conditions,vague,12,generic,50,big claws,Disagree,crullets
+36,2064,truth_conditions,disease,13,generic,50,infected ears,Disagree,krivels
+36,1441,truth_conditions,accidental,14,generic,50,swollen ears,Disagree,plovs
+36,1680,truth_conditions,accidental,15,generic,70,sore legs,Agree,ackles
+36,1528,truth_conditions,vague,16,generic,90,smooth feathers,Agree,wugs
+36,1494,truth_conditions,vague,17,generic,10,long legs,Disagree,cheebas
+36,1991,truth_conditions,disease,18,generic,90,torn feathers,Agree,dorbs
+36,1623,truth_conditions,disease,19,generic,70,rotten teeth,Agree,frams
+36,1967,truth_conditions,accidental,20,generic,90,wet fur,Agree,zoovs
+36,1288,truth_conditions,disease,21,generic,10,torn tails,Disagree,grinks
+36,1368,truth_conditions,part,22,generic,50,feathers,Disagree,javs
+36,1872,truth_conditions,color,23,generic,70,purple feathers,Agree,trufts
+36,1777,truth_conditions,accidental,24,generic,10,cracked claws,Disagree,kweps
+37,5849,truth_conditions,vague,0,generic,50,big claws,Agree,pangolins
+37,7920,truth_conditions,vague,1,generic,30,small ears,Disagree,zorbs
+37,6839,truth_conditions,part,2,generic,70,ears,Agree,ackles
+37,4711,truth_conditions,vague,3,generic,70,long teeth,Agree,feps
+37,4312,truth_conditions,accidental,4,generic,50,itchy tails,Agree,plovs
+37,4831,truth_conditions,accidental,5,generic,10,swollen ears,Disagree,stups
+37,4456,truth_conditions,disease,6,generic,10,rotten teeth,Disagree,reesles
+37,4488,truth_conditions,accidental,7,generic,90,sore legs,Agree,glippets
+37,4616,truth_conditions,disease,8,generic,90,infected ears,Agree,zoovs
+37,4239,truth_conditions,vague,9,generic,10,long legs,Disagree,blins
+37,9080,truth_conditions,accidental,10,generic,70,dusty skin,Agree,wugs
+37,5049,truth_conditions,disease,11,generic,50,fungus-covered fur,Agree,sapers
+37,5887,truth_conditions,part,12,generic,10,claws,Disagree,krivels
+37,8792,truth_conditions,part,13,generic,50,teeth,Agree,kweps
+37,4078,truth_conditions,part,14,generic,90,skin,Agree,grinks
+37,4559,truth_conditions,color,15,generic,90,purple feathers,Agree,frams
+37,6007,truth_conditions,color,16,generic,30,silver legs,Disagree,crullets
+37,3808,truth_conditions,vague,17,generic,90,smooth feathers,Agree,dorbs
+37,4426,truth_conditions,color,18,generic,70,violet skin,Agree,moxes
+37,4567,truth_conditions,disease,19,generic,30,burned skin,Disagree,javs
+37,5190,truth_conditions,accidental,20,generic,30,wet fur,Disagree,cheebas
+37,3888,truth_conditions,color,21,generic,50,blue claws,Agree,luzaks
+37,3207,truth_conditions,color,22,generic,10,orange ears,Disagree,thups
+37,3770,truth_conditions,disease,23,generic,70,torn feathers,Agree,daiths
+37,3406,truth_conditions,part,24,generic,30,tails,Disagree,elleps
+38,11804,truth_conditions,disease,0,generic,70,broken legs,Agree,pangolins
+38,8817,truth_conditions,disease,1,generic,10,burned skin,Disagree,thups
+38,2824,truth_conditions,color,2,generic,30,orange tails,Agree,mooks
+38,15959,truth_conditions,color,3,generic,10,pink teeth,Agree,wugs
+38,1672,truth_conditions,accidental,4,generic,90,swollen ears,Agree,daiths
+38,2489,truth_conditions,disease,5,generic,30,fungus-covered fur,Agree,kazzes
+38,2889,truth_conditions,vague,6,generic,90,big claws,Agree,reesles
+38,28048,truth_conditions,part,7,generic,30,ears,Agree,crullets
+38,2453,truth_conditions,vague,8,generic,50,long legs,Agree,glippets
+38,3600,truth_conditions,disease,9,generic,50,worn-out claws,Agree,taifels
+38,1970,truth_conditions,part,10,generic,50,teeth,Agree,trufts
+38,3869,truth_conditions,vague,11,generic,30,smooth feathers,Agree,krivels
+38,1568,truth_conditions,accidental,12,generic,30,muddy feathers,Agree,dorbs
+38,1336,truth_conditions,color,13,generic,70,purple feathers,Agree,javs
+38,3458,truth_conditions,part,14,generic,10,legs,Agree,kweps
+38,1326,truth_conditions,disease,15,generic,90,torn tails,Agree,ollers
+38,1672,truth_conditions,vague,16,generic,70,curly fur,Agree,plovs
+38,2928,truth_conditions,vague,17,generic,10,rough skin,Agree,feps
+38,1735,truth_conditions,color,18,generic,90,silver legs,Agree,moxes
+38,927,truth_conditions,color,19,generic,50,violet skin,Agree,zoovs
+38,1375,truth_conditions,accidental,20,generic,50,wet fur,Agree,zorbs
+38,3736,truth_conditions,accidental,21,generic,10,dusty skin,Agree,stups
+38,1751,truth_conditions,part,22,generic,90,claws,Agree,lorches
+38,1911,truth_conditions,part,23,generic,70,skin,Agree,ackles
+38,1559,truth_conditions,accidental,24,generic,70,sore teeth,Agree,luzaks
+39,3184,truth_conditions,color,0,generic,90,pink teeth,Agree,dorbs
+39,1372,truth_conditions,part,1,generic,70,fur,Agree,daiths
+39,1238,truth_conditions,accidental,2,generic,70,muddy feathers,Disagree,trufts
+39,924,truth_conditions,disease,3,generic,50,rotten teeth,Disagree,glippets
+39,888,truth_conditions,accidental,4,generic,10,cracked claws,Disagree,stups
+39,1223,truth_conditions,color,5,generic,10,blue claws,Agree,ollers
+39,852,truth_conditions,vague,6,generic,70,rough skin,Agree,reesles
+39,1372,truth_conditions,part,7,generic,10,legs,Disagree,javs
+39,752,truth_conditions,part,8,generic,50,tails,Agree,blins
+39,912,truth_conditions,disease,9,generic,70,burned skin,Agree,frams
+39,762,truth_conditions,accidental,10,generic,90,dusty skin,Agree,feps
+39,940,truth_conditions,vague,11,generic,90,long tails,Disagree,zorbs
+39,807,truth_conditions,disease,12,generic,10,broken legs,Agree,cheebas
+39,910,truth_conditions,part,13,generic,30,teeth,Agree,mooks
+39,864,truth_conditions,color,14,generic,30,violet skin,Agree,moxes
+39,764,truth_conditions,accidental,15,generic,30,itchy tails,Agree,pangolins
+39,1011,truth_conditions,vague,16,generic,50,smooth feathers,Disagree,luzaks
+39,636,truth_conditions,accidental,17,generic,50,sore teeth,Agree,kweps
+39,1638,truth_conditions,vague,18,generic,30,long legs,Disagree,plovs
+39,738,truth_conditions,disease,19,generic,30,torn tails,Agree,kazzes
+39,799,truth_conditions,disease,20,generic,90,torn feathers,Agree,wugs
+39,836,truth_conditions,color,21,generic,70,orange ears,Disagree,krivels
+39,911,truth_conditions,vague,22,generic,10,long teeth,Agree,taifels
+39,688,truth_conditions,part,23,generic,90,ears,Agree,morseths
+39,1327,truth_conditions,color,24,generic,50,yellow fur,Agree,grinks
