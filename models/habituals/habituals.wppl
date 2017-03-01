@@ -22,12 +22,6 @@ var bins = {
 }
 
 var data = {
-	speaker: map(function(d){
-			extend(d, {
-				roundedFreq: nearestPriorBin(d.log_times, bins.state),
-				alignedResponse : responseDictionary[d.response]
-			})
-		}, d2.slice(0, d2.length - 1)),
 	prior: {
 		existence: map(function(d){
 				extend(d, {
@@ -37,12 +31,17 @@ var data = {
 		frequency: map(function(d){
 			return d
 		}, d1.slice(0, d1.length - 1))
-	}
+	},
+	speaker: map(function(d){
+			extend(d, {
+				roundedFreq: nearestPriorBin(d.log_times, bins.state),
+				alignedResponse : responseDictionary[d.response]
+			})
+	}, d2.slice(0, d2.length - 1))
 };
 
 var items = levels(data.speaker, "habitual");
 var genders = levels(data.prior.existence, "gender");
-var priorQuestions = ["Q1","Q2"];
 
 var utterancePrior = Infer({model: function(){
 	return uniformDraw([targetUtterance,"silence"])
@@ -68,7 +67,6 @@ var model = function(){
 		s2: uniformDrift({a:0,b:5,r:0.5})
 	}
 
-	var phi = 0
 	var propFemale = 0.5
 
 	foreach(items, function(i){
@@ -107,7 +105,8 @@ var model = function(){
 			male: {
 				existence: {
 					a: shape_alpha(gs.male, ds.male),
-					b: shape_beta(gs.male, ds.male)},
+					b: shape_beta(gs.male, ds.male)
+				},
 				frequency: {
 					mu: mus.male, sigma: sigmas.male
 				}
@@ -124,6 +123,7 @@ var model = function(){
 		};
 
 		mapData({data: itemData.prior.existence}, function(d){
+			// display(i + " " + d.gender + " " + d.avoided_endval)
 			// display(Beta(priorParams[d.gender]["existence"]).score(d.avoided_endval))
 			observe(Beta(priorParams[d.gender]["existence"]), d.avoided_endval)
 		})
@@ -133,54 +133,72 @@ var model = function(){
 			observe(Gaussian(priorParams[d.gender]["frequency"]), d.logval)
 		})
 
-		query.add(["prior","isPresent", i, "male"], beta(priorParams.male.existence))
-		query.add(["prior","isPresent", i, "female"], beta(priorParams.female.existence))
+
+		var existenceProb = {
+			male: beta(priorParams.male.existence),
+			female: beta(priorParams.female.existence)
+		};
+
+		query.add(["prior","isPresent", i, "male"], existenceProb.male)
+		query.add(["prior","isPresent", i, "female"], existenceProb.female)
 
 		query.add(["prior","frequencyGivenPresent", i, "male"], gaussian(priorParams.male.frequency))
 		query.add(["prior","frequencyGivenPresent", i, "female"], gaussian(priorParams.female.frequency))
 
 		// posterior predictive on prior questions
-		// var existenceProb = {
-		// 	male: beta(priorParams.male.existence),
-		// 	female: beta(priorParams.female.existence)
-		// };
-		//
+
 		// var frequencyGivenExistence = {
 		// 	male: gaussian(priorParams.male.frequency),
 		// 	female: gaussian(priorParams.female.frequency)
 		// };
 
 		var statePrior = Infer({model: function(){
-			flip(propFemale) ?
-				flip(
-					categorical({
-					vs: bins.coin,
-					ps: map(function(b) {
-						return probability(Beta(priorParams.female.existence), b) + eps
-					}, bins.coin )
-					})
-				) ?
-				categorical({
-					vs: bins.state,
-					ps: map(function(b){
-						return probability(Gaussian(priorParams.female.frequency), b) + eps
-					}, bins.state)
-				}) : minBin :
-				flip(
-					categorical({
-					vs: bins.coin,
-					ps: map(function(b) {
-						return probability(Beta(priorParams.male.existence), b) + eps
-					}, bins.coin )
-					})
-				) ?
-				categorical({
-					vs: bins.state,
-					ps: map(function(b){
-						return probability(Gaussian(priorParams.male.frequency), b) + eps
-					}, bins.state)
-				}) : minBin
+			flip(0.5) ?
+				flip(existenceProb.female) ?
+					categorical({ vs: bins.state,
+						ps: map(function(b){
+							return probability(Gaussian(priorParams.female.frequency), b) + eps
+						}, bins.state)
+					}) : minBin :
+				flip(existenceProb.male) ?
+					categorical({ vs: bins.state,
+						ps: map(function(b){
+							return probability(Gaussian(priorParams.male.frequency), b) + eps
+						}, bins.state)
+					}) : minBin
 		}})
+
+		// var statePrior = Infer({model: function(){
+		// 	flip(propFemale) ?
+		// 		flip(
+		// 			categorical({
+		// 			vs: bins.coin,
+		// 			ps: map(function(b) {
+		// 				return probability(Beta(priorParams.female.existence), b) + eps
+		// 			}, bins.coin )
+		// 			})
+		// 		) ?
+		// 		categorical({
+		// 			vs: bins.state,
+		// 			ps: map(function(b){
+		// 				return probability(Gaussian(priorParams.female.frequency), b) + eps
+		// 			}, bins.state)
+		// 		}) : minBin :
+		// 		flip(
+		// 			categorical({
+		// 			vs: bins.coin,
+		// 			ps: map(function(b) {
+		// 				return probability(Beta(priorParams.male.existence), b) + eps
+		// 			}, bins.coin )
+		// 			})
+		// 		) ?
+		// 		categorical({
+		// 			vs: bins.state,
+		// 			ps: map(function(b){
+		// 				return probability(Gaussian(priorParams.male.frequency), b) + eps
+		// 			}, bins.state)
+		// 		}) : minBin
+		// }})
 
 		/// RSA model
 		var listener0 = cache(function(utterance, theta) {
@@ -244,7 +262,7 @@ var model = function(){
 	return query
 }
 
-var mhiter = 5000;
+var mhiter = 25000;
 
 var burn = mhiter / 2;
 var posterior = Infer({
@@ -255,7 +273,7 @@ var posterior = Infer({
   verboseLag: mhiter / 20
 })
 
-var outfile = 'results/results-habituals-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+var outfile = 'results/results-habituals-S2-tweakedPrior-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 utils.writeQueryERP(posterior, outfile,
 	["type", "param", "property", "category", "val"])
