@@ -2,14 +2,18 @@
 
 var chain = last(process.argv) // load index as last command line index
 
-var targetUtterance = "some";
+// var targetUtterance = "some";
 // var targetUtterance = "most";
 // var targetUtterance = "all";
-// var targetUtterance = "generic";
+var targetUtterance = "generic";
+var responseDictionary = { "Agree": 1, "Disagree": 0 };
+
 var utterancePrior = Infer({model: function(){return uniformDraw([targetUtterance,"silence"])}});
 var thetaPrior = Infer({model: function(){
-	return uniformDraw([0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
-		0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95])}
+	return uniformDraw([
+		0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
+		0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95
+	])}
 });
 
 var meaning = function(utt,state, theta) {
@@ -25,7 +29,7 @@ var meaning = function(utt,state, theta) {
 var dataPath = "../../data/unfamiliar_generics/"
 
 var interpretationsDataFile = dataPath + "interpretations-trials.csv"
-// var truthJudgmentDataFile = dataPath + "truth-conditions-2-trials.csv"
+var truthJudgmentDataFile = dataPath + "truth-conditions-2-trials.csv"
 var priorDataFile = dataPath + "unfamiliar-priors.csv"
 
 
@@ -33,18 +37,25 @@ var d0 = dataFrame(utils.readCSV(priorDataFile).data,
 			["prevAcross", "prevWithin"]);
 var d1 = dataFrame(utils.readCSV(interpretationsDataFile).data,
  			["response"]);
-
+var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data,
+ 			["stim_prevalence"]);
 
 var data = {
-	listener: map(function(d){
-			extend(d, {roundedPrevalence: alignPrevalence(d.response)})
-		}, d1.slice(0, d1.length - 1)),
 	prior: map(function(d){
 		extend(d, {
 			roundedAcross: avoidEnds(d.prevAcross),
 			roundedWithin: avoidEnds(d.prevWithin),
 		})
-	}, d0.slice(0, d0.length - 1))
+	}, d0.slice(0, d0.length - 1)),
+	listener: map(function(d){
+		extend(d, {roundedPrevalence: alignPrevalence(d.response)})
+	}, d1.slice(0, d1.length - 1)),
+	speaker: map(function(d){
+		extend(d, {
+			roundedPrevalence: round(d.stim_prevalence/100),
+			binaryResponse: responseDictionary[d.response]
+		})
+	}, d2.slice(0, d2.length - 1))
 };
 
 var items = levels(data.prior, "stim_property");
@@ -52,14 +63,16 @@ var items = levels(data.prior, "stim_property");
 var model = function(){
 
 	var speakerOptimality = {
-		s1: uniformDrift({a:0,b:20,r:2})
+		s1: uniformDrift({a:0,b:20,r:2}),
+		s2: uniformDrift({a:0,b:5,r:0.5}) // could also add a different s1 for first task
 	};
 
 	foreach(items, function(item){
 
 		var propertyData = {
+			prior: _.filter(data.prior, {stim_property: item}),
 			listener: _.filter(data.listener, {stim_property: item}),
-			prior: _.filter(data.prior, {stim_property: item})
+			speaker: _.filter(data.speaker, {stim_property: item})
 		}
 
 		var gs = {
@@ -96,7 +109,7 @@ var model = function(){
 			var theta = categorical({
 				vs: bins,
 				ps: map(function(b) {
-					return probability(Beta(priorParams.across), b)
+					return probability(Beta(priorParams.across), b) + eps
 				}, bins )
 			});
  			var component = flip(theta);
@@ -104,7 +117,7 @@ var model = function(){
  				categorical({
  					vs: bins,
  					ps: map(function(b) {
-						return probability(Beta(priorParams.within), b)
+						return probability(Beta(priorParams.within), b) + eps
 					}, bins )
  				}) : 0
  		}});
@@ -124,7 +137,7 @@ var model = function(){
 				var L0 = listener0(utterance, theta);
 				factor(speakerOptimality.s1 * L0.score(state))
 				return utterance
-			}})}, 10000)
+		}})}, 10000)
 
 		var listener1 = cache(function(utterance) {
 			Infer({model: function(){
@@ -133,7 +146,15 @@ var model = function(){
 				var S1 = speaker1(state, theta)
 				observe(S1, utterance)
 				return state
-			}})}, 10000)
+		}})}, 10000)
+
+		var speaker2 = function(freq){
+			Infer({model: function(){
+				var utterance = sample(utterancePrior);
+		    var L1 = listener1(utterance)
+		    factor(speakerOptimality.s2 * L1.score(freq))
+		    return utterance === targetUtterance ? 1 : 0
+		}})}
 
 		var l1prediction = listener1(targetUtterance);
 
@@ -143,9 +164,25 @@ var model = function(){
 
 		query.add(["predictive","listener",targetUtterance, item], expectation(l1prediction) )
 
+		var frequencies = levels(propertyData.speaker, "roundedPrevalence");
+
+		foreach(frequencies, function(freq){
+
+			var frequencyData = _.filter(propertyData.speaker, {roundedPrevalence: freq});
+			var s2prediction = speaker2(freq);
+
+			mapData({data: frequencyData}, function(d){
+				observe(s2prediction, d.binaryResponse)
+			})
+
+			query.add(["predictive","speaker", freq, item], expectation(s2prediction) )
+
 		})
 
+	})
+
 	query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
+	query.add(["param","speakerOptimality","s2","na"], speakerOptimality.s2)
 	return query
 }
 
@@ -160,7 +197,7 @@ var posterior = Infer({
   verboseLag: mhiter / 20
 })
 
-var outfile = 'results-novelL1-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+var outfile = 'results-novelL1-S2-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 utils.writeQueryERP(posterior, "results/" + outfile,
 	["type", "param", "property", "category", "val"])
