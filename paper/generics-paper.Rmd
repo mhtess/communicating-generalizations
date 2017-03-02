@@ -1,6 +1,6 @@
 ---
-title: "Communicating generalizations"
-short-title: "Communicating generalizations"
+title: "Words are vague: Communicating generalizations about categories"
+short-title: "Communicating generalizations about categories"
 output: kmr::apa_manuscript
 csl: apa6.csl
 bibliography: generics.bib
@@ -63,19 +63,18 @@ Intuition tells us that generalizations in language convey something about the p
 Existing work in both adults and children suggests that choosing to communicate a generalization can be used to exagerate evidence [@Cimpian2010; @Brandone2014].
 
 In addition to having manifold interpretations, what makes linguistic generalizations true or false (i.e., their truth conditions) is also a mystery.
-What animals lay eggs? 
-Well, *Birds lay eggs* even though only about half of them do (females).
+The statement *Birds lay eggs* is true even though only about half of them do (namely, the females).
 Half of birds are also female, and yet *Birds are female* sounds like a strange thing to say.
 *Mosquitos carry malaria* is a true statement despite the prevalence of carrying malaria among mosquitos being a just a fraction of 1\%, while *Canadians are right-handed* is also weird, even though the vast majority of them are. 
 
 How can generalizations in language have such flexible truth conditions while simultaneously carrying intuitive and, at times, very strong implications?
-This question has been investigated by psychologists, linguists, and philosophers since @Carlson1977, and has had the narrow focus of generalizations about *categories*, so-called *generic language*.
-Here, we provide a unified theory of all generalizations conveyed in language.
-We test out theory on 3 case studies: generalizations about categories, events, and causal forces.
+This question has been investigated by psychologists, linguists, and philosophers since @Carlson1977.
+Here, we provide a unified formal theory of generalizations conveyed in language.
+We test theory on the preeminent case study of linguistic generalizations: generic language, or generalizations about categories.
 Our theory formalizes the idea that the core meaning of a linguistic generalization is simple, but underspecified, and that general principles of communication may be used to resolve the precise meaning in context. 
 To be precise, we develop a computational model that describes pragmatic reasoning about the propensity required to assert the generaization.  
 We find that this formalism resolves known philosophical and empirical puzzles.
-We also provide the first set of experimental results about linguistic generalizations about events and causal forces, so called *habitual* and *causal statements*.
+<!--We also provide the first set of experimental results about linguistic generalizations about events and causal forces, so called *habitual* and *causal statements*.-->
 
 In Section 1, we introduce a unified formalism for generalizations and a information-theoric communicative theory of generalizations in language.
 In Section 2, we conduct a set of experiments to test the *truth conditions* of familiar generalizations about cagegories (generic statements), and find our model predicts key patterns in human judgments
@@ -173,12 +172,12 @@ Striking generics (e.g. \emph{Mosquitos carry malaria}) show characteristics of 
 The fact that generics about different properties license different kinds of inferences is taken as evidence that the generics themselves represent different kinds of relations. Statistical information takes a backseat to the conceptual structure.
 
 
-## The Pragmatic Perspective
+# A Formal Theory of Generalizations in Language
 
 We find both the statistical and conceptual accounts compelling, but an important perspective is missing.
-We note that generic language is not unique in its flexibility.
+Linguistic generalizations are not unique in their flexibility.
 Understanding language in general depends upon assumptions interlocutors make about each other and what content is under discussion. 
-The pragmatic lens reveals that utterances carry a mosaic of interpretations with a complex sensitivity to context [@Clark1996; @Grice1975; @Levinson2000]. 
+Viewing language understanding as a social reasoning process reveals that utterances carry a mosaic of interpretations with a complex sensitivity to context [@Clark1996; @Grice1975; @Levinson2000]. 
 Can the puzzles of generic language be understood as effects of pragmatic reasoning?
 If so, we may be able to get away with a relatively simple, statistical,  semantic theory.
 Abstract mental representations, then, may be the conceptual backdrop against which generic language is interpreted. 
@@ -192,51 +191,60 @@ We formalize this hypothesis in the Rational Speech Act (RSA) theory---a formal,
 RSA is derived from social reasoning, formalized as recursive Bayesian inference between speaker and listener [@Frank2012; @Goodman2013; @Goodman2016; see also, @Franke2009; @Franke2015].
 @Goodman2016 provides a good introduction to the RSA framework and Appendix A presents a brief tutorial on RSA for the reader unfamiliar.
 
-We follow the treatment of RSA applied to vague adjectives (e.g.~\emph{tall}), where a semantic variable is left underspecified [@Lassiter2013; @Lassiter2015].
-We model the interpretation of generic statements by a pragmatic listener ($L_1$), concerned with learning the prevalence of a certain property in a certain category, $x=P(F \mid K)$.
-She resolves the likely prevalence $x \in [0, 1]$ upon hearing a generic utterance $u$, by integrating her prior beliefs about $x$ with the generative process of the utterance -- an informative speaker ($S_1$).
-\begin{eqnarray}
-L_{1}(x , \theta \mid u) &\propto& S_{1}(u \mid x, \theta) \cdot P(x) \cdot P(\theta) \label{eq:L1}
-\end{eqnarray}
-In addition to not knowing $x$ \emph{a priori}, the listener does not know the value of the prevalence threshold, $\theta$, used to establish the meaning of the generic (as described below). Because the speaker's choice of utterance can depend on the threshold, the listener must reason about the threshold as well, based on her prior distribution over possible thresholds $P(\theta)$.
-In principle, thresholds could be learned over time for different contexts, but here we assume the listener has no informative knowledge about the semantic variable: $\theta \sim \text{Uniform([0, 1])}$.
-
-To resolve an appropriate meaning, the listener uses her background knowledge about the property $P(x)$ and her intuitive theory of a speaker $S_1$ as a rational actor who has the goal of providing information to a hypothetical literal listener ($L_0$):
-\begin{eqnarray}
-S_{1}(u \mid x, \theta) &\propto& \exp{(\lambda_1 \cdot \ln  ( {L_{0}(x \mid u, \theta)} ) ) }\label{eq:S1}
-\end{eqnarray}
-The listener believes the speaker $S_1$ knows the threshold $\theta$.
-That is, the speaker had a particular meaning in mind, and the listener can use pragmatic reasoning to help resolve that meaning [@Lassiter2013; @Lassiter2015; @GoodmanLassiter]. 
-
-The proportionality in Eq.~\ref{eq:S1} implies normalization over a set of alternative utterances.
-We consider the simplest set of alternatives, including only the production of a generic utterance and the possibility of staying quiet (and we assume no difference in production cost between these alternatives). 
-We adopt the simplest meaning of a generic utterance in terms of prevalence, a threshold function: $\denote{\text{K F}}(x, \theta)=x>\theta$.
-The silent or \emph{null} utterance alternative carries no information (i.e.~$\denote{null}(x, \theta)=T$) and produces a posterior distribution in the listener identical with the prior.^[
-This alternative can be realized in at least two other ways: the speaker could have said the negation of the utterance (i.e. \emph{It is not the case that Ks have F.}) or the negative generic (i.e. \emph{Ks do not have F.}). All results reported are similar for these two alternatives, and we use the alternative of the \emph{null} utterance for simplicity.
-]
-The \emph{null} utterance alternative gives the generic its communicative force; the option of staying silent makes the generic utterance into a \emph{speech-act}.
-
+The model begins with a simple Bayesian agent---a literal listener---who updates her prior beliefs $P(x)$ according to the truth-functional meaning of the utterance heard $\denote{u}$.
 \begin{eqnarray}
 L_{0}(x \mid u, \theta) &\propto& {\delta_{\denote{u}(x, \theta)} \cdot P(x)} \label{eq:L0}
 \end{eqnarray}
+For the generic sentence, we assign the simplest possible meaning, a threshold on the prevalence: $\denote{u_{generic}} = P(F\mid K)>\theta$.
+The prior distribution $P(x)$ is a distribution over likely states of the world. 
+For the case of understanding a generic (e.g., *Dogs are friendly*), the relevant dimension for the adopted semantics is the prevalence of property within the category (e.g., the \% of dogs that are friendly).
+The likelihood $\delta_{\denote{u}(x)}$ is the Kronecker delta function returning $1$ for states $x$ compatible with utterance $u$ (i.e., where the prevalence $x$ is above the threshold $\theta$), and $0$ otherwise.
+The literal listener is a hypothetical agent who knows the threshold $\theta$.
 
-The pragmatic listener $L_1$ (Eq.~\ref{eq:L1}) is a model of generic interpretation: Upon hearing a generic, what prevalence is a listener likely to infer?
-This model assumes a threshold semantics, but doesn't require us to specify the threshold \emph{a priori}: It is inferred with pragmatic reasoning.
-We can now imagine a speaker who reasons about this kind of listener:
+Next is a hypothetical speaker, who reasons about the literal listener when deciding which utterance to produce.
+\begin{eqnarray}
+S_{1}(u \mid x, \theta) &\propto& \exp{(\lambda_1 \cdot \ln {L_{0}(x \mid u, \theta)} ) }\label{eq:S1}
+\end{eqnarray}
+This speaker $S_1$ also knows the threshold $\theta$ and chooses utterances to convey information to the literal listener $L_0$ .
+Following RSA, this speaker is an approximately rational (speech-)actor with degree with rationality governed by parameter $\lambda_1$.
 
+To understand how language is interpreted pragmatically, we model a pragmatic listener $L_1$ who updates her prior beliefs $P(x)$ by reasoning about the generative process of the utterance, the speaker model $S_1$.
+\begin{eqnarray}
+L_{1}(x , \theta \mid u) &\propto& S_{1}(u \mid x, \theta) \cdot P(x) \cdot P(\theta) \label{eq:L1}
+\end{eqnarray}
+Following @Lassiter2013, we model the pragmatic listener as having uncertainty about the threshold: $P(\theta)$.
+Though the listener doesn't know the threshold *a priori*, she resolves the threshold (i.e., the meaning) in context by integrating her prior beliefs $P(x)$ with the basic principles of communication to be truthful and informative, instantiated in her model of the speaker $S_1$ [@Lassiter2015; @GoodmanLassiter].
+In principle, thresholds could be learned over time for different contexts, but here we assume the listener has no informative knowledge about the semantic variable $P(\theta) = \text{Uniform([0, 1])}$.
+The pragmatic listener $L_1$ (Eq. \ref{eq:L1}) is thus a model of *generic interpretation*: Upon hearing a generic, how should a listener update her beliefs?
+
+To model *generic production*, we introduce a model of the speaker who reasons about this kind of listener:
 \begin{equation} 
-S_{2}(u \mid x) \propto  \exp{(\lambda_2 \cdot \ln \int_{\theta} L_{1}(x , \theta \mid u) \diff \theta ) }
+S_{2}(u \mid k) \propto \exp{(\lambda_2 \cdot {\mathbb E}_{x\sim P_{k}} \ln{ \int_{\theta} L_1(x, \theta \mid u)}  \diff \theta ) }
 \label{eq:S2}
 \end{equation}
+This speaker model is similar to the simpler $S_1$ speaker model but instead reasons about the pragmatic listener $L_1$ with two additional modifications. 
+First, the speaker is not assumed to have a particular state of the world $x$ that he wants to communicate to the listener.
+Instead, this speaker has a belief distribution governed by his knowlege of category $k$ over the likely states of the world $x\sim P_k$, and information gain is calculated with respect to communicating that belief distribution to the listener.^[
+As a special case of this belief distribution, one could imagine a delta function at some particular level of prevalence (e.g., 50\% of birds lay eggs).
+We use a more general formulation to allow for the case when the speaker only has a vague sense of the prevalence of the property in the category.
+]
+Second, the speaker is not assumed to know the value of the threshold $\theta$.
+All that is assumed is that the listener infers the value of this variable; the speaker thus integrates over the likely values the listener will infer.
 
-This speaker considers the thought-processes of a listener who understands generics ($L_1$, Eq.~\ref{eq:L1}) and decides if the generic is a good (albeit, vague) way to describe the  prevalence $x$. 
-$S_2$'s decision (like the simpler $S_1$'s decision) is with respect to the alternative of saying nothing: He will choose to produce the generic when the true prevalence $x$ is more likely under $L_1$'s posterior than under her prior. 
-Critically, in contrast to the hypothetical speaker $S_1$, speaker $S_{2}$ doesn't actually know what the generic means (i.e. doesn't have access to the threshold $\theta$), but knows that it will be inferred by $L_{1}$, and integrates over the likely values she'll consider.
-In line with the Rational Speech Act theory, we assume this speaker is a soft-max optimal speaker, with degree of optimality governed by parameter $\lambda_2$.
-$S_2$ is thus a mapping from prevalence $x$ to the probability of producing a generic utterance. 
+The proportionalities in Eqs. \ref{eq:S1}, \ref{eq:S2} imply normalization over a set of alternative utterances.
+As a first test of this theory, we consider the simplest set of alternatives, including only the possibility of staying quiet in addition to saying the generic (and we assume no difference in production cost between these alternatives). 
+We adopt the simplest meaning of a generic utterance in terms of prevalence, a threshold function: $\denote{u_{gen}}(x, \theta)=x>\theta$.
+The silent or \emph{null} utterance alternative carries no information (i.e., $\denote{u_{null}}(x, \theta)=T$) and produces a posterior distribution in the listener identical with the prior.^[
+This alternative can be realized in at least two other ways: the speaker could have said the negation of the utterance (i.e., *It is not the case that Ks F.*) or the negative generic (i.e., *Ks do not F.*). All results reported are similar for these two alternatives, and we use the alternative of the *null* utterance for simplicity.
+]
 Since the only alternative to producing the generic is to stay silent, $S_2$ is interpreted as a model of endorsement, felicity, or truth judgments [@Degen2014].
+
+A similar model structure has been used to explain the context-sensitivity of gradable adjectives like *tall* [@Lassiter2013]. 
+The model thus makes the claim that generic language is *vague language*, and that the same principles that govern interpreting vague language also are at play in interpreting generic language.
+This model assumes a threshold semantics which has been argued before as a simple and useful semantics for generics [@Cohen1999], but doesn't require us to specify the threshold \emph{a priori}: It is inferred with pragmatic reasoning.
 We implemented this model in the probabilisitic programming language WebPPL [@dippl], and a fully specified version of the model can be found at \url{http://forestdb.org/models/generics.html}
 
+<!--S_{2}(u \mid k) \propto  \exp{(\lambda_2 \cdot \ln \int_{\theta} L_{1}(x , \theta \mid u) \diff \theta ) }-->
 
 This model makes the prediction that the interpretation of a generic statement (and hence, it's corresponding truth judgment) depends on the prior on prevalence $P(x)$.
 We can explore the model by running simulations of $L_1$ and $S_2$ under various schematic priors.
