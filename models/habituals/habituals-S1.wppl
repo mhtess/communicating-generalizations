@@ -132,17 +132,18 @@ var model = function(){
 			observe(Gaussian(priorParams[d.gender]["frequency"]), d.logval)
 		})
 
-		query.add(["prior","isPresent", i, "male"], beta(priorParams.male.existence))
-		query.add(["prior","isPresent", i, "female"], beta(priorParams.female.existence))
+		var existenceProb = {
+			male: beta(priorParams.male.existence),
+			female: beta(priorParams.female.existence)
+		};
+
+		query.add(["prior","isPresent", i, "male"], existenceProb.male)
+		query.add(["prior","isPresent", i, "female"], existenceProb.female)
 
 		query.add(["prior","frequencyGivenPresent", i, "male"], gaussian(priorParams.male.frequency))
 		query.add(["prior","frequencyGivenPresent", i, "female"], gaussian(priorParams.female.frequency))
 
 		// posterior predictive on prior questions
-		// var existenceProb = {
-		// 	male: beta(priorParams.male.existence),
-		// 	female: beta(priorParams.female.existence)
-		// };
 		//
 		// var frequencyGivenExistence = {
 		// 	male: gaussian(priorParams.male.frequency),
