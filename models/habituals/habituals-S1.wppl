@@ -150,35 +150,19 @@ var model = function(){
 		// };
 
 		var statePrior = Infer({model: function(){
-			flip(propFemale) ?
-				flip(
-					categorical({
-					vs: bins.coin,
-					ps: map(function(b) {
-						return probability(Beta(priorParams.female.existence), b) + eps
-					}, bins.coin )
-					})
-				) ?
-				categorical({
-					vs: bins.state,
-					ps: map(function(b){
-						return probability(Gaussian(priorParams.female.frequency), b) + eps
-					}, bins.state)
-				}) : minBin :
-				flip(
-					categorical({
-					vs: bins.coin,
-					ps: map(function(b) {
-						return probability(Beta(priorParams.male.existence), b) + eps
-					}, bins.coin )
-					})
-				) ?
-				categorical({
-					vs: bins.state,
-					ps: map(function(b){
-						return probability(Gaussian(priorParams.male.frequency), b) + eps
-					}, bins.state)
-				}) : minBin
+			flip(0.5) ?
+				flip(existenceProb.female) ?
+					categorical({ vs: bins.state,
+						ps: map(function(b){
+							return probability(Gaussian(priorParams.female.frequency), b) + eps
+						}, bins.state)
+					}) : minBin :
+				flip(existenceProb.male) ?
+					categorical({ vs: bins.state,
+						ps: map(function(b){
+							return probability(Gaussian(priorParams.male.frequency), b) + eps
+						}, bins.state)
+					}) : minBin
 		}})
 
 		/// RSA model
@@ -224,7 +208,7 @@ var model = function(){
 	return query
 }
 
-var mhiter = 5000;
+var mhiter = 75000;
 
 var burn = mhiter / 2;
 var posterior = Infer({
@@ -235,7 +219,7 @@ var posterior = Infer({
   verboseLag: mhiter / 20
 })
 
-var outfile = 'results/results-habituals-s1-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+var outfile = 'results/results-habituals-s1-tweakedPrior-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 utils.writeQueryERP(posterior, outfile,
 	["type", "param", "property", "category", "val"])
