@@ -1,0 +1,147 @@
+var convertParams = function(betaParams){
+  var g = betaParams.g, d = betaParams.d;
+  return {a: g*d, b: (1-g) * d}
+};
+
+var probability = function(Dist, x) {
+    return Math.exp(Dist.score(x));
+}
+
+var distProbs = function(dist, supp) {
+  return map(function(s) {
+    return probability(dist, s);
+  }, supp)
+}
+
+var KL = function(p, q, supp) {
+  var P = distProbs(p, supp), Q = distProbs(q, supp);
+  var diverge = function(xp,xq) {
+    return xp == 0 ? 0 : (xp * Math.log(xp / xq) );
+  };
+  return sum(map2(diverge,P,Q));
+};
+
+var targetUtterance = "generic";
+
+var utterancePrior = Infer({model: function(){
+  return uniformDraw([targetUtterance,"silence"])
+}});
+var thetaPrior = Infer({model: function(){
+ return uniformDraw([
+   0.01, 0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
+   0.5, 0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95
+ ])}
+});
+
+var bins = [
+  0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
+  0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,0.99
+];
+
+
+
+var meaning = function(utt,state, theta) {
+  return utt=="generic"? state > theta :
+         utt=="generic is false"? state<=theta :
+         utt=='silence'? true :
+         utt=='some'? state>0:
+         utt=='most'? state>= 0.5:
+         utt=='all'? state >= 0.99:
+         true
+}
+
+var theta = 0.3, priorParams = convertParams({g: 0.75, d: 10});
+var withinKind_params = convertParams({g:0.3, d:20});
+
+var statePrior = Infer({model: function(){
+  var component = flip(theta);
+  return component ?
+    categorical({
+      vs: bins,
+      ps: map(function(b) {
+        return probability(Beta(priorParams), b) + Number.EPSILON
+      }, bins )
+    }) :
+    categorical({
+      vs: bins,
+      ps: map(function(b) {
+        return probability(Beta({a:1,b:100}), b) + Number.EPSILON
+      }, bins )
+    })
+    // 0
+}});
+
+var speakerBeliefs = Infer({model: function(){
+ return categorical({
+     vs:bins,
+     ps:map(function(b) {
+       return probability(Beta(withinKind_params),b) + Number.EPSILON },
+       bins)
+   })
+}});
+
+var speakerOptimality = {
+  s1: 5,
+  s1a: 4,
+  s2: 1.5
+}
+/// (ALTERNATIVE) UNLIFTED THRESHOLD MODEL
+var alt_listener0 = cache(function(utterance) {
+  Infer({model: function(){
+    var state = sample(statePrior)
+    var theta = sample(thetaPrior)
+    var m = meaning(utterance, state, theta)
+    condition(m)
+    return state
+ }})}, 10000)
+
+var alt_speaker1 = cache(function(speakerBeliefs) {
+  Infer({model: function(){
+    var utterance = sample(utterancePrior);
+    var L0 = alt_listener0(utterance)
+    var _kl = KL(speakerBeliefs, L0, L0.support());
+    factor(speakerOptimality.s1a  * -1 * _kl)
+    return utterance === targetUtterance ? 1 : 0
+  }})}, 10000)
+////
+
+/// LIFTED THRESHOLD HOLD
+var listener0 = cache(function(utterance, theta) {
+  Infer({model: function(){
+    var state = sample(statePrior)
+    var m = meaning(utterance, state, theta)
+    condition(m)
+    return state
+ }})}, 10000)
+
+var speaker1 = cache(function(state, theta) {
+  Infer({model: function(){
+    var utterance = sample(utterancePrior);
+    var L0 = listener0(utterance, theta);
+    factor(speakerOptimality.s1 * L0.score(state))
+    return utterance
+  }})}, 10000)
+
+var listener1 = cache(function(utterance) {
+  Infer({model: function(){
+    var state = sample(statePrior);
+    var theta = targetUtterance === "generic" ? sample(thetaPrior) : -99;
+    var S1 = speaker1(state, theta)
+    observe(S1, utterance)
+    return state
+  }})}, 10000)
+
+var speaker2 = function(speakerBeliefs){
+  Infer({model: function(){
+    var utterance = sample(utterancePrior);
+    var L1 = listener1(utterance)
+    // factor(speakerOptimality.s2 * L1.score(speakerBeliefs))
+    var _kl = KL(speakerBeliefs, L1, L1.support());
+    factor(speakerOptimality.s2  * -1 * _kl)
+    return utterance === targetUtterance ? 1 : 0
+ }})}
+
+ display("speaker 1 " + expectation(alt_speaker1(speakerBeliefs)))
+ display("speaker 2 " + expectation(speaker2(speakerBeliefs)))
+ // speaker1(0.01, 0.01)
+ // listener1("generic")
