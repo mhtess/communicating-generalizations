@@ -67,16 +67,30 @@ var model = function(){
 
 		// prior parameters
 		var theta = uniformDrift({a: 0, b: 1, width:0.2})
-		var g = uniformDrift({a: 0, b: 1, width: 0.2})
-		var d = uniformDrift({a: 0, b: 50, width: 5})
-		var priorParams = {a: shape_alpha(g, d), b: shape_beta(g, d)};
+		// var g = uniformDrift({a: 0, b: 1, width: 0.2})
+		// var d = uniformDrift({a: 0, b: 50, width: 5})
+		// var priorParams = {a: shape_alpha(g, d), b: shape_beta(g, d)};
+
+		var priorParams = {
+			a: uniformDrift({a: 1, b: 100, width: 2}),
+			b: uniformDrift({a: 1, b: 100, width: 2})
+		};
+
+		var nullParams = {a:1,b:100};
 
 		// observe structured prior data
 		mapData({data: propertyData.prior}, function(d){
 			var di = d.roundedPrevalence;
-			factor(Math.log(
-				(di==0.01 ? 1 : 0)*(1-theta)+
-				(di> 0.01 ? 1 : 0) * theta * Math.exp(Beta(priorParams).score(di))))
+			factor(
+			// 	Math.log(
+			// 	(di==0.01 ? 1 : 0)*(1-theta)+
+			// 	(di> 0.01 ? 1 : 0) * theta * probability(Beta(priorParams), di)
+			// )
+			Math.log(
+			(1-theta)+ probability(Beta(nullParams), di) +
+			theta * probability(Beta(priorParams), di)
+			)
+		)
 		})
 
 		// observe structured prior data
@@ -97,9 +111,11 @@ var model = function(){
 			return component ?
 				categorical({
 					vs: bins,
-					ps: map(function(b) { return probability(Beta(priorParams), b)  +
-			Number.EPSILON }, bins )
-				}) : 0
+					ps: map(function(b) { return probability(Beta(priorParams), b)  + eps }, bins )
+				}) : categorical({
+					vs: bins,
+					ps: map(function(b) { return probability(Beta(nullParams), b) }, bins )
+				})
 		}});
 
 		// var statePrior = Infer({model: function(){
@@ -125,14 +141,14 @@ var model = function(){
 		    return state
 		 }})}, 10000)
 
-		var speaker1 = cache(function(speakerBeliefs) {
+		var speaker1 = function(speakerBeliefs) {
 			Infer({model: function(){
 		    var utterance = sample(utterancePrior);
 		    var L0 = listener0(utterance);
 				var _kl = KL(speakerBeliefs, L0, speakerBeliefs.support());
 				factor(speakerOptimality.s1  * -1 * _kl)
 		    return utterance === targetUtterance ? 1 : 0
-			}})}, 10000)
+			}})}
 
 		var categories = levels(propertyData.speaker, "Category");
 
@@ -143,9 +159,13 @@ var model = function(){
 				prior: _.filter(propertyData.prior, {Category: k})
 			};
 
-			var g_k = uniformDrift({a: 0, b: 1, width: 0.2})
-			var d_k = uniformDrift({a: 0, b: 50, width: 5})
-			var withinKind_params = {a: shape_alpha(g_k, d_k), b: shape_beta(g_k, d_k)};
+			// var g_k = uniformDrift({a: 0, b: 1, width: 0.2})
+			// var d_k = uniformDrift({a: 0, b: 50, width: 5})
+			// var withinKind_params = {a: shape_alpha(g_k, d_k), b: shape_beta(g_k, d_k)};
+			var withinKind_params = {
+				a: uniformDrift({a: 1, b: 100, width: 2}),
+				b: uniformDrift({a: 1, b: 100, width: 2})
+			};
 
 			mapData({data: categoryData.prior}, function(d){
 				var di = d.roundedPrevalence;
@@ -165,8 +185,7 @@ var model = function(){
 			var speakerBeliefs = Infer({model: function(){
 				return categorical({
 						vs:bins,
-						ps:map(function(b) { return probability(Beta(withinKind_params),b)+
-			Number.EPSILON }, bins )
+						ps:map(function(b) { return probability(Beta(withinKind_params),b)+ eps }, bins )
 					})
 			}});
 
