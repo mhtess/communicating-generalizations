@@ -71,6 +71,7 @@ var model = function(){
 		var g = uniformDrift({a: 0, b: 1, width: 0.2})
 		var d = uniformDrift({a: 0, b: 100, width: 5})
 		var priorParams = {a: shape_alpha(g, d), b: shape_beta(g, d)};
+		var nullParams = {a:1,b:100};
 
 		// observe structured prior data
 		mapData({data: propertyData.prior}, function(d){
@@ -87,7 +88,6 @@ var model = function(){
 		)
 		})
 
-		var nullParams = {a:1,b:100};
 
 		// observe structured prior data
 		// mapData({data: propertyData.prior}, function(d){
