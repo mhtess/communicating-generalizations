@@ -1,4 +1,4 @@
-// time webppl novel-L0-S1.wppl --require utils 0
+// time ~/webppl-paul/webppl novel-L0-S1.wppl --require utils 0
 
 var chain = last(process.argv) // load index as last command line index
 
@@ -192,12 +192,13 @@ var posterior = Infer({
   method: "incrementalMH",
   samples: mhiter, burn: burn,
   verbose: T,
-  verboseLag: mhiter / 20
+  verboseLag: mhiter / 20,
+	stream:'results/results-novelL0-S1-allowUPriors-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.json'
 })
 
-var outfile = 'results-novelL0-S1-allowUPriors-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+// var outfile = 'results-novelL0-S1-allowUPriors-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+//
+// utils.writeQueryERP(posterior, "results/" + outfile,
+// 	["type", "param", "property", "category", "val"])
 
-utils.writeQueryERP(posterior, "results/" + outfile,
-	["type", "param", "property", "category", "val"])
-
-display("written to " + outfile)
+// display("written to " + outfile)
