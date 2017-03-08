@@ -1,0 +1,130 @@
+var chain = last(process.argv) // load index as last command line index
+
+var betaShape = function(p){
+  return {a: p.g * p.d, b: (1-p.g) * p.d}
+};
+
+var responseDictionary = { "agree-key": true,
+"disagree-key": false };
+
+var dataPath = "../../data/familiar_generics/"
+var truthJudgmentDataFile = dataPath + "naturalGenerics-trials-formatted.csv"
+var priorDataFile = dataPath + "naturalGenerics-prior-trials-n57.csv"
+var cueValidityDataFile = dataPath + "cueValidity.csv"
+
+var d0 = dataFrame(utils.readCSV(priorDataFile).data, ["prevalence"]);
+var d1 = dataFrame(utils.readCSV(truthJudgmentDataFile).data);
+var d2 = dataFrame(utils.readCSV(cueValidity).data, ["response"])
+
+var data = {
+	speaker: map(function(d){
+			extend(d, {binaryResponse: responseDictionary[d.response]})
+		}, d1.slice(0, d1.length - 1)),
+	prevalence: map(function(d){
+		extend(d, {
+			roundedPrevalence: avoidEnds(d.prevalence/100),
+			counts: Math.round(d.prevalence)
+		})
+	}, d0.slice(0, d0.length - 1)),
+  cue: map(function(d){
+    extend(d, {
+      roundedPrevalence: avoidEnds(d.response)
+    })
+  }, d2.slice(0, d2.length - 1))
+};
+
+var properties = levels(data.speaker, "Property");
+
+var logisticFunction = function(y) {
+   return 1 / (1 + exp(-y));
+};
+
+var regression = function(){
+
+  var bs = {
+    intercept: uniformDrift({a: 0, b: 1, width: 0.2}),
+    prevalence: uniformDrift({a: 0, b: 1, width: 0.2}),
+    cue: uniformDrift({a: 0, b: 1, width: 0.2})
+  }
+
+  var linearFunction = function(xs){
+     return bs.intercept +
+     bs.prevalence * xs.prevalence +
+     bs.cue * xs.cue;
+  };
+
+  var sigma = uniformDrift({a: 0, b: 1, width: 0.2});
+
+  foreach(properties, function(p){
+
+    var categories = levels(propertyData.speaker, "Category");
+
+    foreach(categories, function(k){
+
+      var itemData = {
+				speaker: _.filter(data.speaker, {Category: k, Property: p}),
+				prevalence: _.filter(data.prevalence, {Category: k, Property: p}),
+        cue: _.filter(data.cue, {Category: k, Property: p})
+			};
+
+      // analyze prevalence data
+      var prevalenceParams = {
+        g: uniformDrift({a: 0, b: 1, width: 0.2}),
+        d: uniformDrift({a: 0, b: 100, width: 5})
+      };
+
+			var prevalenceShapes = betaShape(prevalenceShapes);
+
+      mapData({data: itemData.prevalence}, function(d){
+				observe(Beta(prevalenceShapes), d.roundedPrevalence)
+			});
+
+      // analyze cue validity data
+      var cueParams = {
+        g: uniformDrift({a: 0, b: 1, width: 0.2}),
+        d: uniformDrift({a: 0, b: 100, width: 5})
+      };
+
+      var cueShapes = betaShape(cueParams);
+
+      mapData({data: itemData.cue}, function(d){
+				observe(Beta(prevalenceShapes), d.roundedPrevalence)
+			});
+
+      var predictors = {
+        prevalence: beta(prevalenceShapes);
+        cue: beta(cueShapes)
+      };
+
+      query.add(["predictive", "prevalence", p, k],
+    predictors.prevalence)
+    query.add(["predictive", "cue", p, k],
+  predictors.cue)
+
+      var prediction = linearFunction(predictors);
+      var prediction_withNoise = gaussian(prediction, sigma);
+      var logisticPrediction = Bernoulli({p:
+        logisticFunction(prediction_withNoise)
+      })
+
+      var genericsData = _.map(itemData.speaker, "binaryResponse");
+
+      mapData({data: genericsData}, function(d){
+        observe(logisticPrediction, d)
+      })
+
+      query.add(["predictive","generic", p, k], expectation(logisticPrediction) )
+    })
+
+  })
+
+  query.add(["param", "beta", "intercept", "NA"],
+bs.intercept)
+  query.add(["param", "beta", "prevalence", "NA"],
+  bs.prevalence)
+  query.add(["param", "beta", "cue", "NA"],
+  bs.cue)
+  query.add(["param", "sigma", "NA", "NA"], sigma)
+
+  return query
+}
