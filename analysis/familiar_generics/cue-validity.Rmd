@@ -1,0 +1,58 @@
+---
+title: "Cue validity data"
+output: html_notebook
+---
+
+
+```{r}
+library(langcog)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(coda)
+library(knitr)
+library(ggthemes)
+library(rwebppl)
+library(jsonlite)
+theme_set(theme_few())
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+project.path <- "~/Documents/research/generics-paper/"
+data.path <- "data/familiar_generics/"
+model.path <- "models/generics/"
+```
+
+```{r}
+d.cv <- read.csv(paste(project.path, "mturk/cue-validity-1/round1/cue-validity-1-trials.csv", sep = ""))
+```
+
+```{r}
+d.target.items <- fromJSON(paste(project.path, data.path, "originalStims.json", sep = "")) %>%
+  mutate(item = paste(category, property))
+```
+
+```{r}
+d.cv.targets <- d.cv %>%
+  mutate(property = gsub("&quotechar", "'", property), 
+         item = paste(category, property)) %>%
+  filter( item %in% d.target.items$item)
+```
+
+
+```{r fig.height = 6}
+d.cv.targets %>%
+  ggplot(., aes(x = response))+
+  geom_histogram()+
+  facet_wrap(~ property + category)
+```
+
