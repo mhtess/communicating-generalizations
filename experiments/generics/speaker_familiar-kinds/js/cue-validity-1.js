@@ -23,7 +23,7 @@ function make_slides(f) {
     present : exp.stimuli,
     present_handle : function(stim) {
       $(".err").hide();
-
+      this.startTime = Date.now();
       this.stim = stim;
 
       $(".prompt").html(
@@ -38,6 +38,7 @@ function make_slides(f) {
       if (exp.sliderPost == null) {
         $(".err").show();
       } else {
+        this.rt = Date.now() - this.startTime;
         this.log_responses();
         _stream.apply(this);
       }
@@ -52,9 +53,11 @@ function make_slides(f) {
     log_responses : function() {
       exp.data_trials.push({
         "trial_type" : "cue_validity",
+        "trial_num": exp.fixedStims.indexOf(this.stim) + 1,
         "category": this.stim.category,
         "property": this.stim.property,
-        "response": exp.sliderPost
+        "response": exp.sliderPost,
+        "rt": this.rt
       });
     }
   });
@@ -132,6 +135,7 @@ function init() {
   }
   // 30 target items
   exp.stimuli = _.shuffle(exp.stimuli.concat(originalTargets));
+  exp.fixedStims = exp.stimuli.slice(0);
 
   exp.system = {
       Browser : BrowserDetect.browser,
