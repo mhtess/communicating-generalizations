@@ -5,3 +5,6 @@
 *.Rproj
 paper/generics-paper.tex
 paper/generics-paper_cache/
+paper/generics-paper.pdf
+mturk/
+*.nb.html
