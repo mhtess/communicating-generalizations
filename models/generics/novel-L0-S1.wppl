@@ -1,4 +1,4 @@
-// time ~/webppl-paul/webppl novel-L0-S1.wppl --require utils 0
+// time ~/webppl-fork/webppl novel-L0-S1.wppl --require utils 0
 
 var chain = last(process.argv) // load index as last command line index
 
@@ -9,12 +9,6 @@ var targetUtterance = "generic";
 var responseDictionary = { "Agree": 1, "Disagree": 0 };
 
 var utterancePrior = Infer({model: function(){return uniformDraw([targetUtterance,"silence"])}});
-var thetaPrior = Infer({model: function(){
-	return uniformDraw([
-		0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
-		0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95
-	])}
-});
 
 var meaning = function(utt,state, theta) {
   return utt=="generic"? state > theta :
@@ -47,12 +41,16 @@ var data = {
 			roundedWithin: avoidEnds(d.prevWithin),
 		})
 	}, d0.slice(0, d0.length - 1)),
-	listener: map(function(d){
-		extend(d, {roundedPrevalence: alignPrevalence(d.response)})
-	}, d1.slice(0, d1.length - 1)),
+	listener: filter(function(d){
+		d.roundedPrevalence != midBins[0] // 1 response was exactly 0 (which is literally impossible)
+	}, map(function(d){
+		extend(d, {
+			roundedPrevalence: utils.closest(midBins,d.response)
+		})
+	}, d1.slice(0, d1.length - 1))),
 	speaker: map(function(d){
 		extend(d, {
-			roundedPrevalence: round(d.stim_prevalence/100),
+			roundedPrevalence: utils.closest(midBins, d.stim_prevalence/100),
 			binaryResponse: responseDictionary[d.response]
 		})
 	}, d2.slice(0, d2.length - 1))
@@ -74,27 +72,23 @@ var model = function(){
 			speaker: _.filter(data.speaker, {stim_property: item})
 		}
 
-		var gs = {
-			across: uniform({a: 0, b: 1, width: 0.2}),
-			within: uniform({a: 0, b: 1, width: 0.2})
-		}
-		var ds = {
-			across: uniform({a: 0, b: 100, width: 5}),
-			within: uniform({a: 0, b: 100, width: 5})
-		}
-
 		var priorParams = {
 			across: {
-				a: shape_alpha(gs.across,ds.across),
-				b: shape_beta(gs.across,ds.across)
+				g: uniform({a: 0, b: 1, width: 0.2}),
+				d: uniform({a: 0, b: 100, width: 5})
 			},
 			within: {
-				a: shape_alpha(gs.within,ds.within),
-				b: shape_beta(gs.within,ds.within)
-			}
+			g: uniform({a: 0, b: 1, width: 0.2}),
+			d: uniform({a: 0, b: 100, width: 5})
+		}};
+
+		var shapeParams = {
+			across: betaShape(priorParams.across),
+			within: betaShape(priorParams.within)
 		};
 
-		// var priorParams = {
+		var nullParams = {a:1,b:100}
+		// var shapeParams = {
 		// 	across: {
 		// 		a: uniformDrift({a: 1, b: 100, width: 2}),
 		// 		b: uniformDrift({a: 1, b: 100, width: 2})
@@ -106,35 +100,18 @@ var model = function(){
 		// };
 
 		mapData({data: propertyData.prior}, function(d){
-			observe(Beta(priorParams.across), d.roundedAcross);
-			observe(Beta(priorParams.within), d.roundedWithin);
+			observe(Beta(shapeParams.across), d.roundedAcross);
+			observe(Beta(shapeParams.within), d.roundedWithin);
 		});
 
 		// var theta = beta(priorParams.across);
-		query.add(["prior","isPresent", item, "na"], beta(priorParams.across))
+		query.add(["prior","isPresent", item, "na"], beta(shapeParams.across))
 		query.add(["prior","prevalenceGivenPresent", item, "na"],
-		 beta(priorParams.within))
+		 beta(shapeParams.within))
 
 		var statePrior = Infer({model: function(){
-			var theta = categorical({
-				vs: bins,
-				ps: map(function(b) {
-					return probability(Beta(priorParams.across), b) + eps
-				}, bins )
-			});
- 			var component = flip(theta);
- 			return component ?
- 				categorical({
- 					vs: bins,
- 					ps: map(function(b) {
-						return probability(Beta(priorParams.within), b) + eps
-					}, bins )
- 				}) :  categorical({
-				      vs: bins,
-				      ps: map(function(b) {
-				        return probability(Beta({a:1,b:100}), b) + eps
-				      }, bins )
-				    })
+			var theta = sample(DiscretizedBeta(shapeParams.across));
+			sample(flip(theta) ? DiscretizedBeta(shapeParams.within) : DiscretizedBeta(nullParams))
  		}});
 
 		/// RSA model
@@ -144,6 +121,7 @@ var model = function(){
 				var theta = targetUtterance === "generic" ? sample(thetaPrior) : -99;
 				var m = meaning(utterance, state, theta)
 				condition(m)
+				// factor(Math.log(state))
 				return state
 		 }})}, 10000)
 
@@ -158,6 +136,7 @@ var model = function(){
 		var l0prediction = listener0(targetUtterance);
 
 		mapData({data: propertyData.listener}, function(d){
+			// display(d.roundedPrevalence + " " + l0prediction.score(d.roundedPrevalence))
 			observe(l0prediction, d.roundedPrevalence)
 		})
 
@@ -185,20 +164,23 @@ var model = function(){
 }
 
 var mhiter = 100;
-
 var burn = mhiter / 2;
+
+var outfile = 'results-novelL0-S1-allowUPriors-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+
 var posterior = Infer({
   model: model,
   method: "incrementalMH",
   samples: mhiter, burn: burn,
   verbose: T,
   verboseLag: mhiter / 20,
-	stream:'results/results-novelL0-S1-allowUPriors-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.json'
+	stream: {
+		path: outfile,
+		header: ["type", "param", "property", "category", "val"]
+	}
 })
 
-// var outfile = 'results-novelL0-S1-allowUPriors-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
-//
 // utils.writeQueryERP(posterior, "results/" + outfile,
 // 	["type", "param", "property", "category", "val"])
 
-// display("written to " + outfile)
+display("written to " + outfile)
