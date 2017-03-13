@@ -55,10 +55,10 @@ var model = function(){
 		s2: uniformDrift({a:0,b:5,r:0.5})
 	};
 
-	var nullParams = {
-		a:1,
-		b:uniformDrift({a:1,b:100,r:3})
-	};
+	// var nullParams = {
+	// 	a:1,
+	// 	b:uniformDrift({a:1,b:100,r:3})
+	// };
 
 	// var noise = uniformDrift({a:0,b:1,r:0.1});
 
@@ -76,6 +76,11 @@ var model = function(){
 			g: uniformDrift({a: 0, b: 1, width: 0.2}),
 			d: uniformDrift({a: 0, b: 100, width: 5})
 		}
+		var nullParams = {
+			a:1,
+			b:uniformDrift({a:1,b:100,r:3})
+		};
+
 
 		var priorParams = betaShape(betaParams);
 
@@ -105,6 +110,7 @@ var model = function(){
 
 		query.add(["prior","isPresent", p, "na"], theta)
 		query.add(["prior","prevalenceGivenPresent", p, "na"], beta(priorParams))
+		query.add(["prior","nullParamsB", p, "na"], nullParams.b)
 		query.add(["prior","prevalencePrior", p, "na"],
 			beta ( flip(theta) ? priorParams : nullParams) )
 
@@ -224,7 +230,7 @@ var model = function(){
 	query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s2","na"], speakerOptimality.s2)
 
-	query.add(["param","nullParams","b","na"], nullParams.b);
+	// query.add(["param","nullParams","b","na"], nullParams.b);
 
 	// query.add(["param","noise","na","na"], noise)
 	return query
@@ -234,7 +240,7 @@ var mhiter = 50000;
 
 var burn = mhiter / 2;
 
-var outfile = 'results-fullModel-s2-allowUPriors-refinedPriors-globalNullB'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+var outfile = 'results-fullModel-s2-allowUPriors-refinedPriors-propNullB'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
