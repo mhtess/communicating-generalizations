@@ -1,4 +1,4 @@
-// time ~/webppl-fork/webppl --require ../node_modules/utils regression.wppl 0
+// time ~/webppl-fork/webppl regression.wppl --require  ../node_modules/utils 0
 
 var chain = last(process.argv) // load index as last command line index
 
@@ -129,7 +129,7 @@ var regression = function(){
   return query
 }
 
-var mhiter = 100;
+var mhiter = 10000;
 
 var burn = mhiter / 2;
 
@@ -137,7 +137,13 @@ var outfile = 'results-regression-'+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: regression,
-  method: "incrementalMH",
+  // method: "MCMC",
+	// kernel: {
+	// 	HMC: {
+	// 		steps: 5, stepSize: 0.0001
+	// 	}
+	// },
+	method: "incrementalMH",
   samples: mhiter, burn: burn,
   verbose: T,
   verboseLag: mhiter / 20,
