@@ -1,3 +1,5 @@
+// time ~/webppl-fork/webppl --require ../node_modules/utils regression.wppl 0
+
 var chain = last(process.argv) // load index as last command line index
 
 var betaShape = function(p){
@@ -7,14 +9,14 @@ var betaShape = function(p){
 var responseDictionary = { "agree-key": true,
 "disagree-key": false };
 
-var dataPath = "../../data/familiar_generics/"
+var dataPath = "../../../data/familiar_generics/"
 var truthJudgmentDataFile = dataPath + "naturalGenerics-trials-formatted.csv"
 var priorDataFile = dataPath + "naturalGenerics-prior-trials-n57.csv"
 var cueValidityDataFile = dataPath + "cueValidity.csv"
 
 var d0 = dataFrame(utils.readCSV(priorDataFile).data, ["prevalence"]);
 var d1 = dataFrame(utils.readCSV(truthJudgmentDataFile).data);
-var d2 = dataFrame(utils.readCSV(cueValidity).data, ["response"])
+var d2 = dataFrame(utils.readCSV(cueValidityDataFile).data, ["response"])
 
 var data = {
 	speaker: map(function(d){
@@ -28,7 +30,7 @@ var data = {
 	}, d0.slice(0, d0.length - 1)),
   cue: map(function(d){
     extend(d, {
-      roundedPrevalence: avoidEnds(d.response)
+      roundedCue: avoidEnds(d.response)
     })
   }, d2.slice(0, d2.length - 1))
 };
@@ -42,9 +44,9 @@ var logisticFunction = function(y) {
 var regression = function(){
 
   var bs = {
-    intercept: uniformDrift({a: 0, b: 1, width: 0.2}),
-    prevalence: uniformDrift({a: 0, b: 1, width: 0.2}),
-    cue: uniformDrift({a: 0, b: 1, width: 0.2})
+    intercept: uniformDrift({a: -10, b: 10, width: 2}),
+    prevalence: uniformDrift({a: -10, b: 10, width: 2}),
+    cue: uniformDrift({a: -10, b: 10, width: 2})
   }
 
   var linearFunction = function(xs){
@@ -53,11 +55,11 @@ var regression = function(){
      bs.cue * xs.cue;
   };
 
-  var sigma = uniformDrift({a: 0, b: 1, width: 0.2});
+  var sigma = uniformDrift({a: 0, b: 10, width: 2});
 
   foreach(properties, function(p){
 
-    var categories = levels(propertyData.speaker, "Category");
+    var categories = levels(data.speaker, "Category");
 
     foreach(categories, function(k){
 
@@ -73,9 +75,10 @@ var regression = function(){
         d: uniformDrift({a: 0, b: 100, width: 5})
       };
 
-			var prevalenceShapes = betaShape(prevalenceShapes);
+			var prevalenceShapes = betaShape(prevalenceParams);
 
       mapData({data: itemData.prevalence}, function(d){
+        // display(Beta(prevalenceShapes).score(d.roundedPrevalence))
 				observe(Beta(prevalenceShapes), d.roundedPrevalence)
 			});
 
@@ -88,18 +91,17 @@ var regression = function(){
       var cueShapes = betaShape(cueParams);
 
       mapData({data: itemData.cue}, function(d){
-				observe(Beta(prevalenceShapes), d.roundedPrevalence)
+        // display(Beta(cueShapes).score(d.roundedCue))
+				observe(Beta(cueShapes), d.roundedCue)
 			});
 
       var predictors = {
-        prevalence: beta(prevalenceShapes);
+        prevalence: beta(prevalenceShapes),
         cue: beta(cueShapes)
       };
 
-      query.add(["predictive", "prevalence", p, k],
-    predictors.prevalence)
-    query.add(["predictive", "cue", p, k],
-  predictors.cue)
+      query.add(["predictive", "prevalence", p, k], predictors.prevalence)
+      query.add(["predictive", "cue", p, k], predictors.cue)
 
       var prediction = linearFunction(predictors);
       var prediction_withNoise = gaussian(prediction, sigma);
@@ -110,6 +112,7 @@ var regression = function(){
       var genericsData = _.map(itemData.speaker, "binaryResponse");
 
       mapData({data: genericsData}, function(d){
+        // display(logisticPrediction.score(d))
         observe(logisticPrediction, d)
       })
 
@@ -118,13 +121,30 @@ var regression = function(){
 
   })
 
-  query.add(["param", "beta", "intercept", "NA"],
-bs.intercept)
-  query.add(["param", "beta", "prevalence", "NA"],
-  bs.prevalence)
-  query.add(["param", "beta", "cue", "NA"],
-  bs.cue)
+  query.add(["param", "beta", "intercept", "NA"], bs.intercept)
+  query.add(["param", "beta", "prevalence", "NA"], bs.prevalence)
+  query.add(["param", "beta", "cue", "NA"], bs.cue)
   query.add(["param", "sigma", "NA", "NA"], sigma)
 
   return query
 }
+
+var mhiter = 100;
+
+var burn = mhiter / 2;
+
+var outfile = 'results-regression-'+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+
+var posterior = Infer({
+  model: regression,
+  method: "incrementalMH",
+  samples: mhiter, burn: burn,
+  verbose: T,
+  verboseLag: mhiter / 20,
+	stream: {
+		path: "results/" + outfile,
+		header: ["type", "param", "property", "category", "val"]
+	}
+})
+
+display("written to " + outfile)
