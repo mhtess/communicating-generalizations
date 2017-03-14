@@ -1,4 +1,4 @@
-// time ~/webppl-fork/webppl familiar-S2.wppl --require utils
+// time ~/webppl-fork/webppl familiar-S2.wppl --require utils 0
 
 var chain = last(process.argv) // load index as last command line index
 
@@ -50,15 +50,25 @@ var noiseLink = function(dist, noise){
 
 var model = function(){
 
+	// var speakerOptimality = {
+	// 	s1: uniformDrift({a:0,b:20,r:2}),
+	// 	s2: uniformDrift({a:0,b:5,r:0.5})
+	// };
+
 	var speakerOptimality = {
-		s1: uniformDrift({a:0,b:20,r:2}),
-		s2: uniformDrift({a:0,b:5,r:0.5})
+		s1: uniform({a:0, b:20}),
+		s2: uniform({a:0, b:5})
 	};
 
 	// var nullParams = {
 	// 	a:1,
 	// 	b:uniformDrift({a:1,b:100,r:3})
 	// };
+
+	var nullParams = {
+		a: 1,
+		b: uniform(0, 100)
+	};
 
 	// var noise = uniformDrift({a:0,b:1,r:0.1});
 
@@ -70,16 +80,22 @@ var model = function(){
 		}
 
 		// prior parameters
-		var theta = uniformDrift({a: 0, b: 1, width:0.2})
+		// var theta = uniformDrift({a: 0, b: 1, width:0.2})
+		var theta = uniform(0, 1)
 
+		// var betaParams = {
+		// 	g: uniformDrift({a: 0, b: 1, width: 0.2}),
+		// 	d: uniformDrift({a: 0, b: 100, width: 5})
+		// }
 		var betaParams = {
-			g: uniformDrift({a: 0, b: 1, width: 0.2}),
-			d: uniformDrift({a: 0, b: 100, width: 5})
+			g: uniform(0, 1),
+			d: uniform(0, 100)
 		}
-		var nullParams = {
-			a:1,
-			b:uniformDrift({a:1,b:100,r:3})
-		};
+
+		// var nullParams = {
+		// 	a:1,
+		// 	b:uniformDrift({a:1,b:100,r:3})
+		// };
 
 
 		var priorParams = betaShape(betaParams);
@@ -109,8 +125,9 @@ var model = function(){
 		// })
 
 		query.add(["prior","isPresent", p, "na"], theta)
-		query.add(["prior","prevalenceGivenPresent", p, "na"], beta(priorParams))
-		query.add(["prior","nullParamsB", p, "na"], nullParams.b)
+		query.add(["prior","prevalenceGivenPresent", p, "mean"], betaParams.g)
+		query.add(["prior","prevalenceGivenPresent", p, "sampleSize"], betaParams.d)
+		// query.add(["prior","nullParamsB", p, "na"], nullParams.b)
 		query.add(["prior","prevalencePrior", p, "na"],
 			beta ( flip(theta) ? priorParams : nullParams) )
 
@@ -176,10 +193,15 @@ var model = function(){
 				prior: _.filter(propertyData.prior, {Category: k})
 			};
 
+			// var withinParams = {
+			// 	g: uniformDrift({a: 0, b: 1, width: 0.2}),
+			// 	d: uniformDrift({a: 0, b: 100, width: 5})
+			// }
 			var withinParams = {
-				g: uniformDrift({a: 0, b: 1, width: 0.2}),
-				d: uniformDrift({a: 0, b: 100, width: 5})
+				g: uniform(0, 1),
+				d: uniform(0, 100)
 			}
+
 
 			var withinShape = betaShape(withinParams);
 
@@ -230,17 +252,17 @@ var model = function(){
 	query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s2","na"], speakerOptimality.s2)
 
-	// query.add(["param","nullParams","b","na"], nullParams.b);
+	query.add(["param","nullParams","b","na"], nullParams.b);
 
 	// query.add(["param","noise","na","na"], noise)
 	return query
 }
 
-var mhiter = 50000;
+var mhiter = 10000;
 
 var burn = mhiter / 2;
 
-var outfile = 'results-fullModel-s2-allowUPriors-refinedPriors-propNullB'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+var outfile = 'results-fullModel-s2-allowUPriors-refinedPriors-globalNullB-sansDrift-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
