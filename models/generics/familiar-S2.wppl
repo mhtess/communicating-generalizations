@@ -67,7 +67,7 @@ var customUniformDrift = function(params) {
   });
 };
 
-var properties = ["have wings"];
+// var properties = ["have wings"];
 
 var model = function(){
 
