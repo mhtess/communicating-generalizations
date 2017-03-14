@@ -49,7 +49,7 @@ var noiseLink = function(dist, noise){
 var model = function(){
 
 	var speakerOptimality = {
-		s1: uniformDrift({a:0,b:20,r:2})
+		s1: uniformDrift({a:0,b:20,r:10})
 	};
 
 	// var noise = uniformDrift({a:0,b:1,r:0.1});
@@ -66,7 +66,7 @@ var model = function(){
 
 		var betaParams = {
 			g: uniformDrift({a: 0, b: 1, width: 0.2}),
-			d: uniformDrift({a: 0, b: 100, width: 5})
+			d: uniformDrift({a: 0, b: 100, width: 20})
 		}
 
 		var priorParams = betaShape(betaParams);
@@ -80,21 +80,11 @@ var model = function(){
 
 		// observe structured prior data
 		mapData({data: propertyData.prior}, function(d){
-			var di = d.roundedPrevalence;
-			// console.log(			Math.log(
-			// 			(1-theta)+ probability(Beta(nullParams), di) +
-			// 			theta * probability(Beta(priorParams), di)
-			// 			))
-			factor(
-			// 	Math.log(
-			// 	(di==0.01 ? 1 : 0)*(1-theta)+
-			// 	(di> 0.01 ? 1 : 0) * theta * probability(Beta(priorParams), di)
-			// )
-			Math.log(
-			(1-theta)+ probability(Beta(nullParams), di) +
-			theta * probability(Beta(priorParams), di)
-			)
-		)
+			 factor(
+				 util.logsumexp([
+						Math.log(theta) + Beta(priorParams).score(d.roundedPrevalence),
+						Math.log(1-theta) + Beta(nullParams).score(d.roundedPrevalence)
+					]))
 		})
 
 		// observe structured prior data
@@ -106,9 +96,11 @@ var model = function(){
 		// })
 
 		query.add(["prior","isPresent", p, "na"], theta)
-		query.add(["prior","prevalenceGivenPresent", p, "na"], beta(priorParams))
+		query.add(["prior","prevalenceGivenPresent", p, "mean"], betaParams.g)
+		query.add(["prior","prevalenceGivenPresent", p, "sampleSize"], betaParams.d)
+		// query.add(["prior","nullParamsB", p, "na"], nullParams.b)
 		query.add(["prior","prevalencePrior", p, "na"],
-			beta( flip(theta) ? priorParams : nullParams ) )
+			beta ( flip(theta) ? priorParams : nullParams) )
 
 
 		var statePrior = Infer({model: function(){
@@ -159,7 +151,7 @@ var model = function(){
 
 			var withinParams = {
 				g: uniformDrift({a: 0, b: 1, width: 0.2}),
-				d: uniformDrift({a: 0, b: 100, width: 5})
+				d: uniformDrift({a: 0, b: 100, width: 20})
 			}
 
 			var withinShape = betaShape(withinParams);
@@ -216,15 +208,15 @@ var model = function(){
 	return query
 }
 
-var mhiter = 100;
+var mhiter = 50000;
 
-var burn = mhiter / 2;
+var burn = mhiter;// / 2;
 
-var outfile = 'results-fullModel-s1-allowUPriors-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+var outfile = 'results-fullModel-s1-allowUPriors-refinedPriors-fixedNull-prevPriorFactorBugFixed-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
-  method: "incrementalMH",
+	method: "incrementalMH",
   samples: mhiter, burn: burn,
   verbose: T,
   verboseLag: mhiter / 20,
