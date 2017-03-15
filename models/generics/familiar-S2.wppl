@@ -44,31 +44,6 @@ var meaning = function(utt,state, theta) {
          true
 }
 
-var noiseLink = function(dist, noise){
-	return Infer({model: function() { flip(noise) ? uniformDraw([0,1]) : sample(dist) }});
-}
-
-var customUniformDrift = function(params) {
-  return sample(Uniform(_.omit(params, 'width')), {
-    driftKernel: function(prevVal) {
-		      var width = _.has(params, 'width') ? params.width : 0.1;
-		      var a = Math.max(params.a, prevVal - width);
-		      var b = Math.min(params.b, prevVal + width);
-					return Uniform({a: a, b: b})
-					// var range = params.b - params.a;
-					// var midPt = params.b - (range / 2);
-		      // return Infer({model: function(){
-					// 	return flip(0.5) ? Uniform({a: a, b: b}) :
-					// 	prevVal > midPt ?
-					// 		Uniform({a: params.a,b: midPt  }) :
-					// 		Uniform({a: midPt,b: params.b})
-					// }})
-		}
-  });
-};
-
-// var properties = ["have wings"];
-
 var model = function(){
 
 	var speakerOptimality = {
@@ -151,8 +126,8 @@ var model = function(){
 		query.add(["prior","prevalenceGivenPresent", p, "mean"], betaParams.g)
 		query.add(["prior","prevalenceGivenPresent", p, "sampleSize"], betaParams.d)
 		// query.add(["prior","nullParamsB", p, "na"], nullParams.b)
-		query.add(["prior","prevalencePrior", p, "na"],
-			beta ( flip(theta) ? priorParams : nullParams) )
+		// query.add(["prior","prevalencePrior", p, "na"],
+		// 	beta ( flip(theta) ? priorParams : nullParams) )
 
 			var statePrior = Infer({model: function(){
 				sample(flip(theta) ? DiscretizedBeta(priorParams) : DiscretizedBeta(nullParams))
@@ -219,7 +194,8 @@ var model = function(){
 			var withinParams = {
 				g: uniformDrift({a: 0, b: 1, width: 0.2}),
 				d: uniformDrift({a: 0, b: 100, width: 20})
-			}
+			};
+
 			// var withinParams = {
 			// 	g: customUniformDrift({a:0, b:1, width: 0.2}),
 			// 	d: customUniformDrift({a:0, b:100, width: 20})
@@ -237,8 +213,7 @@ var model = function(){
 			// })
 
 
-			query.add(["withinKind","prevalence", p, k],
-			 				beta(withinShape))
+			query.add(["withinKind","prevalence", p, k], beta(withinShape))
 			// query.add(["withinKind","prevalence", p, k], withinKind_prev)
 			// displayObj(withinShape);
 			var speakerBeliefs = DiscretizedBeta(withinShape)
