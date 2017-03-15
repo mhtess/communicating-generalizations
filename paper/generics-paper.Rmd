@@ -20,12 +20,12 @@ author-note:
     
 abstract: 
     "Acquiring abstract knowledge requires making generalizations.
-    Everyday generalizations typically rest upon not observational data though, but upon testimony: Generalizations conveyed with language.
+    Everyday generalizations typically rest not upon observational data, but upon testimony: Generalizations conveyed with language.
     The language of generalizations---so called, generic language (e.g., *Dogs bark.*)---appears early in development and is ubiqutious in everyday conversation.
-    However, what makes generic sentences true or not depends upon the context, generics are interpreted quite strongly, and they exaggerate evidence. 
-    These three phenonena have confounded previous attempts to formalize the meaning of generalizations in language.
+    However, generic sentences are extremely flexible in their usage, while simultaneously conveying a strong inference: That the generalization should hold in the future. 
+    These phenonena have confounded previous attempts to formalize the meaning of generalizations in language.
     We present a computational model that treats the core meaning of a generic sentence as simple but underspecified, and uses general principles of language understanding to establish a precise meaning in context. 
-    Our model shows these three central phenomena emerge from the interaction of diverse prior beliefs with communicative principles.
+    Our model shows the central phenomena of generic language emerge from the interaction of diverse prior beliefs with communicative principles.
     We elicit these priors experimentally and show that the resulting model predictions explain almost all of the variance in human judgments for both common and novel generics and outperform alternative models.
     This theory provides the computational bridge between the words we use and the generalizations they describe.
     "
@@ -53,8 +53,6 @@ knitr::opts_chunk$set(fig.width=6, fig.height=5, fig.crop = F, fig.path='figs/',
 library(rwebppl)
 ```
 
-
-
 # Introduction 
 
 Figuring out that a category tends to have a property, an entity tends to exhibit a behavior, or a cause tends to produce an effect can be crucial and hard-won knowledge. 
@@ -66,9 +64,9 @@ Intuition suggests that generalizations in language convey something about the p
 *Bill smokes cigarettes* seems to suggest a daily-habit, while *Susan writes novels* implies something much weaker, maybe a novel every few years.
 *Drinking moonshine makes you go blind* and so does *staring at the sun*, but neither causal statement tells you to precisely the increased relative risk.
 *Mosquitos carry malaria* is a true statement despite the prevalence of carrying malaria among mosquitos being a just a fraction of 1\%.
-The fact that these generalizations do not reduce to particular quantitative statements implies that what makes them true or false (in terms of precise quantitative measurements) is also underspecified [@Carlson1977; @Leslie2008].
+The fact that these generalizations do not reduce to particular quantitative statements implies that what makes them true or false (in terms of precise quantitative measurements) is also underspecified [@Carlson1977; @Leslie2008; @NickelBlackwell].
 
-Yet, listeners still have intuitions about how strongly a generalization is expected to hold.
+Yet, listeners still have intuitions about how strongly a generalization should hold.
 The case of *Mosquitos carry malaria* suggests the generic must in some way be analogous to "some" (i.e., *Some mosquitos carry malaria*). 
 Yet, generalizations about categories are often interpreted as implying the property is widespread: *Swans have hollow bones* means something  different than *Some swans have hollow bones* [@Gelman2002].
 How particular interpretations arise from generalizations in language is also a mystery.
@@ -143,16 +141,82 @@ In particular, we develop a mathematical model that describes pragmatic reasonin
 We find that this formalism resolves the philosophical and empirical puzzles.
 -->
 
+# Communicating Generalizations
+
+Generalizations are used to make predictions about instances that an agent has yet to experience [@HumeTHN].
+What does it mean to form a generalization?
+We can treat the problem as a problem of Bayesian inference about an unknown latent cause over the data we observe.
+Suppose we observe a feature $F$ among instances of a kind $K = \{k_1, k_2, ...\}$: What can we infer about the probability of that feature in future instances of $K$?
+
+Bayes' rule provides a rational framework for answering such problems.
+Suppose *a priori* we have no informative beliefs about the prevalence of the feature in the kind (i.e., $P(F \mid K) \sim \text{Uniform}(0, 1) = \text{Beta(1, 1)}$).
+Observing some number of positive instances of $K$ with $F$ will update this prior belief distribution into a posterior belief distribution.
+For example, consider the prevalence of \textsc{being friendly} (F) among \textsc{dogs} (K); call this $p$.
+We may encounter some individual dogs, note how many of them were friendly, and form a posterior belief distribution about the friendliness of dogs.
+
+$$
+P(p \mid d) = \frac{P(d \mid p) \cdot P(p)}{\int_{p'}P(d \mid p') \cdot P(p')}
+$$
+Our ability to use this updated belief $P(p \mid d)$ in order to make predictions about unobserved instances is a computational description of generalization [e.g., @Tenenbaum2011].
+Life is only so long, however, and a person can only be in one place at a time.
+The amount of data we can gather about any particular category, event, or causal force is extremely limited by these physical constraints.
+Thus, it is not surprising that language provides a simple way to communicate these generalizations to one another.
+
+The linguistic outlet for generalizations about categories---so called, *generic language*---has received tremendous attention from psychologists, linguists, and philosophers.
+Generic language is one of the earliest emerging forms of complex, compositional language (CITE).
+Somewhere between 2 and 3 years of age, children recognize that generics convey a generalization about a category, not directly tied to concrete instances in a scene [@Cimpian2008].
+More on development.
+
+What is perhaps surprising from a formal perspective is that generic language is far from trivial to characterize. 
+If generics convey something about the prevalence of feature, we would expect them to be in some way comparable to quantifier statments (e.g., "some", "most", "all", ...).
+Rehash linguistic puzzles.
+The extreme flexibility of generic meaning stands in stark contrast to its early emergence in development.
+In fact, quantified statements, whose formal meaning is much more straight-forward, emerge much *later* in development.
+This has led some to conclude that the normal tools for describing the semantics of quantified utterances (namely, a truth-functional threshold) will not work for generic language [@Leslie2008].
+
+This may be throwing out the baby with the bathwater.
+Consider the acquisition problem, there are two aspects of meaning that a language learner must acquire for the semantics of a quantified utterance: (1) that the meaning is a threshold-function (i.e., $\denote{u}(p, \theta) = \{p :p > \theta\}$ and (2) the value of the threshold (e.g., $\theta = 0$ for "some", $\theta = 0.5$ for "most").
+Perhaps, then, the difficulty in acquiring the meaning of quantifiers is a difficulty in learning the value of the threshold (aspect 2) and not in recognizing that the utterance conveys something about the quantity (e.g., via a semantic threshold; aspect 1).
+This would lead to the prediction that generics could be amenable to a threshold-semantics, but with the value of the threshold left underspecified in the semantics.
+The problem of generic language interpretation then reduces to the problem of inferring the threshold in context.
+
+We can formalize this hypothesis with a "literal listener" model from the Rational Speech Act framework [@Frank2012; @Goodman2013; @Goodman2016].
+
+\begin{eqnarray}
+L_{0}(p \mid u) &\propto& {\delta_{\denote{u}(p, \theta)} \cdot P(p) \cdot P(\theta)} \label{eq:L0}
+\end{eqnarray}
+
+The $\delta_{\denote{u}(x)}$ likelihood is the Kronecker delta function returning $1$ for states $p$ compatible with utterance $u$ and $0$ otherwise. 
+For the case of a generic utterance, these are states of the world $p$ that are greater than the semantic threshold $\theta$.
+
+
+
+For the generic sentence, we assign the simplest possible meaning, a threshold on the prevalence: $\denote{u_{generic}} = P(F\mid K)>\theta$.
+The prior distribution $P(x)$ is a distribution over likely states of the world. 
+For the case of understanding a generic (e.g., *Dogs are friendly*), the relevant dimension for the adopted semantics is the prevalence of property within the category (e.g., the \% of dogs that are friendly).
+
+The literal listener is a hypothetical agent who knows the threshold $\theta$.
+
+
+
+
+
+
+
+
+Thus, in order to define a generalization about a category, there must be some corresponding concrete particular instance of that category from which the generalization is formed. 
+For example, if an agent observes $n$ instances of \textsc{dog} ($d_1, d_2, ..., d_n$)
+For example, if an observer forms a generalization about \textsc{dogs}, she must some way of determining when she is in an instance of the category \textsc{dogs}: She must be able to *individuate*.
+In Hume's words, generalizations are predictions about "instances of which we have had no experience resemble those of which we have had experience" [@HumeTHN].
+
+
 
 # The Problems with Communicating Generalizations
 
 Generalizations can be made about almost anything.
-Here, we restrict our focus to generlizations about categories (generic langauge), generalizations about events (habitual language), and generalizations about causal forces (causal language). 
-Generalizations are used to make predictions about instances that an agent has yet to experience [@HumeTHN].
-Thus, in order to define a generalization about a category, event, or causal force, there must be some corresponding concrete particular instance of that category, event, or causal force from which the generalization is formed. 
-For example, if an agent observes $n$ instances of \textsc{dog} ($d_1, d_2, ..., d_n$)
-For example, if an observer forms a generalization about \textsc{dogs}, she must some way of determining when she is in an instance of the category \textsc{dogs}: She must be able to *individuate*.
-In Hume's words, generalizations are predictions about "instances of which we have had no experience resemble those of which we have had experience" [@HumeTHN].
+Here, we restrict our focus to generalizations about categories (whose linguistic expression is known as *generic language*), which have been the primary focus of psychologists, linguists, and philosophers.
+We posit that our analysis should expect to generalizations about events (habitual language) as well as generalizations about causal forces (causal language).
+
 
 
 Generics express a relation between a kind K (e.g., \textsc{robins}) and a property F (e.g., \textsc{lays eggs}), such that the property can also be said to be applicable of an individual (i.e., the bird in my backyard lays eggs).
