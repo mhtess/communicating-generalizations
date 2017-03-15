@@ -229,10 +229,10 @@ var model = function(){
 
 		})
 
-  query.add(["prior","across", type, "mean"], higherOrderBeliefs.across.g)
-  query.add(["prior","across", type, "sampleSize"], higherOrderBeliefs.across.d)
-  query.add(["prior","within", type, "mean"], higherOrderBeliefs.within.g)
-  query.add(["prior","within", type, "sampleSize"], higherOrderBeliefs.within.d)
+  query.add(["prior","across", propType, "mean"], higherOrderBeliefs.across.g)
+  query.add(["prior","across", propType, "sampleSize"], higherOrderBeliefs.across.d)
+  query.add(["prior","within", propType, "mean"], higherOrderBeliefs.within.g)
+  query.add(["prior","within", propType, "sampleSize"], higherOrderBeliefs.within.d)
 
   })
 	query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
