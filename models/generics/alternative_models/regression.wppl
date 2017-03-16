@@ -44,9 +44,9 @@ var logisticFunction = function(y) {
 var regression = function(){
 
   var bs = {
-    intercept: uniformDrift({a: -10, b: 10, width: 2}),
-    prevalence: uniformDrift({a: -10, b: 10, width: 2}),
-    cue: uniformDrift({a: -10, b: 10, width: 2})
+    intercept: uniform({a: -10, b: 10}),
+    prevalence: uniform({a: -10, b: 10}),
+    cue: uniform({a: -10, b: 10})
   }
 
   var linearFunction = function(xs){
@@ -55,11 +55,11 @@ var regression = function(){
      bs.cue * xs.cue;
   };
 
-  var sigma = uniformDrift({a: 0, b: 10, width: 2});
+  var sigma = uniform({a: 0, b: 10});
 
   foreach(properties, function(p){
 
-    var categories = levels(data.speaker, "Category");
+    var categories = levels(_.filter(data.speaker, {Property: p}), "Category");
 
     foreach(categories, function(k){
 
@@ -70,12 +70,17 @@ var regression = function(){
 			};
 
       // analyze prevalence data
-      var prevalenceParams = {
-        g: uniformDrift({a: 0, b: 1, width: 0.2}),
-        d: uniformDrift({a: 0, b: 100, width: 5})
+      // var prevalenceParams = {
+      //   g: uniformDrift({a: 0, b: 1, width: 0.2}),
+      //   d: uniformDrift({a: 0, b: 100, width: 5})
+      // };
+      //
+			// var prevalenceShapes = betaShape(prevalenceParams);
+      var prevalenceShapes = {
+        a: uniform({a: 1, b: 40}),
+        b: uniform({a: 1, b: 40})
       };
 
-			var prevalenceShapes = betaShape(prevalenceParams);
 
       mapData({data: itemData.prevalence}, function(d){
         // display(Beta(prevalenceShapes).score(d.roundedPrevalence))
@@ -83,12 +88,19 @@ var regression = function(){
 			});
 
       // analyze cue validity data
-      var cueParams = {
-        g: uniformDrift({a: 0, b: 1, width: 0.2}),
-        d: uniformDrift({a: 0, b: 100, width: 5})
+      // var cueParams = {
+      //   g: uniformDrift({a: 0, b: 1, width: 0.2}),
+      //   d: uniformDrift({a: 0, b: 100, width: 5})
+      // };
+      //
+      // var cueShapes = betaShape(cueParams);
+
+      var cueShapes = {
+        a: uniform({a: 1, b: 40}),
+        b: uniform({a: 1, b: 40})
       };
 
-      var cueShapes = betaShape(cueParams);
+
 
       mapData({data: itemData.cue}, function(d){
         // display(Beta(cueShapes).score(d.roundedCue))
@@ -104,7 +116,7 @@ var regression = function(){
       query.add(["predictive", "cue", p, k], predictors.cue)
 
       var prediction = linearFunction(predictors);
-      var prediction_withNoise = gaussian(prediction, sigma);
+      var prediction_withNoise = gaussian({mu: prediction, sigma: sigma});
       var logisticPrediction = Bernoulli({p:
         logisticFunction(prediction_withNoise)
       })
@@ -129,7 +141,7 @@ var regression = function(){
   return query
 }
 
-var mhiter = 10000;
+var mhiter = 2000;
 
 var burn = mhiter / 2;
 
@@ -137,20 +149,24 @@ var outfile = 'results-regression-'+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: regression,
-  // method: "MCMC",
-	// kernel: {
-	// 	HMC: {
-	// 		steps: 5, stepSize: 0.0001
-	// 	}
-	// },
-	method: "incrementalMH",
+  method: "MCMC",
+	kernel: {
+		HMC: {
+			steps: 5, stepSize: 0.004
+		}
+	},
+	// method: "incrementalMH",
   samples: mhiter, burn: burn,
   verbose: T,
-  verboseLag: mhiter / 20,
-	stream: {
-		path: "results/" + outfile,
-		header: ["type", "param", "property", "category", "val"]
-	}
+  // verboseLag: mhiter / 20,
+	// stream: {
+	// 	path: "results/" + outfile,
+	// 	header: ["type", "param", "property", "category", "val"]
+	// }
 })
+
+utils.writeQueryERP(posterior, "results/" + outfile,
+	["type", "param", "property", "category", "val"])
+
 
 display("written to " + outfile)
