@@ -22,7 +22,7 @@ var meaning = function(utt,state, theta) {
 
 var dataPath = "../../data/unfamiliar_generics/"
 
-var interpretationsDataFile = dataPath + "interpretations-trials.csv"
+var interpretationsDataFile = dataPath + "interpretations-trials-stimTypeSpeaker.csv"
 var truthJudgmentDataFile = dataPath + "truth-conditions-2-trials.csv"
 var priorDataFile = dataPath + "unfamiliar-priors.csv"
 
@@ -60,7 +60,7 @@ var items = levels(data.prior, "stim_property");
 var propertyTypes = levels(data.speaker, "stim_type");
 var frequencies = levels(data.speaker, "roundedPrevalence");
 var nullParams = {a:1,b:100}
-
+// display(data.listener)
 var model = function(){
 
 	var speakerOptimality = {
@@ -70,6 +70,7 @@ var model = function(){
   foreach(propertyTypes, function(propType){
 
     var items = levels(_.filter(data.listener, {stim_type: propType}), "stim_property")
+    display(items);
 
     var higherOrderBeliefs = {
       across: {
