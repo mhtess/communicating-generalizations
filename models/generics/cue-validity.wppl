@@ -1,0 +1,42 @@
+
+
+var withItParams = {a: 1, b: 1}, nullParams = {a:1 , b: 100}
+
+var totalNKinds = 10;
+// var kindsWithIt = 30;
+// var mainCProb = kindsWithIt / totalNKinds;
+var mainCProb = 0.1;
+var kindsWithIt = mainCProb * totalNKinds
+
+
+var prev = 0.125;
+
+// this is assuming k is within mainComponent
+var cueValidity = function(){
+  // var k = categorical({vs: [0,1,2,3,4,5], ps: [1,1,1,1,1,1]})
+  var mainComponent = flip(mainCProb) // k < 2 //flip(acrossProb);
+  // var mainComponent = k < 2;
+  var prevalencePrior = DiscretizedBeta( mainComponent ? withItParams : nullParams )
+  observe(prevalencePrior, prev)
+  var pfk = sample(prevalencePrior)
+  var f = flip(pfk);
+  condition(f);
+  return mainComponent//k == 1
+}
+
+// Infer({model: cueValidity})
+
+var cueValidity = Math.exp(Infer({model: cueValidity}).score(true)) / kindsWithIt
+
+// display(1 / kindsWithIt)
+display(cueValidity)
+
+// from logistic regression
+// Estimate Std. Error   z value         Pr(>|z|)
+// (Intercept) -3.9967565  0.1682973 -23.74819       < 2.22e-16 ***
+// prevalence   2.0383624  0.3086935   6.60319 0.00000000004024 ***
+// cuevalidity  8.1142735  0.3502921  23.16431       < 2.22e-16 ***
+
+var logisticPrediciton  = 1 / (1 + Math.exp(-(-4 + 2*prev + 8*cueValidity)))
+
+logisticPrediciton
