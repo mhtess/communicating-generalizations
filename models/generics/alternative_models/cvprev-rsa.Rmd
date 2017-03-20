@@ -1,0 +1,497 @@
+---
+title: "Cue validity / prev regression and RSA comparison"
+output: html_notebook
+---
+
+```{r preamble}
+library(langcog)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(coda)
+library(knitr)
+library(ggthemes)
+library(rwebppl)
+library(jsonlite)
+library(ggmcmc)
+theme_set(theme_few())
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+project.path <- "~/Documents/research/generics-paper/"
+data.path <- "data/familiar_generics/"
+model.path <- "models/generics/alternative_models/"
+wp.pkg.path <- paste(project.path, "models/generics/node_modules/utils/", sep = "")
+betaMean = function(a, b){
+  return ( a / (a + b ))
+}
+
+betaSDev = function(a, b){
+  return( sqrt ( ( a * b) / ( ( a + b ) ^ 2 * (a + b + 1) ) ) ) 
+}
+```
+
+### Questions
+
+1. Does empirical cue validity corespond to cue validity derived from the prevalence prior?
+2. Can we tease apart a cue validity + prevalence regression (speaker) model from the RSA speaker model?
+
+
+```{r}
+d.cv <- read.csv(paste(project.path, data.path, "cue-validity-1-trials.csv", sep = ""))
+
+d.target.items <- fromJSON(paste(project.path, data.path, "originalStims.json", sep = "")) %>%
+  mutate(item = paste(category, property))
+
+d.cv.targets <- d.cv %>%
+  mutate(property = gsub("&quotechar", "'", property), 
+         item = paste(category, property)) %>%
+  filter( item %in% d.target.items$item)
+
+d.cv.out <- left_join(d.cv.targets %>%
+                        #mutate(property = gsub("'", "", property)) %>%
+                        select(-item),
+                      d.target.items) %>%
+  mutate(Property = gsub("'", "", Property)) %>%
+  select(workerid, trial_num, Category, Property, response)
+```
+
+
+```{r}
+d.prev <- read.csv(paste(project.path, data.path,
+                       "naturalGenerics-prior-trials-n57.csv", sep = ""))
+
+properties <- levels(d.prev$Property)
+
+d.prev <- d.prev %>%
+  mutate(roundedPrevalence = prevalence / 100,
+         roundedPrevalence = ifelse(roundedPrevalence < 0.01, 0.01, 
+                                    ifelse(roundedPrevalence> 0.99, 0.99, roundedPrevalence)))
+```
+
+```{r}
+d.tj <- read.csv(paste(project.path, data.path,
+                       "naturalGenerics-trials-formatted.csv", sep = "")) %>%
+  rowwise() %>%
+  mutate(response = ifelse(response == "agree-key", 1, 0))
+```
+
+
+#### Prevalence prior
+
+```{r wpplHelpers}
+wpHelpers <- '
+var betaShape = function(p){
+  return {a: p.g * p.d, b: (1-p.g) * p.d}
+};
+'
+```
+
+
+```{r prevalencePriorModel}
+prevalencePrior <- '
+var model = function(){
+  var theta = uniformDrift({a: 0, b: 1, width: 0.2})
+  var betaParams = betaShape({
+    g: uniformDrift({a: 0, b: 1, width: 0.2}),
+    d: uniformDrift({a: 0, b: 60, width: 10})
+  })
+
+  var nullParams = {
+    a:1, b: uniformDrift({a: 0, b: 100, width: 10})
+  }
+
+  mapData({data: data}, function(d){
+	 factor(
+		 util.logsumexp([
+				Math.log(theta) + Beta(betaParams).score(d.roundedPrevalence),
+				Math.log(1-theta) + Beta(nullParams).score(d.roundedPrevalence)
+			]))
+  })
+
+  return {theta: theta, a: betaParams.a, b: betaParams.b, nullB: nullParams.b}
+}
+'
+```
+
+```{r runPriorModel}
+n_samples = 1000
+burn = n_samples
+
+wp.post.summary <- data.frame()
+
+for (p in properties){
+  wp.post <- webppl(program_code = paste(wpHelpers, prevalencePrior, sep = "\n"),
+       model_var = "model",
+       inference_opts = list(method = "MCMC", samples = n_samples, burn = burn, verbose = TRUE),
+       data = d.prev %>% filter(Property == p),
+       data_var = "data",
+       chains = 3, cores = 3)
+  
+  wp.post.summary <- bind_rows(
+    wp.post.summary,
+    wp.post %>%
+      group_by(Parameter) %>%
+      summarize(MAP = estimate_mode(value), cred_upper = hdi_upper(value), cred_lower = hdi_lower(value)) %>%
+      mutate(Property = p)
+  )
+  
+  print(p)
+}
+save(wp.post.summary, file = paste(project.path, model.path, "results/prevPriorParams_mcmc1k_burn1k.Rdata", sep = ""))
+```
+
+##### Pseudocounts
+
+```{r scatter1}
+wp.post.summary %>%
+  select(Parameter, MAP, Property) %>%
+  spread(Parameter, MAP) %>%
+  ggplot(., aes( x = b, y = a, size = theta, color = nullB, label = Property))+#, alpha = 1-theta))+
+  geom_jitter(width = 2, height = 2, alpha = 0.3)+
+  xlim(-3, 65)+
+  ylim(-3, 65)
+```
+
+Text plot
+
+```{r scatter2_text}
+wp.post.summary %>%
+  select(Parameter, MAP, Property) %>%
+  spread(Parameter, MAP) %>%
+  ggplot(., aes( x = b, y = a, size = 1 - theta, color = nullB, label = Property))+#, alpha = 1-theta))+
+  geom_text_repel(force = 10, segment.alpha = 0.3)+
+  xlim(-3, 65)+
+  ylim(-3, 65)
+```
+
+
+NullB only is different when theta is high, which is also when it's less relevant.
+(Conclusion: NullB doesn't matter much, could fix it to be 100 for all items)
+
+```{r scatter_nullBvsTheta}
+wp.post.summary %>%
+  select(Parameter, MAP, Property) %>%
+  spread(Parameter, MAP) %>%
+  ggplot(., aes( x = theta, y = nullB))+
+  geom_point()+
+  xlim(0, 1)+
+  ylim(0, 100)+
+  coord_fixed(ratio = 0.01)
+```
+
+
+
+##### Mean and variance
+
+```{r scatter1_mean_var}
+wp.post.summary %>%
+  select(Parameter, MAP, Property) %>%
+  spread(Parameter, MAP) %>%
+  rowwise() %>%
+  mutate(mu = betaMean(a, b),
+         sigma = betaSDev(a, b)) %>%
+  ggplot(., aes( x = sigma, y = mu, size = theta, color = theta, label = Property))+
+  geom_jitter( alpha = 0.3 )
+```
+
+Text plot
+
+```{r scatter2_mean_var_text}
+wp.post.summary %>%
+  select(Parameter, MAP, Property) %>%
+  spread(Parameter, MAP) %>%
+  rowwise() %>%
+  mutate(mu = betaMean(a, b),
+         sigma = betaSDev(a, b)) %>%
+  ggplot(., aes( x = sigma, y = mu, size = 1 - theta, label = Property))+
+  geom_text_repel(force = 10, segment.alpha = 0.3)
+```
+
+
+
+
+```{r table1}
+wp.post.summary.wide <- wp.post.summary %>%
+  select(Parameter, MAP, Property) %>%
+  spread(Parameter, MAP)
+
+wp.post.summary.wide[order(-wp.post.summary.wide$a),] %>% kable()
+```
+
+#### Within kind prevalence
+
+
+```{r withinPrevalenceModel}
+withinPrevalence <- '
+var model = function(){
+  var betaParams = betaShape({
+    g: uniformDrift({a: 0, b: 1, width: 0.2}),
+    d: uniformDrift({a: 0, b: 60, width: 10})
+  })
+
+  mapData({data: data}, function(d){
+    observe(Beta(betaParams), d.roundedPrevalence)
+  })
+
+  return {a: betaParams.a, b: betaParams.b}
+}
+'
+```
+
+```{r runPrevalenceModel}
+n_samples = 1000
+burn = n_samples
+
+wp.post.within.summary <- data.frame()
+
+for (p in properties){
+  categories <- levels(factor(filter(d.tj, Property == p)$Category))
+  for (catg in categories){
+    
+    wp.post <- webppl(program_code = paste(wpHelpers, withinPrevalence, sep = "\n"),
+       model_var = "model",
+       inference_opts = list(method = "MCMC", samples = n_samples, burn = burn, verbose = TRUE),
+       data = d.prev %>% filter(Property == p, Category == catg),
+       data_var = "data",
+       chains = 3, cores = 3)
+  
+    wp.post.within.summary <- bind_rows(
+      wp.post.within.summary,
+      wp.post %>%
+        group_by(Parameter) %>%
+        summarize(MAP = estimate_mode(value), cred_upper = hdi_upper(value), cred_lower = hdi_lower(value)) %>%
+        mutate(Property = p, Category = catg)
+    )
+    
+  print(catg)
+  }  
+  print(p)
+}
+save(wp.post.within.summary, file = paste(project.path, model.path, "results/withinPrevParams_mcmc1k_burn1k.Rdata", sep = ""))
+```
+
+```{r}
+wp.post.within.summary.wide <- left_join(
+  wp.post.within.summary %>%
+    filter(Parameter == "a") %>%
+    rename(a_MAP = MAP, a_cred_upper = cred_upper, a_cred_lower = cred_lower) %>%
+    select(-Parameter),
+  wp.post.within.summary %>%
+    filter(Parameter == "b") %>%
+    rename(b_MAP = MAP, b_cred_upper = cred_upper, b_cred_lower = cred_lower) %>%
+    select(-Parameter)
+)  %>% mutate(maxVal = ifelse(a_MAP > b_MAP, a_MAP, b_MAP))
+```
+```{r scatter1_prev}
+ggplot(wp.post.within.summary.wide, 
+       aes( x = b_MAP, y = a_MAP, xmin = b_cred_lower, xmax = b_cred_upper,
+            ymin = a_cred_lower, ymax = a_cred_upper))+
+  geom_jitter(width = 2, height = 2, alpha = 0.3)+
+  xlim(-3, 65)+
+  ylim(-3, 65)
+```
+
+Text plot
+
+```{r scatter2prev_text}
+ggplot(wp.post.within.summary.wide, 
+       aes( x = b_MAP, y = a_MAP, xmin = b_cred_lower, xmax = b_cred_upper,
+            ymin = a_cred_lower, ymax = a_cred_upper, label = paste(Category, Property)), color = b_MAP)+
+  geom_text_repel(force = 4, segment.alpha = 0.3, size = 3) +
+  xlim(-30, 63)+
+  ylim(-30, 45)
+```
+```{r scatter2_text_narrowRange}
+ggplot(wp.post.within.summary.wide %>% filter(b_MAP < 30, a_MAP< 20), 
+       aes( x = b_MAP, y = a_MAP, xmin = b_cred_lower, xmax = b_cred_upper,
+            ymin = a_cred_lower, ymax = a_cred_upper, label = paste(Category, Property), color = maxVal))+
+  geom_point(size = 0.3)+
+  geom_text_repel(force = 4, segment.alpha = 0.3, size = 3)
+```
+```{r table2}
+wp.post.within.summary.wide[order(-wp.post.within.summary.wide$maxVal),] %>% 
+  select(Category, Property, a_MAP, b_MAP, a_cred_lower, a_cred_upper, b_cred_lower, b_cred_upper) %>% 
+  kable()
+```
+
+
+
+Examining mean and variance of within-kind prevalence distributions
+
+```{r}
+wp.post.within.summary.wide <- wp.post.within.summary.wide %>% 
+  rowwise() %>%
+   mutate(mu = betaMean(a_MAP, b_MAP),
+         sigma = betaSDev(a_MAP, b_MAP))
+```
+
+
+```{r scatter_mu_sigma_prev}
+ggplot(wp.post.within.summary.wide, 
+       aes( x = mu, y = sigma))+
+  geom_point( alpha = 0.3 )
+```
+
+
+Text plot
+
+```{r scatter_mu_sigma_prev_text}
+ggplot(wp.post.within.summary.wide, 
+       aes( x = sigma, y = mu, label = paste(Category, Property), color = mu))+
+  geom_hline(yintercept = 0.5, lty = 3)+
+  geom_point(size = 0.8)+
+  geom_text_repel(force = 1, segment.alpha = 0.3, size = 3)
+```
+
+
+#### Compare elicited cue validity with prevalence prior derived cue validity
+
+```{r}
+cueValidityModel2 <- '
+
+var cueValidity = function(){
+  var kind = uniformDraw(data.prior);
+  // observe(Bernoulli({p: kind.roundedPrevalence}), true)
+  observe(Bernoulli({p: kind.prevalence/100}), true)
+  return kind.Category == data.kind[0]
+}
+
+expectation(Infer({model: cueValidity}))
+'
+
+wp.cueValidity <- data.frame()
+for (p in properties){
+  categories <- levels(factor(filter(d.tj, Property == p)$Category))
+  prevPriorData = d.prev %>% filter(Property == p)
+  
+  for (catg in categories){
+
+    dataToPass <- list(
+      prior = prevPriorData,
+      kind = catg
+    )
+    
+    wp.rs <- webppl(cueValidityModel2, 
+       packages = c(wp.pkg.path),
+       data_var = "data",
+       data = dataToPass)
+    
+    wp.cueValidity <- bind_rows(wp.cueValidity, 
+                                data.frame(Category = catg,
+                                           Property = p,
+                                           cv = wp.rs))
+    
+  }
+  print(p)
+}
+
+```
+
+
+
+Empirical cue validity
+
+```{r}
+d.cv.summary <- d.cv.out %>% 
+  group_by(Category, Property) %>%
+  multi_boot_standard(column = "response")
+```
+
+```{r}
+left_join(d.cv.summary, wp.cueValidity) %>%
+  ggplot(., aes( x = cv, y = mean, ymin = ci_lower, ymax = ci_upper))+
+  geom_abline(intercept = 0, slope = 1, lty = 3, alpha = 0.3)+
+  geom_point()+
+  geom_errorbar(alpha = 0.3) +
+  xlim(0, 1) + ylim(0, 1) + 
+  coord_fixed() + 
+  xlab("Prevalence prior derived CV")+
+  ylab("Empirical CV")
+  
+
+with(left_join(d.cv.summary, wp.cueValidity), 
+     cor(cv, mean, use = "pairwise.complete.obs"))
+
+#ggsave("~/Desktop/cueValidity-empirical-vs-prevPriorderived_raw.pdf",
+       #width = 4, height = 4)
+```
+
+
+
+
+### Regression model
+
+```{r}
+regressionModel <- '
+var withItParams = data.prior[0], nullParams = {a:1 , b: 100}
+
+var totalNKinds = 30;
+var mainCProb = data.prior[0]["theta"];
+var kindsWithIt = mainCProb * totalNKinds
+
+var prev = utils.closest(midBins, data.prev[0]["mu"]);
+
+// this is assuming k is within mainComponent
+var cueValidity = function(){
+  var mainComponent = flip(mainCProb);
+  var prevalencePrior = DiscretizedBeta( mainComponent ? withItParams : nullParams )
+  observe(prevalencePrior, prev)
+  var pfk = sample(prevalencePrior)
+  var f = flip(pfk);
+  condition(f);
+  return mainComponent
+}
+
+var b  = {
+  cv: 8, prev: 2
+}
+
+var cueValidity = Math.exp(Infer({model: cueValidity}).score(true)) / kindsWithIt;
+display(cueValidity)
+display(prev)
+var cvSpeaker = Infer({model: function(){
+  var generic = flip(Math.exp(-4)); // "generic" ?
+  factor( generic ? (b.cv*cueValidity + b.prev*prev) : 0)
+  return generic
+}})
+
+expectation(cvSpeaker)
+'
+```
+
+```{r}
+for (p in properties){
+  categories <- levels(factor(filter(d.tj, Property == p)$Category))
+  priorParams <- wp.post.summary.wide %>% filter(Property == p)
+  
+  for (catg in categories){
+    prevParams <- wp.post.within.summary.wide %>% filter(Property == p, Category == catg)
+
+    dataToPass <- list(
+      prior = priorParams,
+      prev = prevParams
+    )
+    
+    webppl(regressionModel, 
+           packages = c(wp.pkg.path),
+           data_var = "data",
+           data = dataToPass)
+    
+  }
+}
+```
+
+
+
+
+
