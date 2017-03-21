@@ -168,3 +168,13 @@ Tigers eat people. | [0.59,0.78]| 0.61
 - 30 target items (from truth judgment task) + 10 fillers = 40 items per subject.
 - n = 40 ($0.75) = 30 + 20% = 36
 - 3/8/17
+
+
+- 3/15/17: Notice that the "is juvenile" and "is full-grown" properties are paired with the wrong categories.
+
+## Cue validity 2
+
+- 21 properties (from truth judgment task)
+- Free production: Given property, what animal?
+- n = 50 ($0.40) = 20 + 20% = 24
+- 3/21/17
