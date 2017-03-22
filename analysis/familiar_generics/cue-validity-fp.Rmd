@@ -3,6 +3,17 @@ title: "Cue validity (free production)"
 output: html_notebook
 ---
 
+```{r}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+- 21 properties (from truth judgment task)
+- Free production: Given property, what animal?
+- n = 50 
+- 3/21/17
+
+[Experiment here](https://stanford.edu/~mtessler/generics-paper/experiments/generics/speaker_familiar-kinds/cue-validity-2-freeProduction.html)
+
 
 ```{r}
 library(langcog)
@@ -27,28 +38,64 @@ hdi_lower<- function(s){
   m <- HPDinterval(mcmc(s))
   return(m["var1","lower"])
 }
+substrRight <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
+}
+
 project.path <- "~/Documents/research/generics-paper/"
 data.path <- "data/familiar_generics/"
+model.path <- "models/generics/alternative_models/"
+
 ```
 
 ```{r}
-d.cv <- read.csv("/Users/mht/Documents/research/generics-paper/mturk/cue-validity-2-freeProduction/round1/cue-validity-2-freeProduction-trials.csv")
+d.cv <- read.csv(paste(project.path, data.path, "cue-validity-2-freeProduction-trials.csv", sep = ""))
 
 d.target.items <- fromJSON(paste(project.path, data.path, "originalStims_wrongDeployment.json", sep = "")) %>%
   mutate(sentence = paste(category, property))
 ```
 
-Force all responses to lower case. 
+
+### Preprocessing
+
+- Force all responses to lower case. 
+- Remove spaces.
+- Fix mosquito mispellings.
+- Count "deertick" as "tick".
+- Remove plural "s".
+
 Mark if the produced animal matches the generic of interest.
 
 ```{r}
+mosquito.mispellings <- c("mosqu", "mesqu", "misqu", "mosiq")
+
 d.cv <- d.cv %>%
   rename(property = category) %>%
   mutate(response = tolower(response),
+         response = gsub(" ", "", response),
+         response = ifelse(substr(response, 1, 5) %in% mosquito.mispellings, "mosquito", response),
+         response = ifelse(response == "deertick", "tick", response),
+         response = ifelse(substrRight(response, 1) == "s",
+                           substr(response, 1, nchar(response)-1), response),
          property = gsub("&quotechar", "'", property),
          sentence = paste(response, property),
          targetMention = ifelse(sentence %in% d.target.items$sentence, 1, 0))
 ```
+
+#### Top 20 produced cues
+
+```{r}
+d.cv.all <- d.cv %>%
+  rename(category = response) %>%
+  group_by(category, property) %>%
+  summarize(mentions = n())
+
+d.cv.all[with(d.cv.all, order(-mentions)), ] %>% head(20) %>% kable()
+```
+
+
+
+## Cue validity measurements of interest
 
 ```{r}
 d.cv.summary <- left_join(
@@ -64,9 +111,203 @@ d.cv.summary <- left_join(
               prop = mentions / trials)
   ) %>%
   mutate(prop = ifelse(is.na(prop), 0, prop))
+
+d.cv.summary[with(d.cv.summary, order(-prop)), c("category", "property", "prop", "mentions")] %>% kable()
 ```
 
+#### What do people produce when they are not producing (e.g.,) "mosquitos" for malaria?
+
 ```{r}
-d.cv.summary[with(d.cv.summary, order(-prop)), c("Category", "Property", "prop", "mentions")] %>% kable()
+top.cv <- d.cv.summary[with(d.cv.summary, order(-mentions)), ] %>% head(8)
+
+top.cv.all <- d.cv.all %>% 
+  filter(property %in% top.cv$property)
+
+top.cv.all[with(top.cv.all, order(property, -mentions)), ] %>% kable()
 ```
+
+
+# Comparisons with other measures
+
+Largest deviations recorded in tables below scatterplots. 
+
+## Prevalence prior derived cue validity
+```{r}
+load(file = paste(project.path, model.path, 
+             "results/prevPriorDerivedCueValidity.Rdata", sep = ""))
+
+d.cv.ppdcv <- left_join(
+  d.cv.summary %>%
+    select(Property, Category, prop),
+  wp.cueValidity %>% rename(pp_cv = cv)
+) %>%
+  mutate(pp_cv = ifelse(is.na(pp_cv), 0, pp_cv))
+```
+
+
+$$r^2_{pearson}(`r length(d.cv.ppdcv[,1])`) = `r with(d.cv.ppdcv, cor(pp_cv, prop, use = "pairwise.complete.obs"))`$$
+
+$$r^2_{spearman}(`r length(d.cv.ppdcv[,1])`) = `r with(d.cv.ppdcv, cor(pp_cv, prop, use = "pairwise.complete.obs", method = "spearman"))`$$
+
+```{r}
+ggplot(d.cv.ppdcv, aes( x = prop, y = pp_cv))+
+  geom_abline(intercept = 0, slope = 1, lty = 3, alpha = 0.3)+
+  geom_point()+
+  xlim(0, 1) + ylim(0, 1) + 
+  coord_fixed() + 
+  ylab("Prevalence prior derived CV")+
+  xlab("Empirical (free production) CV")
+  
+
+d.cv.ppdcv <- d.cv.ppdcv %>% mutate(sqErr = (prop-pp_cv)^2)
+
+d.cv.ppdcv[with(d.cv.ppdcv, order(-sqErr)), ] %>% 
+  rename(free_production_cv = prop, 
+         prev_prior_derived_cv = pp_cv) %>% head(10) %>% kable()
+```
+
+
+
+
+## Direct questions (empirical)
+
+For example: Suppose it lays eggs. How likely is it that it is a Robin?
+
+```{r}
+d.cv.direct <- read.csv(paste(project.path, data.path, "cue-validity-1-trials.csv", sep = ""))
+
+d.cv.direct.summary <- d.cv.direct %>%
+  mutate(property = gsub("&quotechar", "'", property),
+    sentence = paste(category, property),
+    targetMention = ifelse(sentence %in% d.target.items$sentence, 1, 0)) %>%
+  filter(targetMention == 1) %>%
+  group_by(category, property) %>%
+  multi_boot_standard(column = "response")
+
+d.cv.fp.direct <- left_join(d.cv.summary, d.cv.direct.summary)
+
+```
+
+
+$$r^2_{pearson}(`r length(d.cv.fp.direct[,1])`) = `r with(d.cv.fp.direct, cor(mean, prop, use = "pairwise.complete.obs"))`$$
+
+$$r^2_{spearman}(`r length(d.cv.fp.direct[,1])`) = `r with(d.cv.fp.direct, cor(mean, prop, use = "pairwise.complete.obs", method = "spearman"))`$$
+
+
+```{r}
+ggplot(d.cv.fp.direct, aes( x = prop, y = mean, ymin = ci_lower, ymax = ci_upper))+
+  geom_abline(intercept = 0, slope = 1, lty = 3, alpha = 0.3)+
+  geom_point(alpha = 0.7)+
+  geom_errorbar(alpha = 0.3) +
+  xlim(0, 1) + ylim(0, 1) + 
+  coord_fixed() + 
+  ylab("Empirical (direct questions) CV")+
+  xlab("Empirical (free production) CV")
+  
+
+d.cv.fp.direct <- d.cv.fp.direct %>% mutate(sqErr = (prop-mean)^2)
+
+d.cv.fp.direct[with(d.cv.fp.direct, order(-sqErr)), ] %>% 
+  rename(free_production_cv = prop, 
+         direct_query_cv = mean) %>%
+  select(category, property, free_production_cv, direct_query_cv, sqErr) %>% head(20) %>% kable()
+```
+
+## Regression (with prevalence) to predict truth judgments
+
+```{r}
+d.tj <- read.csv(paste(project.path, data.path,
+                       "naturalGenerics-trials-formatted.csv", sep = ""))
+
+d.target.items <- fromJSON(paste(project.path, data.path, "originalStims.json", sep = "")) %>%
+  mutate(
+    property = gsub("'", "", property),
+    Property = gsub("'", "", Property),
+    sentence = paste(Category, Property),
+    item = paste(category, property))
+
+
+d.prev <- read.csv(paste(project.path, data.path,
+                       "naturalGenerics-prior-trials-n57.csv", sep = ""))
+
+
+d.prev.summary <- d.prev %>%
+  mutate(item = paste(Category, Property)) %>%
+  filter(item %in% d.target.items$sentence) %>%
+  mutate(prevalence = prevalence / 100) %>%
+  group_by(Category, Property, item) %>%
+  multi_boot_standard(column = "prevalence")
+
+# need to filter by TJ items (direct query cue-validity expt had 2 items misspecified)
+d.cv.summary <- left_join(
+  d.target.items %>% select(-sentence),
+  d.cv %>%
+    rename(category = response) %>%
+    group_by(property) %>%
+    mutate(n = n(),
+           item = paste(category, property)) %>%
+    filter(item %in% d.target.items$item) %>%
+    group_by(category, property) %>%
+    summarize(mentions = n(),
+              trials = mean(n), # mean(n) == n, because it's just the number of subjects
+              prop = mentions / trials)
+  ) %>%
+  mutate(prop = ifelse(is.na(prop), 0.01, prop))
+
+d.tj.w.prev.cue <- left_join(
+  left_join(
+    d.tj %>%
+      mutate(response = ifelse(response == "agree-key", 1, 0)),
+    d.prev.summary %>% 
+      rename(prevalence = mean) %>% 
+      select(-ci_lower, -ci_upper)
+    ),
+  d.cv.summary %>% select(-item))
+
+
+
+rs.glm <- glm(response ~ prevalence + prop, 
+              data = d.tj.w.prev.cue, family = 'binomial')
+
+glm.model.predictions <- unique(select(d.tj.w.prev.cue, Property, Category, item, prevalence, prop))
+
+glm.model.predictions <- glm.model.predictions %>%
+  mutate(prediction = predict(rs.glm, ., type = "response"))
+
+d.tj.w.glm <- left_join(
+  d.tj.w.prev.cue %>%
+       group_by(Property, Category, item) %>%
+       multi_boot_standard(column = "response"),
+  glm.model.predictions
+)
+
+```
+
+
+$$r^2_{pearson}(`r length(d.tj.w.glm$Property)`) = `r with(d.tj.w.glm, cor(mean, prediction, use = "pairwise.complete.obs"))`$$
+
+$$r^2_{spearman}(`r length(d.tj.w.glm$Property)`) = `r with(d.tj.w.glm, cor(mean, prediction, use = "pairwise.complete.obs", method = "spearman"))`$$
+
+
+```{r fig.width = 7}
+ggplot(d.tj.w.glm %>% rename(cuevalidity = prop), aes (x = prediction, y = mean, ymin = ci_lower, ymax = ci_upper, color = cuevalidity))+
+  geom_errorbar(alpha = 0.3)+
+  geom_abline(intercept = 0, slope = 1, lty = 3)+
+  geom_text_repel(data = d.tj.w.glm %>% rename(cuevalidity = prop) %>% 
+                    filter(prediction > 0.14, prediction < 0.9), 
+                  aes(label = item, color = cuevalidity), force = 1, size = 3)+
+  geom_point()+
+  xlim(0,1)+
+  ylim(0,1)+
+  coord_fixed()+
+  xlab("Logistic model prediction")+
+  ylab("Human generic endorsement")
+
+d.tj.w.glm <- d.tj.w.glm %>% mutate(sqErr = (mean - prediction) ^ 2)
+
+d.tj.w.glm[with(d.tj.w.glm, order(-sqErr)), ] %>% ungroup() %>%
+  select(item, prediction, mean, prevalence, prop, sqErr) %>%
+  rename(humanEndorse = mean, cueValidity = prop) %>% kable()
+```
+
 
