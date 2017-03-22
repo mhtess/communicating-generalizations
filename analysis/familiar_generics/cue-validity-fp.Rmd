@@ -1,0 +1,72 @@
+---
+title: "Cue validity (free production)"
+output: html_notebook
+---
+
+
+```{r}
+library(langcog)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(coda)
+library(knitr)
+library(ggthemes)
+library(rwebppl)
+library(jsonlite)
+theme_set(theme_few())
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+project.path <- "~/Documents/research/generics-paper/"
+data.path <- "data/familiar_generics/"
+```
+
+```{r}
+d.cv <- read.csv("/Users/mht/Documents/research/generics-paper/mturk/cue-validity-2-freeProduction/round1/cue-validity-2-freeProduction-trials.csv")
+
+d.target.items <- fromJSON(paste(project.path, data.path, "originalStims_wrongDeployment.json", sep = "")) %>%
+  mutate(sentence = paste(category, property))
+```
+
+Force all responses to lower case. 
+Mark if the produced animal matches the generic of interest.
+
+```{r}
+d.cv <- d.cv %>%
+  rename(property = category) %>%
+  mutate(response = tolower(response),
+         property = gsub("&quotechar", "'", property),
+         sentence = paste(response, property),
+         targetMention = ifelse(sentence %in% d.target.items$sentence, 1, 0))
+```
+
+```{r}
+d.cv.summary <- left_join(
+  d.target.items %>% select(-sentence),
+  d.cv %>%
+    rename(category = response) %>%
+    group_by(property) %>%
+    mutate(n = n()) %>%
+    filter(targetMention == 1) %>%
+    group_by(category, property) %>%
+    summarize(mentions = n(),
+              trials = mean(n), # mean(n) == n, because it's just the number of subjects
+              prop = mentions / trials)
+  ) %>%
+  mutate(prop = ifelse(is.na(prop), 0, prop))
+```
+
+```{r}
+d.cv.summary[with(d.cv.summary, order(-prop)), c("Category", "Property", "prop", "mentions")] %>% kable()
+```
+
