@@ -2,25 +2,41 @@
 
 var chain = last(process.argv) // load index as last command line index
 
+var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
+
 
 var dataPath = "data/"
 var targetUtterance = "habitual"
 
-var prior_existenceFile = dataPath + "prior2-existence.csv";
-var prior_waitFile = dataPath + "prior2-timesper5yr.csv";
+// var prior_existenceFile = dataPath + "prior2-existence.csv";
+// var prior_waitFile = dataPath + "prior2-timesper5yr.csv";
 var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
+var priorDataFile = dataPath + "prior2.csv";
 
-var d0 = dataFrame(utils.readCSV(prior_existenceFile).data, ["val"]);
-var d1 = dataFrame(utils.readCSV(prior_waitFile).data, ["val", "logval"]);
+// var d0 = dataFrame(utils.readCSV(prior_existenceFile).data, ["val"]);
+// var d1 = dataFrame(utils.readCSV(prior_waitFile).data, ["val", "logval"]);
 var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data,
 				["n_times", "log_times"]);
+var d3 = dataFrame(utils.readCSV(priorDataFile).data,
+["mixture_male", "mixture_female",
+"dayRate_male","dayRate_female",
+"annualRate_male","annualRate_female"]);
 
 
-var bins = {
-	state: _.range(-1, 9, 0.5),
-	threshold: _.range(-0.75,8.75,0.5),
-	coin: _.range(0.05, 1.0, 0.1)
-}
+// scale: number of times / year
+var upperBins = map(
+	function(i){ Math.exp(i) * 365},
+	_.range(-7.5, 2.5, 0.5))
+
+var lowerBins = [0].concat(upperBins.slice(0, upperBins.length - 1))
+
+var midBins = map2(function(b1,b2){
+  return roundTo3((b2 - b1)/2 + b1)
+}, lowerBins, upperBins)
+
+var thetaBins = map2(function(b1, b2){
+  return roundTo3((b2-b1)/2 + b1);
+}, midBins.slice(0, midBins.length-1), midBins.slice(1))
 
 var data = {
 	speaker: map(function(d){
@@ -28,30 +44,43 @@ var data = {
 				roundedFreq: nearestPriorBin(d.log_times, bins.state),
 				alignedResponse : responseDictionary[d.response]
 			})
-		}, d2.slice(0, d2.length - 1)),
-	prior: {
-		existence: map(function(d){
-				extend(d, {
-					avoided_endval: avoidEnds(d.val)
-				})
-		}, d0.slice(0, d0.length - 1)),
-		frequency: map(function(d){
-			return d
-		}, d1.slice(0, d1.length - 1))
-	}
+		}, d2),
+	// prior: {
+	// 	existence: map(function(d){
+	// 			extend(d, {
+	// 				avoided_endval: avoidEnds(d.val)
+	// 			})
+	// 	}, d0.slice(0, d0.length - 1)),
+	// 	frequency: map(function(d){
+	// 		return d
+	// 	}, d1.slice(0, d1.length - 1))
+	// },
+	prior: map(function(d){
+		extend(d, {
+			lograte_male: Math.log(d.annualRate_male),
+			lograte_female: Math.log(d.annualRate_female),
+			roundMixture_male: avoidEnds(d.mixture_male),
+			roundMixture_female: avoidEnds(d.mixture_female)
+		})
+	}, filter(function(d){
+		( (d.mixture_male > 0) && (d.mixture_female > 0) &&
+		(d.dayRate_male > 0) && (d.dayRate_female > 0))
+	},d3))
 };
 
+// console.log(data.speaker)
+//
 var items = levels(data.speaker, "habitual");
-var genders = levels(data.prior.existence, "gender");
-var priorQuestions = ["Q1","Q2"];
-
+// var genders = levels(data.prior.existence, "gender");
+// var priorQuestions = ["Q1","Q2"];
+//
 var utterancePrior = Infer({model: function(){
 	return uniformDraw([targetUtterance,"silence"])
 }});
 
-var thetaPrior = Infer({model: function(){
-	return uniformDraw(bins.threshold)}
-});
+// var thetaPrior = Infer({model: function(){
+// 	return uniformDraw(bins.threshold)}
+// });
 
 var meaning = function(utt,state, theta) {
   return utt=="habitual"? state > theta :
@@ -65,83 +94,78 @@ var meaning = function(utt,state, theta) {
 var model = function(){
 
 	var speakerOptimality = {
-		s1: uniformDrift({a:0,b:20,r:2})
+		s1: uniformDrift({a:0, b:20, width:2})
 	}
 
-	var propFemale = 0.5;
+	var nullParams = {
+		mu: uniformDrift({a:-4,b:-1, width: 1}),
+		sigma: uniformDrift({a:0,b:1, width: 0.2})
+	}
 
 	foreach(items, function(i){
 
 		var itemData = {
 			speaker: _.filter(data.speaker, {habitual: i}),
-			prior: {
-				existence: _.filter(data.prior.existence, {item: i}),
-				frequency: _.filter(data.prior.frequency, {item: i})
-			}
+			prior: _.filter(data.prior, {item: i})
 		};
 
 		// prior parameters
 		/// mixture component
-		var gs = {
-			male: uniformDrift({a: 0, b: 1, width: 0.2}),
-			female: uniformDrift({a: 0, b: 1, width: 0.2})
-		};
 
-		var ds = {
-			male: uniformDrift({a: 0, b: 50, width: 5}),
-			female: uniformDrift({a: 0, b: 50, width: 5})
-		};
-
-		/// frequency given done it before
-		var mus = {
-			male: uniformDrift({a:0, b:10, width: 0.75}),
-			female: uniformDrift({a:0, b:10, width: 0.75})
-		};
-		var sigmas = {
-			male: uniformDrift({a:0, b:10, width: 0.75}),
-			female: uniformDrift({a:0, b:10, width: 0.75})
-		};
-
-		var priorParams = {
+		var mixtureParams = {
 			male: {
-				existence: {
-					a: shape_alpha(gs.male, ds.male),
-					b: shape_beta(gs.male, ds.male)},
-				frequency: {
-					mu: mus.male, sigma: sigmas.male
-				}
+        g: uniformDrift({a: 0, b: 1, width: 0.2}),
+        d: uniformDrift({a: 0, b: 100, width: 5})
+      },
+			female: {
+        g: uniformDrift({a: 0, b: 1, width: 0.2}),
+        d: uniformDrift({a: 0, b: 100, width: 5})
+      }
+		};
+
+		var mixtureShapes = {
+			male: betaShape(mixtureParams.male),
+			female: betaShape(mixtureParams.female)
+		};
+
+		var frequencyWhenPresent = {
+			male: {
+				mu: uniformDrift({a:-1.5, b:8.5, width: 2}),
+				sigma: uniformDrift({a:0, b:5, width: 1})
 			},
 			female: {
-				existence: {
-					a: shape_alpha(gs.female, ds.female),
-					b: shape_beta(gs.female, ds.female)
-				},
-				frequency: {
-					mu: mus.female, sigma: sigmas.female
-				}
+				mu: uniformDrift({a:-1.5, b:8.5, width: 2}),
+				sigma: uniformDrift({a:0, b:5 width: 1})
 			}
-		};
+		}
 
-		mapData({data: itemData.prior.existence}, function(d){
-			// display(Beta(priorParams[d.gender]["existence"]).score(d.avoided_endval))
-			observe(Beta(priorParams[d.gender]["existence"]), d.avoided_endval)
-		})
-
-		mapData({data: itemData.prior.frequency}, function(d){
-			// display(Gaussian(priorParams[d.gender]["frequency"]).score(d.logval))
-			observe(Gaussian(priorParams[d.gender]["frequency"]), d.logval)
+		mapData({data: itemData.prior}, function(d){
+			observe(Beta(mixtureShapes.female, d.roundMixture_female))
+			observe(Gaussian(frequencyWhenPresent.female), d.lograte_female)
+			observe(Beta(mixtureShapes.male, d.roundMixture_male))
+			observe(Gaussian(frequencyWhenPresent.male), d.lograte_male)
 		})
 
 		var existenceProb = {
-			male: beta(priorParams.male.existence),
-			female: beta(priorParams.female.existence)
+			male: beta(mixtureShapes.male),
+			female: beta(mixtureShapes.female)
 		};
 
-		query.add(["prior","isPresent", i, "male"], existenceProb.male)
-		query.add(["prior","isPresent", i, "female"], existenceProb.female)
-
-		query.add(["prior","frequencyGivenPresent", i, "male"], gaussian(priorParams.male.frequency))
-		query.add(["prior","frequencyGivenPresent", i, "female"], gaussian(priorParams.female.frequency))
+		var allParams = [
+			mixtureShapes.male.a, mixtureShapes.male.b,
+			mixtureShapes.female.a, mixtureShapes.female.b,
+			frequencyWhenPresent.male.mu, frequencyWhenPresent.male.sigma,
+			frequencyWhenPresent.female.mu, frequencyWhenPresent.female.sigma
+		]
+		//
+		// query.add(["prior","isPresent", i, "male"], existenceProb.male)
+		//
+		//
+		// query.add(["prior","isPresent", i, "male"], existenceProb.male)
+		// query.add(["prior","isPresent", i, "female"], existenceProb.female)
+		//
+		// query.add(["prior","frequencyGivenPresent", i, "male"], gaussian(priorParams.male.frequency))
+		// query.add(["prior","frequencyGivenPresent", i, "female"], gaussian(priorParams.female.frequency))
 
 		// posterior predictive on prior questions
 		//
@@ -151,20 +175,17 @@ var model = function(){
 		// };
 
 		var statePrior = Infer({model: function(){
-			flip(0.5) ?
-				flip(existenceProb.female) ?
-					categorical({ vs: bins.state,
-						ps: map(function(b){
-							return probability(Gaussian(priorParams.female.frequency), b) + eps
-						}, bins.state)
-					}) : minBin :
-				flip(existenceProb.male) ?
-					categorical({ vs: bins.state,
-						ps: map(function(b){
-							return probability(Gaussian(priorParams.male.frequency), b) + eps
-						}, bins.state)
-					}) : minBin
-		}})
+			sample(
+				flip(0.5) ?
+					flip(existenceProb.female) ?
+						DiscretizedLognormal(frequencyWhenPresent.female) :
+						DiscretizedLognormal(nullParams) :
+					flip(existenceProb.male) ?
+						DiscretizedLognormal(frequencyWhenPresent.male) :
+						DiscretizedLognormal(nullParams)
+					)
+				}
+			})
 
 		/// RSA model
 		var listener0 = cache(function(utterance) {
