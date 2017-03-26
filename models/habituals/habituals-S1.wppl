@@ -143,14 +143,12 @@ var model = function(){
 			female: beta(mixtureShapes.female)
 		};
 
-		var allParams = [
-			mixtureShapes.male.a, mixtureShapes.male.b,
+		query.add(["prior", i, mixtureShapes.male.a], [
+			mixtureShapes.male.b,
 			mixtureShapes.female.a, mixtureShapes.female.b,
 			frequencyWhenPresent.male.mu, frequencyWhenPresent.male.sigma,
 			frequencyWhenPresent.female.mu, frequencyWhenPresent.female.sigma
-		]
-
-		query.add(["prior", i], allParams)
+		])
 		//
 		// query.add(["prior","mixture_a", i, "male"], mixtureShapes.male.a)
 		// query.add(["prior","mixture_b", i, "male"], mixtureShapes.male.b)
@@ -208,8 +206,8 @@ var model = function(){
 				observe(s1prediction, d.alignedResponse)
 			})
 
-			query.add(["predictive", i], [
-				freqData[0]["time_period"],freq, expectation(s1prediction),  "NA",
+			query.add(["predictive", i, freqData[0]["time_period"]], [
+				freq, "s2", expectation(s2prediction),
 				"NA",  "NA",  "NA",  "NA" ])
 
 				// query.add(["predictive", i, freqData[0]["time_period"],freq], expectation(s1prediction))
@@ -220,9 +218,11 @@ var model = function(){
 	})
 
 	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
-	query.add(["param", "speakerOptimality"], [
-		"s1", speakerOptimality.s1, "NA",  "NA",
-		"NA",  "NA",  "NA",  "NA" ])
+	query.add(["param", "speakerOptimality", "s1"], [
+		 speakerOptimality.s1, "NA", "NA",
+		"nullParams_mu",  nullParams.mu,
+		"nullParams_sigma",  nullParams.sigma])
+		
 	return query
 }
 
