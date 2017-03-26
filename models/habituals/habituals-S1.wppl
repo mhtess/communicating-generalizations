@@ -1,4 +1,4 @@
-// time webppl habituals-S1.wppl --require utils 0
+// time webppl habituals-S1.wppl --require utils 1
 
 var chain = last(process.argv) // load index as last command line index
 
@@ -23,28 +23,16 @@ var d3 = dataFrame(utils.readCSV(priorDataFile).data,
 "annualRate_male","annualRate_female"]);
 
 
-// scale: number of times / year
-var upperBins = map(
-	function(i){ Math.exp(i) * 365},
-	_.range(-7.5, 2.5, 0.5))
-
-var lowerBins = [0].concat(upperBins.slice(0, upperBins.length - 1))
-
-var midBins = map2(function(b1,b2){
-  return roundTo3((b2 - b1)/2 + b1)
-}, lowerBins, upperBins)
-
-var thetaBins = map2(function(b1, b2){
-  return roundTo3((b2-b1)/2 + b1);
-}, midBins.slice(0, midBins.length-1), midBins.slice(1))
 
 var data = {
 	speaker: map(function(d){
 			extend(d, {
-				roundedFreq: nearestPriorBin(d.log_times, bins.state),
+				rate: d.n_times / 5,
+				roundedRate: utils.closest(midBins, d.n_times / 5),
+				// roundedFreq: nearestPriorBin(d.log_times, bins.state),
 				alignedResponse : responseDictionary[d.response]
 			})
-		}, d2),
+		}, d2.slice(0, d2.length - 1)),
 	// prior: {
 	// 	existence: map(function(d){
 	// 			extend(d, {
@@ -68,7 +56,7 @@ var data = {
 	},d3))
 };
 
-// console.log(data.speaker)
+// console.log()
 //
 var items = levels(data.speaker, "habitual");
 // var genders = levels(data.prior.existence, "gender");
@@ -77,6 +65,7 @@ var items = levels(data.speaker, "habitual");
 var utterancePrior = Infer({model: function(){
 	return uniformDraw([targetUtterance,"silence"])
 }});
+
 
 // var thetaPrior = Infer({model: function(){
 // 	return uniformDraw(bins.threshold)}
@@ -90,16 +79,19 @@ var meaning = function(utt,state, theta) {
          true
 }
 
-
+// _.uniqBy(map(function(x){
+// 	_.pick(x, ["time_period", "roundedRate"])
+// }, data.speaker), "time_period")
+//
 var model = function(){
 
 	var speakerOptimality = {
-		s1: uniformDrift({a:0, b:20, width:2})
+		s1: uniformDrift({a: 0, b: 20, width:2})
 	}
 
 	var nullParams = {
-		mu: uniformDrift({a:-4,b:-1, width: 1}),
-		sigma: uniformDrift({a:0,b:1, width: 0.2})
+		mu: uniformDrift({a: -4, b:  -1, width: 1}),
+		sigma: uniformDrift({a: 0, b: 1, width: 0.2})
 	}
 
 	foreach(items, function(i){
@@ -135,7 +127,7 @@ var model = function(){
 			},
 			female: {
 				mu: uniformDrift({a:-1.5, b:8.5, width: 2}),
-				sigma: uniformDrift({a:0, b:5 width: 1})
+				sigma: uniformDrift({a:0, b:5, width: 1})
 			}
 		}
 
@@ -157,22 +149,17 @@ var model = function(){
 			frequencyWhenPresent.male.mu, frequencyWhenPresent.male.sigma,
 			frequencyWhenPresent.female.mu, frequencyWhenPresent.female.sigma
 		]
-		//
-		// query.add(["prior","isPresent", i, "male"], existenceProb.male)
-		//
-		//
-		// query.add(["prior","isPresent", i, "male"], existenceProb.male)
-		// query.add(["prior","isPresent", i, "female"], existenceProb.female)
-		//
-		// query.add(["prior","frequencyGivenPresent", i, "male"], gaussian(priorParams.male.frequency))
-		// query.add(["prior","frequencyGivenPresent", i, "female"], gaussian(priorParams.female.frequency))
 
-		// posterior predictive on prior questions
+		query.add(["prior", i], allParams)
 		//
-		// var frequencyGivenExistence = {
-		// 	male: gaussian(priorParams.male.frequency),
-		// 	female: gaussian(priorParams.female.frequency)
-		// };
+		// query.add(["prior","mixture_a", i, "male"], mixtureShapes.male.a)
+		// query.add(["prior","mixture_b", i, "male"], mixtureShapes.male.b)
+		// query.add(["prior","mixture_a", i, "female"], mixtureShapes.female.a)
+		// query.add(["prior","mixture_b", i, "female"], mixtureShapes.female.b)
+		// query.add(["prior","freq_mu", i, "male"], frequencyWhenPresent.male.mu)
+		// query.add(["prior","freq_sigma", i, "male"], frequencyWhenPresent.male.sigma)
+		// query.add(["prior","freq_mu", i, "female"], frequencyWhenPresent.female.mu)
+		// query.add(["prior","freq_sigma", i, "female"], frequencyWhenPresent.female.sigma)
 
 		var statePrior = Infer({model: function(){
 			sample(
@@ -205,45 +192,60 @@ var model = function(){
 		    return utterance === targetUtterance ? 1 : 0
 			}})}, 10000)
 
-		var observedFrequencies = levels(itemData.speaker, "roundedFreq");
+		var observedFrequencies = levels(itemData.speaker, "roundedRate");
 
 		foreach(observedFrequencies, function(freq){
 
-			var freqData = _.filter(itemData.speaker, {roundedFreq: freq});
-			var responseData = _.map(freqData, "alignedResponse");
-
+			var freqData = _.filter(itemData.speaker, {roundedRate: freq});
+			// var responseData = _.map(freqData, "alignedResponse");
 			var s1prediction = speaker1(freq);
+			// display(map(function(s){return [s, s1prediction.score(s)]},
+			//  s1prediction.support()))
 
-			mapData({data:responseData}, function(d){
-				// display("speaker score = " + s2prediction.score(d))
-				observe(s1prediction, d)
+			mapData({data:freqData}, function(d){
+				// display(d)
+				// display("speaker score = " + s1prediction.score(d.alignedResponse))
+				observe(s1prediction, d.alignedResponse)
 			})
 
-			query.add(["predictive",targetUtterance, i, freq], expectation(s1prediction) )
+			query.add(["predictive", i], [
+				freqData[0]["time_period"],freq, expectation(s1prediction),  "NA",
+				"NA",  "NA",  "NA",  "NA" ])
+
+				// query.add(["predictive", i, freqData[0]["time_period"],freq], expectation(s1prediction))
+
 
 		})
 
 	})
 
-	query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
-
+	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
+	query.add(["param", "speakerOptimality"], [
+		"s1", speakerOptimality.s1, "NA",  "NA",
+		"NA",  "NA",  "NA",  "NA" ])
 	return query
 }
 
-var mhiter = 75000;
+var mhiter = 1000;
 
 var burn = mhiter / 2;
+
+var outfile = 'results-habituals-s1-cdfPrior-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+
 var posterior = Infer({
   model: model,
   method: "incrementalMH",
   samples: mhiter, burn: burn,
   verbose: T,
-  verboseLag: mhiter / 20
+  verboseLag: mhiter / 20,
+	stream: {
+		path: "results/" + outfile,
+		header: [
+			"param", "item",
+			"mix_male_a", "mix_male_b", "mix_female_a", "mix_female_b",
+			"freq_male_mu", "freq_male_sigma", "freq_female_mu", "freq_female_sigma"
+		]
+	}
 })
-
-var outfile = 'results/results-habituals-s1-tweakedPrior-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
-
-utils.writeQueryERP(posterior, outfile,
-	["type", "param", "property", "category", "val"])
 
 display("written to " + outfile)
