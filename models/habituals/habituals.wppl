@@ -2,23 +2,19 @@
 
 var chain = last(process.argv) // load index as last command line index
 
-
 var dataPath = "data/"
 var targetUtterance = "habitual"
 
-// var prior_existenceFile = dataPath + "prior2-existence.csv";
-// var prior_waitFile = dataPath + "prior2-timesper5yr.csv";
+var prior_existenceFile = dataPath + "prior2-existence.csv";
+var prior_waitFile = dataPath + "prior2-timesper5yr.csv";
 var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
-var priorDataFile = dataPath + "prior2.csv";
+// var priorDataFile = dataPath + "prior2.csv";
 
-// var d0 = dataFrame(utils.readCSV(prior_existenceFile).data, ["val"]);
-// var d1 = dataFrame(utils.readCSV(prior_waitFile).data, ["val", "logval"]);
+var d0 = dataFrame(utils.readCSV(prior_existenceFile).data, ["val"]);
+var d1 = dataFrame(utils.readCSV(prior_waitFile).data, ["val", "logval"]);
 var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data,
 				["n_times", "log_times"]);
-var d3 = dataFrame(utils.readCSV(priorDataFile).data,
-["mixture_male", "mixture_female",
-"dayRate_male","dayRate_female",
-"annualRate_male","annualRate_female"]);
+// var d3 = dataFrame(utils.readCSV(priorDataFile).data, ["mixture_male", "mixture_female", "dayRate_male","dayRate_female", "annualRate_male","annualRate_female"]);
 
 
 var data = {
@@ -30,27 +26,16 @@ var data = {
 				alignedResponse : responseDictionary[d.response]
 			})
 		}, d2.slice(0, d2.length - 1)),
-	// prior: {
-	// 	existence: map(function(d){
-	// 			extend(d, {
-	// 				avoided_endval: avoidEnds(d.val)
-	// 			})
-	// 	}, d0.slice(0, d0.length - 1)),
-	// 	frequency: map(function(d){
-	// 		return d
-	// 	}, d1.slice(0, d1.length - 1))
-	// },
-	prior: map(function(d){
-		extend(d, {
-			lograte_male: Math.log(d.annualRate_male),
-			lograte_female: Math.log(d.annualRate_female),
-			roundMixture_male: avoidEnds(d.mixture_male),
-			roundMixture_female: avoidEnds(d.mixture_female)
-		})
-	}, filter(function(d){
-		( (d.mixture_male > 0) && (d.mixture_female > 0) &&
-		(d.dayRate_male > 0) && (d.dayRate_female > 0))
-	},d3))
+	prior: {
+		mixture: map(function(d){
+				extend(d, {
+					avoided_endval: avoidEnds(d.val)
+				})
+		}, d0.slice(0, d0.length - 1)),
+		frequency: map(function(d){
+			return d
+		}, d1.slice(0, d1.length - 1))
+	}
 };
 
 
@@ -77,19 +62,22 @@ var model = function(){
 	}
 
 	var nullParams = {
-		mu: uniformDrift({a: -4, b:  -1, width: 1}),
-		sigma: uniformDrift({a: 0, b: 1, width: 0.2})
+		mu: uniformDrift({a: -4, b:  0, width: 1}),
+		sigma: uniformDrift({a: 0, b: 2, width: 0.2})
 	}
 
 	foreach(items, function(i){
 
 		var itemData = {
 			speaker: _.filter(data.speaker, {habitual: i}),
-			prior: _.filter(data.prior, {item: i})
+			prior: {
+				mixture: _.filter(data.prior.mixture, {item: i}),
+				frequency: _.filter(data.prior.frequency, {item: i})
+			}
 		};
 
 		// prior parameters
-		/// mixture component
+		/// mixture parameter
 
 		var mixtureParams = {
 			male: {
@@ -107,27 +95,35 @@ var model = function(){
 			female: betaShape(mixtureParams.female)
 		};
 
+		mapData({data: itemData.prior.mixture}, function(d){
+			observe(Beta(mixtureShapes[d.gender]), d.avoided_endval)
+		})
+
+		// "does it" component
+
 		var frequencyWhenPresent = {
 			male: {
-				mu: uniformDrift({a:-1.5, b:8.5, width: 2}),
+				mu: uniformDrift({a: 0, b:10, width: 2}),
 				sigma: uniformDrift({a:0, b:5, width: 1})
 			},
 			female: {
-				mu: uniformDrift({a:-1.5, b:8.5, width: 2}),
+				mu: uniformDrift({a:0, b:10, width: 2}),
 				sigma: uniformDrift({a:0, b:5, width: 1})
 			}
 		}
 
-		mapData({data: itemData.prior}, function(d){
-			observe(Beta(mixtureShapes.female, d.roundMixture_female))
-			observe(Gaussian(frequencyWhenPresent.female), d.lograte_female)
-			observe(Beta(mixtureShapes.male, d.roundMixture_male))
-			observe(Gaussian(frequencyWhenPresent.male), d.lograte_male)
+		mapData({data: itemData.prior.frequency}, function(d){
+			observe(Gaussian(frequencyWhenPresent[d.gender]), d.logval)
 		})
 
 		var existenceProb = {
 			male: beta(mixtureShapes.male),
 			female: beta(mixtureShapes.female)
+		};
+		//
+		var freqWhenPresent = {
+			male: gaussian(frequencyWhenPresent.male),
+			female: gaussian(frequencyWhenPresent.female)
 		};
 
 		// var allParams = [
@@ -137,12 +133,26 @@ var model = function(){
 		// 	frequencyWhenPresent.female.mu, frequencyWhenPresent.female.sigma
 		// ]
 
-		query.add(["prior", i, mixtureShapes.male.a], [
-			mixtureShapes.male.b,
-			mixtureShapes.female.a, mixtureShapes.female.b,
-			frequencyWhenPresent.male.mu, frequencyWhenPresent.male.sigma,
-			frequencyWhenPresent.female.mu, frequencyWhenPresent.female.sigma
-		])
+		// query.add(["prior", i, "a", "mixture", "male"], mixtureShapes.male.a);
+		// query.add(["prior", i, "b", "mixture", "male"], mixtureShapes.male.b);
+		// query.add(["prior", i, "a", "mixture", "female"], mixtureShapes.female.a);
+		// query.add(["prior", i, "b", "mixture", "female"], mixtureShapes.female.b);
+		// query.add(["prior", i, "mu", "frequency", "male"], frequencyWhenPresent.male.mu);
+		// query.add(["prior", i, "sigma", "frequency", "male"], frequencyWhenPresent.male.sigma);
+		// query.add(["prior", i, "mu", "frequency", "female"], frequencyWhenPresent.female.mu);
+		// query.add(["prior", i, "sigma", "frequency", "female"], frequencyWhenPresent.female.sigma);
+
+		query.add(["prior", i, "predictive", "mixture", "male"], existenceProb.male);
+		query.add(["prior", i, "predictive", "mixture", "female"], existenceProb.female);
+		query.add(["prior", i, "predictive", "frequency", "male"], freqWhenPresent.male);
+		query.add(["prior", i, "predictive", "frequency", "female"], freqWhenPresent.female);
+
+		// query.add(["prior", i, mixtureShapes.male.a], [
+		// 	mixtureShapes.male.b,
+		// 	mixtureShapes.female.a, mixtureShapes.female.b,
+		// 	frequencyWhenPresent.male.mu, frequencyWhenPresent.male.sigma,
+		// 	frequencyWhenPresent.female.mu, frequencyWhenPresent.female.sigma
+		// ])
 
 		// posterior predictive on prior questions
 
@@ -242,47 +252,53 @@ var model = function(){
 			var s2prediction = speaker2(freq);
 
 			mapData({data:freqData}, function(d){
-				// display("speaker score = " + s2prediction.score(d))
+				// display("speaker score = " + s2prediction.score(d.alignedResponse))
 				observe(s2prediction, d.alignedResponse)
 			})
 
-			query.add(["predictive", i, freqData[0]["time_period"]], [
-				freq, "s2", expectation(s2prediction),
-				"NA",  "NA",  "NA",  "NA" ])
+			// query.add(["predictive", i, freqData[0]["time_period"]], [
+			// 	freq, "s2", expectation(s2prediction),
+			// 	"NA",  "NA",  "NA",  "NA" ])
+
+			query.add(["predictive", i, "s2", freqData[0]["time_period"], freq], expectation(s2prediction));
+
 
 		})
 
 	})
 
-	query.add(["param", "speakerOptimality", "s1"], [
-		 speakerOptimality.s1, "s2", speakerOptimality.s2,
-		"nullParams_mu",  nullParams.mu,
-		"nullParams_sigma",  nullParams.sigma])
+	// query.add(["param", "speakerOptimality", "s1"], [
+	// 	 speakerOptimality.s1, "s2", speakerOptimality.s2,
+	// 	"nullParams_mu",  nullParams.mu,
+	// 	"nullParams_sigma",  nullParams.sigma])
 
-	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
-	// query.add(["param","speakerOptimality","s2","na"], speakerOptimality.s2)
+	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+	query.add(["param","speakerOptimality","s2","NA", "NA"], speakerOptimality.s2)
+	var nullPred = gaussian(nullParams);
+
+	query.add(["param","nullDistribution","predictive","NA", "NA"], nullPred)
 
 	return query
 }
 
-var mhiter = 10;
-
-var burn = mhiter / 2;
-
-var outfile = 'results-habituals-s2-cdfPrior-'+'smtncs'+targetUtterance+"-"+ mhiter+'_burn'+burn+'_chain'+chain+'.csv'
+var totalIterations = 50000, lag = 10;
+var mhiter = totalIterations/lag, burn = totalIterations / 2;
+var outfile = 'results-habituals-S2-cdfPrior-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
   method: "incrementalMH",
-  samples: mhiter, burn: burn,
-  verbose: T,
-  verboseLag: mhiter / 20,
+	samples: mhiter, burn: burn, lag: lag,
+  verbose: T, verboseLag: totalIterations / 20,
 	stream: {
 		path: "results/" + outfile,
+		// header: [
+		// 	"param", "item",
+		// 	"mix_male_a", "mix_male_b", "mix_female_a", "mix_female_b",
+		// 	"freq_male_mu", "freq_male_sigma", "freq_female_mu", "freq_female_sigma"
+		// ]
 		header: [
-			"param", "item",
-			"mix_male_a", "mix_male_b", "mix_female_a", "mix_female_b",
-			"freq_male_mu", "freq_male_sigma", "freq_female_mu", "freq_female_sigma"
+			"type", "item", "cat", "param", "gender", "val"
 		]
 	}
 })
