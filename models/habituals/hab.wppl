@@ -1,0 +1,94 @@
+var utterancePrior = Infer({model: function(){
+	return uniformDraw(["habitual","silence"])
+}});
+
+var meaning = function(utt,state, theta) {
+  return utt=="habitual"? state > theta :
+         utt=="habitual is false"? state<=theta :
+         utt=='silence'? true :
+         utt=='some'? state > 0 :
+         true
+}
+
+var speakerOptimality = {
+  s1: 10,
+  s2: 2
+}
+
+var nullParams = {
+  mu: -2,
+  sigma: 1
+}
+
+var e = 0.8
+var mu = 5.3, sigma = 1.5
+var existenceProb = {
+  female: e, male: e
+};
+
+var frequencyWhenPresent = {
+  male: {mu, sigma}, female: {mu, sigma}
+};
+
+var statePrior = Infer({model: function(){
+  sample(
+    flip(0.5) ?
+      flip(existenceProb.female) ?
+        DiscretizedLognormal(frequencyWhenPresent.female) :
+        DiscretizedLognormal(nullParams) :
+      flip(existenceProb.male) ?
+        DiscretizedLognormal(frequencyWhenPresent.male) :
+        DiscretizedLognormal(nullParams)
+      )
+    }
+  }
+)
+
+var listener0 = cache(function(utterance, theta) {
+  Infer({model: function(){
+    var state = sample(statePrior)
+    var m = meaning(utterance, state, theta)
+    condition(m)
+    return state
+ }})}, 10000)
+
+var speaker1 = cache(function(state, theta) {
+  Infer({model: function(){
+    var utterance = sample(utterancePrior);
+    var L0 = listener0(utterance, theta);
+    factor(speakerOptimality.s1 * L0.score(state))
+    return utterance
+  }})}, 10000)
+
+var listener1 = cache(function(utterance) {
+  Infer({model: function(){
+    var state = sample(statePrior);
+    var theta = sample(thetaPrior);
+    var S1 = speaker1(state, theta)
+    observe(S1, utterance)
+    return state
+  }})}, 10000)
+
+var speaker2 = function(freq){
+  Infer({model: function(){
+    var utterance = sample(utterancePrior);
+    var L1 = listener1(utterance)
+    factor(speakerOptimality.s2 * L1.score(freq))
+    // var _kl = KL(speakerBeliefs, L1, speakerBeliefs.support());
+    // factor(speakerOptimality.s2  * -1 * _kl)
+    return utterance
+ }})}
+
+
+// statePrior
+// listener1("habitual")
+speaker2(290.468)
+
+// utils.lognormalCDF(Math.exp(5.3),
+    // frequencyWhenPresent.female)
+
+// upperBins
+
+// thetaPrior
+
+// midBins
