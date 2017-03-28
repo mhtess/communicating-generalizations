@@ -1,0 +1,50 @@
+# Appendix B: Measuring cue validity
+
+In considering generalizations about categories, or *generic language*, theories try to formalize the truth conditions by analogy to quantified statements (e.g., *some*, *most*, ...).
+Here, the prevalence of the feature, or $P(f \mid k)$, is the important quantity.
+Quantifiers can be described as conditions on prevalence: $\denote{some} = \{P(f \mid k) > 0\}, \denote{most} = \{P(f \mid k) > 0.5\}, \denote{all} = \{P(f \mid k) = 1\}$.
+The question for formal semantic theories has been: is there some threshold $\theta$ beyond which generic statements become true?
+Hard-constraints on $\theta$ are difficult to defend because of cases like *Mosquitos carry malaria*, where only the weakest threshold would suffice.
+
+Some (who?) have noted, however, that the inverse probability, the probability of the kind $k$ given the feature $f$ --- $P(k \mid f)$ --- might be able to save statistical-based approaches [@Leslie2007].
+This inverse probability, referred to as *cue validity*, encodes the diagnosticity of the feature for the kind.
+For example, after learning that an entity *carries malaria*, the probability that the entity is a *mosquito* is very high. 
+
+An approach based only on cue-validity would be insufficient because of cases like *Dogs have four legs*. 
+Tons of animals have four legs, and so the diagnositicity of having four legs for a dog is very low. 
+However, one could argue for some integration of the two probabilities --- prevalence and cue validity.
+This is often tested by measuring prevalence and cue validity and using both measurements as predictors of generic endorsement in a logistic-regression [@Khemlani2012; @Prasada2013].
+
+As noted in the main text, cue validity can be derived from a prevalence prior composed of a finite number of kinds.
+This relationship follows from Bayes' Rule:
+
+$$
+P(x \in k | x \in f) = \frac{P(x \in f \mid x \in k) \cdot P(x \in k)}{\sum_{k'}P(x \in f \mid x \in k') \cdot P(x \in k')}
+$$
+
+where $x$ is an arbitrary entity, $k$ is a kind represented as a collection of entities in the kind, and $f$ is a feature represented as a collection of entities with the feature.
+However, in a generative model composed of a potentially infinite number of kinds, the cue validity of a feature for a particular kind is 0. 
+In our mixture model formulation of the prevalence prior, we explicitly represent the prevalence prior as a generative model with a potentially infinite number of kinds (see Appendix A for more details).
+In this formulation, there is a mixture parameter $\phi$ that we consider the *potential of the property to be present in a kind*. 
+This is generalization of cue validity to the case of an infinite number of kinds. 
+
+## Cue validity is a special case of the prevalence prior structure
+
+## Measuring cue validity
+
+Measuring cue validity involves collecting participants' judgments that rely upon the probability of the kind given the feature.
+There are at least two conceivable ways of trying to measure cue validity.
+One way is ask participants directly about the probability (or likelihood, odds, etc...) of the kind given the feature, using a likert scale or slider.
+We'll call this approach the "direct question" approach.
+Another way is to supply participants with the feature alone and have them generate the kind.
+We'll call this approach the "free production" approach. 
+
+What criteria can we use to validate one measurement over the other?
+We propose three boundary cases *a priori* that the measurement should be able to satisfy.
+\begin{enumerate}
+\item{Completely diagnostic features: We contend there are a number of features that only one (or very small) of categories contain. Examples include: \emph{carrying malaria} (mosquitos), \emph{carrying Lyme disease} (ticks), \emph{having manes} (lions), \emph{having pouches} (kangaroos). The cue validity of these features for the corresponding categories should be very high (close to 1).}
+\item{Completely absent features: For features that are completely absent in a kind, the cue validity should be extremely low or 0. There are many examples of these kinds of pairings; for example, \emph{having wings} (leopards), \emph{laying eggs} (lions).}
+\item{Completely undiagnostic features: We contend there are a number of features that almost every category contains. Examples include: \emph{being female / male}, \emph{being juvenile}. The cue validity of these features for particular categories should be extremely low or 0. Learning that an entity is female tells you almost nothing about what kind of animal it is.}
+\end{enumerate}
+
+

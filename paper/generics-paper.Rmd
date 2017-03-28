@@ -1,33 +1,32 @@
 ---
-title: "Communicating generalizations"
-short-title: "Communicating generalizations"
-output: kmr::apa_manuscript
-csl: apa6.csl
-bibliography: generics.bib
+title             : "Communicating generalizations"
+shorttitle        : "Communicating generalizations"
 
-document-params: "a4paper,man,apacite,floatsintext"
+author: 
+  - name          : "Michael Henry Tessler"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "450 Serra Mall, Bldg. 420, Rm. 316, Stanford, CA 94305"
+    email         : "mtessler@stanford.edu"
+  - name          : "Noah D. Goodman"
+    affiliation   : "1"
 
+affiliation:
+  - id            : "1"
+    institution   : "Department of Psychology, Stanford University"
+    
 header-includes:
   - \usepackage{tabularx}
   - \usepackage{multicol}
   - \usepackage{wrapfig}
   - \usepackage{caption}
-  # - \usepackage{stfloats}
   - \usepackage{booktabs}
 
-bib-tex: "library.bib"
+author_note: >
+  Enter author note here.
 
-author-information:
-    - \author{Michael Henry Tessler \\ Noah D. Goodman}
-
-affiliation-information:
-    - \affiliation{Department of Psychology, Stanford University}
-
-author-note:
-    "Correspondence concerning this article should be addressed to: M. H. Tessler, Stanford University, Department of Psychology, 450 Serra Mall, Bldg. 420, Rm. 316, Stanford, CA 94305, mtessler@stanford.edu, 757-561-7971."
-    
-abstract: 
-    "Acquiring abstract knowledge requires making generalizations.
+abstract: >
+    Acquiring abstract knowledge requires making generalizations.
     Everyday generalizations typically rest not upon observational data, but upon testimony: Generalizations conveyed with language.
     The language of generalizations---so called, generic or habitual language (e.g., *Dogs bark.*)---appears early in development and is ubiqutious in everyday conversation.
     However, generic sentences are extremely flexible in their usage, while simultaneously conveying a strong inference: That the generalization should hold in the future. 
@@ -36,10 +35,21 @@ abstract:
     Our model shows the central phenomena of generic language emerge from the interaction of diverse prior beliefs with communicative principles.
     We elicit these priors experimentally and show that the resulting model predictions explain almost all of the variance in human judgments for both common and novel generics and outperform alternative models.
     This theory provides the computational bridge between the words we use and the generalizations they describe.
-    "
-    
-keywords:
-    "generics, pragmatics, semantics, bayesian modeling"
+  
+keywords          : "generics, pragmatics, semantics, bayesian modeling"
+wordcount         : "X"
+
+bibliography      : ["generics.bib"]
+
+figsintext        : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+lineno            : no
+
+lang              : "english"
+class             : "man"
+output            : papaja::apa6_pdf
 ---
 
 \newcommand{\denote}[1]{\mbox{ $[\![ #1 ]\!]$}}
@@ -57,6 +67,12 @@ knitr::opts_chunk$set(fig.width=6, fig.height=5, fig.crop = F, fig.path='figs/',
                       echo=FALSE, warning=FALSE, cache=F, message=FALSE, sanitize = T)
 
 ```
+
+
+```{r include = FALSE}
+library("papaja")
+```
+
 
 ```{r}
 library(rwebppl)
@@ -190,11 +206,17 @@ df.tab <- data.frame(
   x = c("a dog", "an instance of John", "an instance of a person drinking moonshine"),
   k = c("DOGS", "JOHN", "DRINKING MOONSHINE"),
   f = c("is friendly", "is smoking / smoked at time t", "caused person to go blind")
-) %>% xtable(., 
-         caption = c("Decomposition of generalizations into concrete particulars and corresponding properties."),
-         label = c("tab:genpart"))
+) #%>% xtable(., 
+ #        caption = c("Decomposition of generalizations into concrete particulars and corresponding properties."),
+  #       label = c("tab:genpart"))
 
-print(df.tab,  type = "latex", tabular.environment = "tabularx", width = "\\textwidth",  include.rownames = FALSE, comment = F)
+
+apa_table(df.tab, 
+          caption = "Decomposition of generalizations into concrete particulars and corresponding properties.", 
+          escape = TRUE, small = TRUE
+)
+
+#print(df.tab,  type = "latex", tabular.environment = "tabularx", width = "\\textwidth",  include.rownames = FALSE, comment = F)
 ```
 
 
@@ -204,7 +226,7 @@ We can treat this probability as an unknown latent cause of $f$ in $k$, and use 
 
 Suppose *a priori* we have no informative beliefs about the propensity (i.e., $P(x \in f \mid x \in k) \sim \text{Uniform}(0, 1)$).
 Observing some number of positive instances of $k$ with $f$ will update this prior belief distribution into a posterior belief distribution.
-As a concrete example, consider the prevalence of \textsc{being friendly} ($f$) among \textsc{dogs} (k); call this $p = P(x \in \{\text{is friendly}} \mid x \in \{\text{is a dog}})$.
+As a concrete example, consider the prevalence of \textsc{being friendly} ($f$) among \textsc{dogs} (k); call this $p = P(x \in \{\text{is friendly}\} \mid x \in \{\text{is a dog}\})$.
 We encounter some individual dogs, note how many of them were friendly, and form a posterior belief distribution about the friendliness of dogs.
 
 $$
@@ -249,76 +271,6 @@ For the case of understanding a generic (e.g., *Dogs are friendly*), the relevan
 The literal listener is a hypothetical agent who knows the threshold $\theta$.
 
 
-
-
-
-
-
-
-Thus, in order to define a generalization about a category, there must be some corresponding concrete particular instance of that category from which the generalization is formed. 
-For example, if an agent observes $n$ instances of \textsc{dog} ($d_1, d_2, ..., d_n$)
-For example, if an observer forms a generalization about \textsc{dogs}, she must some way of determining when she is in an instance of the category \textsc{dogs}: She must be able to *individuate*.
-In Hume's words, generalizations are predictions about "instances of which we have had no experience resemble those of which we have had experience" [@HumeTHN].
-
-
-
-# The Problems with Communicating Generalizations
-
-Generalizations can be made about almost anything.
-Here, we restrict our focus to generalizations about categories (whose linguistic expression is known as *generic language*), which have been the primary focus of psychologists, linguists, and philosophers.
-We posit that our analysis should expect to generalizations about events (habitual language) as well as generalizations about causal forces (causal language).
-
-
-
-Generics express a relation between a kind K (e.g., \textsc{robins}) and a property F (e.g., \textsc{lays eggs}), such that the property can also be said to be applicable of an individual (i.e., the bird in my backyard lays eggs).
-Bare plural statements (e.g., \emph{Robins lay eggs}) tend strongly to yield a generic meaning [@Carlson1977], though other forms can express such a meaning sometimes (e.g., \emph{A mongoose eats snakes.}).
-
-Given that generics express a property that can be applied to individuals, it would seem intuitive that the number of individuals with the property would be what makes the statement true or false.
-Counter-examples like \emph{Mosquitos carry malaria} and \emph{Birds lay eggs} v. \emph{Birds are female} stifle such intuition. 
-Semantic theories that appeal to the statistics of the world (i.e., how many Ks have F) try to rescue the notion that a generic expresses something like \emph{Ks, in general, have F}, where \emph{in general} is often either restricted to particular domains or is calculated with particular distortions.
-Alternative, \emph{conceptually}-based theories take a generic to mean \emph{Ks, in virtue of being the kind of things that Ks are, have F}.
-These accounts appeal to structured, conceptual representations in deciding what kinds of generic statements are true or false.
-Statistical and conceptual theories express the major contrasting views of the truth conditions of generic statements [@Carlson1995essay].^[We use the terms statistical and conceptual to refer to what @Carlson1995essay referred to as "inductive" and "rules and regulations" views, respectively.]
-
-
-## Statistical Accounts of Generics
-
-Statistical accounts take the \textbf{property prevalence} to be fundamental: \emph{Birds lay eggs} means \emph{Birds, in general, lay eggs}. 
-Of course, birds do not in general lay eggs (it's only the adult, female ones that do).
-The primary way of dealing with such issues is to posit domain restrictions ("implicitly, we are only talking about the females") when there are "salient partitions" [@Carlson1995].
-The most fully-developed theory on this front is due to @Cohen1999. 
-Let's first introduce some notation:
-
-For a given kind $K$ (e.g.~\textsc{robins}) and property $F$ (e.g.~\textsc{lays eggs}), we refer to the probability that an instance of kind $K$ has property $F$, that is $P(F\mid K)$, as the \emph{prevalence} of $F$ within $K$.
-Logical quantifiers can be described as conditions on prevalence (i.e.~\emph{some} is $P(F\mid K)>0$, \emph{all} is $P(F\mid K)=1$). 
-Assuming the generic relates to the property prevalence, then the simplest meaning would similarly be a threshold on prevalence: $P(F\mid K)>\theta$. @Cohen1999 takes $\theta = 0.5$; that is, \emph{Robins lay eggs} is roughly taken to mean \emph{More than half of (relevant) robins lay eggs}. 
-
-Cohen introduces constraints into the computation of prevalence: $P(F\mid K)$. In particular, prevalence is computed with respect to a \emph{partition set}. 
-For example, the property \emph{lays eggs} induces a set of alternatives that all have to do with procreation (e.g. \emph{gives birth to live young}, \emph{undergoes mitosis}, ...).
-The individuals that enter into the prevalence computation are only those individuals that would satisfy one or another alternative. 
-That is, the only individuals under consideration are the female members of kinds because only the female members can plausibly satisfy one or another of the alternatives.
-The inference that this sort of domain restriction is applied, as well as other constraints posited in the theory, are thought to be a pragmatic inference, though specifying the details of the pragmatics is beyond the scope of Cohen's theory.
-Without a well specified theory of pragmatics, however, we have no general solution to map from property prevalence to truth judgment.
-Conceptual information seems to be behind the pragmatic inference, but how Cohen's and other prevalence-based accounts relate to such knowledge remains obscure [@Carlson1995essay].
-^[However, see @Cohen2004 for a discussion of how his semantic constraints relate to different kinds of generics and different kinds of conceptual representational frameworks found in cognitive science.]
-
-## Conceptual Accounts of Generics
-
-Conceptual accounts of generics emphasize the structure of generic knowledge [@Prasada2000], and view generic utterances as the way of expressing special mental relationships between kinds and properties [@Leslie2008; @Prasada2012].
-From this perspective, \emph{Bishops move diagonally} because those are the rules of the game, not because they \emph{tend to} move diagonally.
-How do we come to know the rules of the game, though?
-
-@Leslie2007's influential theory posits that generics are tied to a "default mode of generalization". 
-This "default mode" comes equipped with the ability to single-out \emph{striking properties} (e.g. properties which are dangerous or appalling) as particularly useful aspects of the world to know about. 
-Hence, \emph{Mosquitos carry malaria} is true because carrying malaria is striking, and thus, a useful bit of information to convey.
-The default mode can also distinguish "negative" counter-instances of a property   (e.g. a bird that doesn't lay eggs) from "positive" counter-instances (e.g. a hypothetical bird that bears live young).
-Generics are much less reasonable when positive counter-instances exist. Hence, \emph{Birds are female} seems weird because "being male" is a positive counter-instance of "being female", but since there are no birds that bear live young,  \emph{Birds lay eggs} is fine.
-
-Parallel work in the psychology of concepts supports this perspective.
-@Prasada2006 and later @Prasada2013 distinguish between \emph{principled}, \emph{statistical}, and \emph{causal} relations within concepts. 
-Generics like \emph{Birds lay eggs} (in which only a minority of K have F) exhibit characteristics of principled connections (operationalized by endorsement of the phrase \emph{In general, Ks have F}), supporting @Leslie2007's typology.
-Striking generics (e.g. \emph{Mosquitos carry malaria}) show characteristics of \emph{causal connections} (operationalized using the phrase \emph{There is something about Ks that cause them to F}). 
-The fact that generics about different properties license different kinds of inferences is taken as evidence that the generics themselves represent different kinds of relations. Statistical information takes a backseat to the conceptual structure.
 
 
 # A Formal Theory of Generalizations in Language
@@ -469,11 +421,20 @@ The first test of our theory, then, will be to see if these predictions correspo
 
 # Communicating generalizations about events
 
+*Habitual* language (e.g,. "Mary smokes.") conveys generalizations about events. 
+In this first set of experiments, we test whether or not the context-sensitivity of these generalizations can be explained by our computational model of pragmatic reasoning. 
+We focus on a special kind of event: a person doing an action. 
+
+The internal structure of events can differ in several ways [CITE event people?].
+For example, the event of *smoking a cigarette* takes between 5 - 10 minutes, while the event of *wearing socks* probably lasts for several hours. 
+In these experiments, we focus on the dimension of the likely frequency of the event (how often a person does it), taking for granted that observers can segment time into discrete events. 
+
+In order for the computational model described in Eq. \ref{eq:S2} to make predictions, we must first measure the prior over the frequency of different events $P(p)$.
 
 ## Prior elicitation
 
-In this experiment we elicit the prior $P(p)$ for different events in order to generate model predictions for corresponding habituals.
-Given that some individuals rarely or never engage in an event, while others do quite frequently, we would expect the prior to be a mixture distribution between (at least) these two possibilities, similar in spirit to Zero-inflated or Hurdle Models of epidemiological data \cite{hurdleModels}.
+In this experiment we elicit the prior $P(p)$ for different events in order to generate model predictions for corresponding habitual statements.
+Given that some individuals rarely or never engage in an action (e.g., "non-smokers" for smoking), while others do quite frequently, we would expect the prior to be a mixture distribution between (at least) these two possibilities, similar in spirit to Zero-inflated or Hurdle Models of epidemiological data \cite{hurdleModels}.
 Indeed, there may be more than these two possibilities, corresponding to individuals with different traits or demographics (e.g., different expected frequencies depending on age or gender). 
 
 ### Method
@@ -486,31 +447,33 @@ The experiment took on average 12 minutes and participants were compensated \$1.
 
 #### Materials
 
-We created thirty-one events organized into pairs or triplets from 5 different conceptual categories: food and drug (e.g. \emph{eats caviar}, \emph{eats peanut butter}), work (e.g. \emph{sells things on eBay}, \emph{sells companies}), clothing (e.g. \emph{wears a suit}, \emph{wears a bra}), entertainment (e.g. \emph{watches professional football}, \emph{watches space launches}) and hobbies (e.g. \emph{runs}, \emph{hikes}). 
+We created thirty-one events organized into pairs or triplets from 5 different conceptual categories: 
+food and drug (e.g. \emph{eats caviar}, \emph{eats peanut butter}), 
+work (e.g. \emph{sells things on eBay}, \emph{sells companies}), 
+clothing (e.g. \emph{wears a suit}, \emph{wears a bra}), 
+entertainment (e.g. \emph{watches professional football}, \emph{watches space launches}), and 
+hobbies (e.g. \emph{runs}, \emph{hikes}). 
 Items were chosen to intuitively cover a range of likely frequencies of action, as well as to provide a minimal comparison to another item by having a common superordinate action (e.g. \emph{eating} caviar vs. peanut butter).
 
 #### Procedure
 
 For each event, participants were asked two questions, with associated dependent measures:
 \begin{enumerate}
-
-\item ``How many \{men, women\} have \textsc{done action} before?'' \\
-Participants responded ``N out of every J.'' by entering a number for N and choosing J from a drop-down menu (options: \{1000 - 10 million\}; default: 1000).
-%Response format: ``N out of every J.'' Enter number for N. Choose J from drop-down menu (options: 1000 - 10 million; default: 1000).
-
-\item ``For a typical \{man, woman\} who has \textsc{done action} before, how frequently does he or she \textsc{do action}?''\\  
-Participants responded ``M times in K.'' by entering a number for M and choosing K from a drop-down menu (options: \{week, month, year, 5 years\}; default: year).
+\item "How many \{men, women\} have \textsc{done action} before?" \\
+Participants responded "N out of every J." by entering a number for N and choosing J from a drop-down menu (options for J: \{1000 - 10 million\}; default: 1000).
+\item For a typical \{man, woman\} who has \textsc{done action} before, how frequently does he or she \textsc{do action}?"\\  
+Participants responded "M times in K." by entering a number for M and choosing K from a drop-down menu (options for K: \{week, month, year, 5 years\}; default: year).
 \end{enumerate}
 
-For example, one set read: ``How many men have smoked cigarettes before?''; ``For a typical man who has smoked cigarettes before, how frequently does he smoke cigarettes?''
+For example, one set read: "How many men have smoked cigarettes before?"; "For a typical man who has smoked cigarettes before, how frequently does he smoke cigarettes?"
 
 We anticipated there might be different beliefs about the frequency of events depending on whether the actor is male or female, so we asked about both genders.
-Participants answered both questions for each gender on each slide (4 questions total per slide, order of male / female randomized between-subjects), and every participant completed all 31 items in random order.
+Participants answered both questions for each gender on each slide (4 questions total per slide, order of male / female randomized between-subjects), and every participant completed all 31 items in a randomized order.
 The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/experiments/priors/priors-2.html}.
 
 \begin{figure*}[t]
 \centering
-  \includegraphics[width=0.84\textwidth]{tj-scatters-3}
+  \includegraphics[width=0.84\textwidth]{figs/tj-scatters-3}
   \caption{
   Human acceptability judgments as a function of the log frequency of action (left) and speaker $S_2$ model predictions (right) for ninety-three unique items (event \textsc{x} frequency). 
   Color denotes target-individual frequency of action (log scale), with lighter colors indicating more frequent actions. 
@@ -572,12 +535,12 @@ The experiment took 4 minutes on average and participants were compensated \$0.5
 
 #### Procedure and materials
 
-On each trial, participants were presented with a \emph{past frequency statement} for a given event of the form: ``In the past M \{weeks, months, years\}, \textsc{person} \textsc{did x} 3 times''.
+On each trial, participants were presented with a \emph{past frequency statement} for a given event of the form: "In the past M \{weeks, months, years\}, \textsc{person} \textsc{did x} 3 times".
 For example, \emph{In the past month, Bill smoked cigarettes 3 times}.
 The particular intervals used (number M and window \{weeks, months, years\}) were selected after examining the predictions of the speaker model (Eq.~\ref{eq:S2}), for each item independently, to yield a variety of predicted endorsement rates.
 The items were the same as in Expt. ~1.
 
-Participants were asked whether they agreed or disagreed with the corresponding habitual sentence: ``\textsc{person does x}'' (e.g. \emph{Bill smokes cigarettes}).
+Participants were asked whether they agreed or disagreed with the corresponding habitual sentence: "\textsc{person does x}" (e.g. \emph{Bill smokes cigarettes}).
 Participants saw 25 out of the 31 items paired randomly with a male or female character name; the other 6 trials were presented with both male and female names (on separate trials; 37 trials total) to explore the nature of the contrast class (see Model section). 
 The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/experiments/truth-judgments/tj-2.html}.
 
@@ -604,7 +567,7 @@ This may be due to the fact that actor has done the action in the past a plurali
 
 \begin{figure*}[t]
 \centering
-  \includegraphics[width=\textwidth]{expt3-4-scatters-camera.pdf}
+  \includegraphics[width=\textwidth]{figs/expt3-4-scatters-camera.pdf}
   \caption{Left: Predicted log frequency as a function of past log frequency given to the participant (Expt. 3a; CIs suppressed and jitter added for visual clarity).
   Middle: Human endorsements of habitual sentences (Expt. 3b) vs. Predicted log frequency (Expt. 3a), with data for corresponding items from Expt. 2 (assumed to have the same predictive log frequency as baseline). 
   Right: Endorsements (Expt. 3b) vs. Speaker $S_2$ model predictions using empirically elicited predictive frequencies (Expt. 3a).}
@@ -984,7 +947,7 @@ We repeated this procedure 1000 times to bootstrap 95\% confidence intervals.
 
 The generic endorsement model (speaker $S_2$) predicted that \emph{average truth conditions} should not vary appreciably across the different types of properties, consistent with the fact that generics are acceptable for broad range of prevalence levels for all property types.
 A similar absence of a gradient was observed in the human data ($\beta = 2.82; SE = 4.02; t(39) = 0.70; p = 0.49$; Figure \ref{fig:exp2b}, dotted lines). 
-Interpretations of generic utterances are stronger than their average truth conditions for the biological properties but not for the accidental properties (Figure \ref{fig:exp2b}) with both human data, replicating \citeA{Cimpian2010}, and the model; the extent of the difference is governed by prior property knowledge (mean prevalence when present $\gamma$, from Expt.~2a).
+Interpretations of generic utterances are stronger than their average truth conditions for the biological properties but not for the accidental properties (Figure \ref{fig:exp2b}) with both human data, replicating @Cimpian2010, and the model; the extent of the difference is governed by prior property knowledge (mean prevalence when present $\gamma$, from Expt.~2a).
 The listener and speaker pair of models predicts human endorsements and interpretations of novel generic utterances well ($r^2(10) = 0.87$, MSE = 0.008).
 Thus, our model predicts that the asymmetry between truth conditions and implied prevalence should hold, but only for properties with the most extreme prior beliefs.
 
@@ -1242,6 +1205,101 @@ Indeed, it has been argued that conceptual structure in general, including highe
 Future work will be needed to explore whether probabilistic representations of conceptual knowledge can capture the relations identified in other accounts of generics (such as characteristic, essential, and striking properties), and whether the effect of these relations can then be adequately captured via their impact on subjective prevalence.
 
 
+## Communicating probabilities
+
+-- KT saw that people don't do well reasoning about explicit probabilities, and concluded that people are bad with probabilities. But what if people are good, and just the way of conveying them is more vague? We can communicate 75% (assuming the priors are consistent with that), and we can communicate 30% (when the priors are consistent). So people do show sensitivity to these probabilities, suggesting that people are good with probabilities (CITE all developmental work)
+
+
+## Relationship to other theories of generics
+
+-- "default generalization" -- very close, the listener is doing a generalization, but not generalization based on evidence, but by reasoning about the threshold
+-- "normalcy" approaches -- prevalence in a cognitive model is a posterior predictive probability, which incorporates background knowledge in order to make predictions about the future. it's likely that what is "normal" is captured in much of our intuitive theories of other domains
+-- generic as indexical (sterken) -- She has two free variables: quantificational force & lexical restriction. Quantificational force is like the uncertain threshold
+-- majority-based approaches using domain restriction: Birds lay eggs means "Most female birds lay eggs" (Cohen, 1999). Our model didn't have to rely upon domain restriction at all, but it's possible there's a mathematically similar model that uses domain restriction and a fixed threshold. You would need a theory of how the domain gets retricted; this would likely rely upon the same principles (true + informative)
+
+
+
+
+### The Problems with Communicating Generalizations
+
+Thus, in order to define a generalization about a category, there must be some corresponding concrete particular instance of that category from which the generalization is formed. 
+For example, if an agent observes $n$ instances of \textsc{dog} ($d_1, d_2, ..., d_n$)
+For example, if an observer forms a generalization about \textsc{dogs}, she must some way of determining when she is in an instance of the category \textsc{dogs}: She must be able to *individuate*.
+In Hume's words, generalizations are predictions about "instances of which we have had no experience resemble those of which we have had experience" [@HumeTHN].
+
+
+Generalizations can be made about almost anything.
+Here, we restrict our focus to generalizations about categories (whose linguistic expression is known as *generic language*), which have been the primary focus of psychologists, linguists, and philosophers.
+We posit that our analysis should expect to generalizations about events (habitual language) as well as generalizations about causal forces (causal language).
+
+
+
+Generics express a relation between a kind K (e.g., \textsc{robins}) and a property F (e.g., \textsc{lays eggs}), such that the property can also be said to be applicable of an individual (i.e., the bird in my backyard lays eggs).
+Bare plural statements (e.g., \emph{Robins lay eggs}) tend strongly to yield a generic meaning [@Carlson1977], though other forms can express such a meaning sometimes (e.g., \emph{A mongoose eats snakes.}).
+
+Given that generics express a property that can be applied to individuals, it would seem intuitive that the number of individuals with the property would be what makes the statement true or false.
+Counter-examples like \emph{Mosquitos carry malaria} and \emph{Birds lay eggs} v. \emph{Birds are female} stifle such intuition. 
+Semantic theories that appeal to the statistics of the world (i.e., how many Ks have F) try to rescue the notion that a generic expresses something like \emph{Ks, in general, have F}, where \emph{in general} is often either restricted to particular domains or is calculated with particular distortions.
+Alternative, \emph{conceptually}-based theories take a generic to mean \emph{Ks, in virtue of being the kind of things that Ks are, have F}.
+These accounts appeal to structured, conceptual representations in deciding what kinds of generic statements are true or false.
+Statistical and conceptual theories express the major contrasting views of the truth conditions of generic statements [@Carlson1995essay].^[We use the terms statistical and conceptual to refer to what @Carlson1995essay referred to as "inductive" and "rules and regulations" views, respectively.]
+
+
+### Statistical Accounts of Generics
+
+Statistical accounts take the \textbf{property prevalence} to be fundamental: \emph{Birds lay eggs} means \emph{Birds, in general, lay eggs}. 
+Of course, birds do not in general lay eggs (it's only the adult, female ones that do).
+The primary way of dealing with such issues is to posit domain restrictions ("implicitly, we are only talking about the females") when there are "salient partitions" [@Carlson1995].
+The most fully-developed theory on this front is due to @Cohen1999. 
+Let's first introduce some notation:
+
+For a given kind $K$ (e.g.~\textsc{robins}) and property $F$ (e.g.~\textsc{lays eggs}), we refer to the probability that an instance of kind $K$ has property $F$, that is $P(F\mid K)$, as the \emph{prevalence} of $F$ within $K$.
+Logical quantifiers can be described as conditions on prevalence (i.e.~\emph{some} is $P(F\mid K)>0$, \emph{all} is $P(F\mid K)=1$). 
+Assuming the generic relates to the property prevalence, then the simplest meaning would similarly be a threshold on prevalence: $P(F\mid K)>\theta$. @Cohen1999 takes $\theta = 0.5$; that is, \emph{Robins lay eggs} is roughly taken to mean \emph{More than half of (relevant) robins lay eggs}. 
+
+Cohen introduces constraints into the computation of prevalence: $P(F\mid K)$. In particular, prevalence is computed with respect to a \emph{partition set}. 
+For example, the property \emph{lays eggs} induces a set of alternatives that all have to do with procreation (e.g. \emph{gives birth to live young}, \emph{undergoes mitosis}, ...).
+The individuals that enter into the prevalence computation are only those individuals that would satisfy one or another alternative. 
+That is, the only individuals under consideration are the female members of kinds because only the female members can plausibly satisfy one or another of the alternatives.
+The inference that this sort of domain restriction is applied, as well as other constraints posited in the theory, are thought to be a pragmatic inference, though specifying the details of the pragmatics is beyond the scope of Cohen's theory.
+Without a well specified theory of pragmatics, however, we have no general solution to map from property prevalence to truth judgment.
+Conceptual information seems to be behind the pragmatic inference, but how Cohen's and other prevalence-based accounts relate to such knowledge remains obscure [@Carlson1995essay].
+^[However, see @Cohen2004 for a discussion of how his semantic constraints relate to different kinds of generics and different kinds of conceptual representational frameworks found in cognitive science.]
+
+### Conceptual Accounts of Generics
+
+Conceptual accounts of generics emphasize the structure of generic knowledge [@Prasada2000], and view generic utterances as the way of expressing special mental relationships between kinds and properties [@Leslie2008; @Prasada2012].
+From this perspective, \emph{Bishops move diagonally} because those are the rules of the game, not because they \emph{tend to} move diagonally.
+How do we come to know the rules of the game, though?
+
+@Leslie2007's influential theory posits that generics are tied to a "default mode of generalization". 
+This "default mode" comes equipped with the ability to single-out \emph{striking properties} (e.g. properties which are dangerous or appalling) as particularly useful aspects of the world to know about. 
+Hence, \emph{Mosquitos carry malaria} is true because carrying malaria is striking, and thus, a useful bit of information to convey.
+The default mode can also distinguish "negative" counter-instances of a property   (e.g. a bird that doesn't lay eggs) from "positive" counter-instances (e.g. a hypothetical bird that bears live young).
+Generics are much less reasonable when positive counter-instances exist. Hence, \emph{Birds are female} seems weird because "being male" is a positive counter-instance of "being female", but since there are no birds that bear live young,  \emph{Birds lay eggs} is fine.
+
+Parallel work in the psychology of concepts supports this perspective.
+@Prasada2006 and later @Prasada2013 distinguish between \emph{principled}, \emph{statistical}, and \emph{causal} relations within concepts. 
+Generics like \emph{Birds lay eggs} (in which only a minority of K have F) exhibit characteristics of principled connections (operationalized by endorsement of the phrase \emph{In general, Ks have F}), supporting @Leslie2007's typology.
+Striking generics (e.g. \emph{Mosquitos carry malaria}) show characteristics of \emph{causal connections} (operationalized using the phrase \emph{There is something about Ks that cause them to F}). 
+The fact that generics about different properties license different kinds of inferences is taken as evidence that the generics themselves represent different kinds of relations. Statistical information takes a backseat to the conceptual structure.
+
+
+
+
+
+
+
+## Other philosophical puzzles
+
+-- Books are paperbacks. (failure of the constrast class)
+-- Birds lay eggs and are female vs. Elephants live in Asia and Africa
+--> can use pragmatics to resolve if the property is conjunctive or not. 
+-- Women are submissive. (generics + politeness mechanism, some states have lower value than others)
+-- Muslims are terrorists (vs. Mosquitos carry malaria)
+
+
+
 # Conclusion
 
 It might seem paradoxical that a part of language that is so common in communication and central to learning should be vague. 
@@ -1267,5 +1325,17 @@ The theory presented here gives one explanation of how we do so, providing a com
 
 
 
-
 # References 
+
+<!-- \setlength{\parindent}{-0.1in}  -->
+<!-- \setlength{\leftskip}{0.125in} -->
+<!-- \noindent -->
+
+<div id = 'refs'></div>
+
+```{r child = 'appendix-prevalencePrior.Rmd'}
+```
+
+```{r child = 'appendix-cueValidity.Rmd'}
+```
+
