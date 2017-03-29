@@ -63,6 +63,7 @@ function make_slides(f) {
       this.startTime = Date.now()
       this.stim =  stim;
       this.trialNum = exp.stimscopy.indexOf(stim);
+      $("#tableGenerator").html('<table id="tableGenerator"> </table>');
 
       $(".prompt").html(
         "For each of the following people that you know, how often does he or she <strong>" + stim.present + "</strong>?<br><br>"
@@ -74,15 +75,18 @@ function make_slides(f) {
         var newRow = $(document.createElement('tr'))
              .attr("id", 'row' + i);
 
-        newRow.append( $("<td id=nameCol"+i+">").text(exp.names[i] +
-        " " + stim.habitual + " "));
+        // newRow.append( $("<td id=nameCol"+i+">").text(exp.names[i] +
+        // " " + stim.habitual + " "));
 
         var freqBox = $(document.createElement('td'))
              .attr("id", 'freqbox' + i);
 
-        freqBox.after().html('<input type="text" maxlength="3" size="3" name="freqbox' + i +
-              '" id="freqbox' + i + '" value="" > times per </input>' +
+        freqBox.after().html(exp.names[i] +
+        " " + stim.habitual + " " +
+        '<input type="text" maxlength="3" size="3" tabindex="'+(i+1) +'"'+
+              'id="freqbox_response' + i + '" value="" > times per </input>' +
               ' <select id="interval'+i+'">'+
+              '<label><option value="" ></option></label>'+
                 '<label><option value="week" >week</option></label>'+
                   '<label><option value="month">month</option></label>'+
                   '<label><option value="year">year</option></label>'+
@@ -99,6 +103,7 @@ function make_slides(f) {
       var globalInterval = $(document.createElement('div'))
            .attr("id", 'globalInterval');
       globalInterval.after().html('<br>Set time window for all responses: <select id="global_setting">'+
+      '<label><option value="" ></option></label>'+
         '<label><option value="week" >week</option></label>'+
           '<label><option value="month">month</option></label>'+
           '<label><option value="year">year</option></label>'+
@@ -122,6 +127,16 @@ function make_slides(f) {
     },
 
     button : function() {
+
+      for(i=0; i<exp.names.length; i++){
+        exp.data_trials.push({
+          action: this.stim.habitual,
+          person: exp.names[i],
+          n_times: $("#freqbox_response" + i).val(),
+          interval: $("#interval" + i).val()
+        })
+      }
+
       // responses = [$("#text_response_a").val(),
       //              $("#text_response_b").val(),
       //               $("#n_people_a").val(),
