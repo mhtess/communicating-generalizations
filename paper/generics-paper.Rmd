@@ -41,7 +41,7 @@ wordcount         : "X"
 
 bibliography      : ["generics.bib"]
 
-figsintext        : yes
+figsintext        : no
 figurelist        : no
 tablelist         : no
 footnotelist      : no
@@ -54,12 +54,12 @@ output            : papaja::apa6_pdf
 
 \newcommand{\denote}[1]{\mbox{ $[\![ #1 ]\!]$}}
 \newcommand*\diff{\mathop{}\!\mathrm{d}}
-<!-- \definecolor{Red}{RGB}{255,0,0} -->
-<!-- \definecolor{Green}{RGB}{10,200,100} -->
-<!-- \definecolor{Blue}{RGB}{10,100,200} -->
-<!-- \newcommand{\ndg}[1]{\textcolor{Green}{[ndg: $#1$]}}   -->
-<!-- \newcommand{\mht}[1]{\textcolor{Blue}{[mht: $#1$]}}   -->
-<!-- \newcommand{\red}[1]{\textcolor{Red}{$#1$}}   -->
+\definecolor{Red}{RGB}{255,0,0}
+\definecolor{Green}{RGB}{10,200,100}
+\definecolor{Blue}{RGB}{10,100,200}
+<!-- \newcommand{\ndg}[1]{\textcolor{Green}{$[ndg: #1 ]$}} -->
+<!-- \newcommand{\mht}[1]{\textcolor{Blue}{$[mht: #1 ]$}} -->
+<!-- \newcommand{\red}[1]{\textcolor{Red}{$#1$}} -->
 
 ```{r global_options, include=FALSE}
 rm(list=ls())
@@ -90,19 +90,41 @@ If we are starting with habituals and/or doing all 3 kinds of generalizations, w
 - predictives (future frequency)
 -->
 
-Figuring out that a category tends to have a property, an entity tends to exhibit a behavior, or a cause tends to produce an effect is extraordinarily useful knowledge in an uncertain world. <!-- can be crucial and hard-won knowledge. -->
-It is not surprising then that language provides simple ways to communicate such generalizations: *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*. 
+<!-- Generalizations. Quantitative models. Communication / Cultural ratchet. RSA but  -->
+<!-- only specific language. One case study is generics. Puzzles. -->
+
+<!-- Quantitative model, different kinds of generalizations -->
+
+Figuring out that a category tends to have a property, an entity tends to exhibit a behavior, or a cause tends to produce an effect is crucial  knowledge in an uncertain world. <!-- can be crucial and hard-won knowledge. -->
+Without generalizations, human thought would be confined to direct experience: We would be unable to predict if the lion was about to charge or if eating a certain plant could be deadly.
+Generalizations are the life-blood of cognition and they are the foundations of generative, productive thought.
+From a very young age, children generalize from their direct experience to new situations or novel instances of a category [@Dewar2010; @Gelman1986]. 
+(CHECK THESE CITATIONS).
+The human capacity to generalize from experience displays subtle sensitivities to context [@Nisbett1983].
+Quantitative modeling has been crucial in informing our theories of how observers form generalizations.
+Inductive inferences are not subject to not only the details of the observations, but also how those observations are generated [@Gweon2010; @Shafto2012].
+
+A learner cannot form all of her abstract knowledge through direct experience, however.
+Life is only so long, and you can only be in one place at a time.
+It is not surprising then that language provides simple ways to communicate generalizations: *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*. 
 Generalizations are among the easiest forms of compositional linguistic expression and appear early in development. 
 The language is so simple that it appears everywhere in human conversation (*Movie theaters are cold.*), pedagogy (*Blickets make the machine go.*), political and scientific discourse (*The President peddles falsehoods.*, *Psychology experiments don’t replicate.*), stereotypes (*Boys are good at math*), motivation (*Big girls eat their broccoli!*), emotion-regulation  (*Accidents happen.*), child-directed (*Mommy works late*) and child-produced speech (*Slides aren't for grown-ups!*), and many other facets of experience [@GelmanEtAl2004; @Gelman2008; @Cimpian2010motivation; @Rhodes2012].
 
+In recent years, there has been tremendous progress in quantitative models of language use that display complex sensitivites to context [@Goodman2016; @Franke2015].
+The Rational Speech Act theory of language use is one such family of models that has succeeded, where others have failed, to explain *pragmatic* language phenomena (i.e., interactions between language and context).
+This framework has been used to explain, in precise mathematical terms, how it is that utterances like "some of the kids failed the test" are interpreted to mean "some (but not all) of the kids failed the test" [@Goodman2013], how "I waited a million years to get a table" is interpreted as "I waited a long time and I was annoyed" [@Kao2014], and how "John is tall" can mean John is 5'4" is John if a 12-year-old but will mean John is 6'2" is he is 24-years-old [@Lassiter2015].
+Computational modeling has pushed our understanding of these commplex phenomena, but so far, rational models of language use have focused on *specific* statements: utterances that convey information about a particular entity or situation. 
+A formal theory of *general* statements about entities or situations that extend beyond the here-and-now has remained elusive.
+
 Though the language of generalizations is found everywhere and in every language [@Behrens2005; @Carlson1995], the meaning of such linguistic expressions is philosophically puzzling and has resisted precise formalization.
-At first it seems the generalizations conveys something about the propensity of an instance, property, or event, but exactly what is conveyed is unclear.
+At first it seems the generalizations conveys something about the propensity or probability of an instance, of a property, or an event to occur, but exactly what is conveyed is unclear.
 *Mary smokes cigarettes* seems to suggest a daily-habit, while *Bill writes poems* implies something much weaker, maybe a poem every few weeks.
 *Drinking moonshine makes you go blind* and so does *staring at the sun*, but neither causal statement tells you to precisely the increased relative risk.
-*Mosquitos carry malaria* is a true statement despite the prevalence of carrying malaria among mosquitos being a just a fraction of 1\%, while *Canadians are right-handed* might seem like a weird thing to say, even though the vast majority of Canadians are.
-Generalizations, then, do not reduce to particular quantitative statements; this is the major hurdle in providing a formal account of generalizations in language [@Carlson1977; @Leslie2008; @NickelBlackwell].
+*Mosquitos carry malaria* is a true statement despite the prevalence of carrying malaria among mosquitos being a just a fraction of 1\%, while *Ducks are female* might seem like a weird thing to say, even though the rate is much higher than the malaria-carrying mosquitos.
+As well, *Ducks lay eggs* is a good generalization, though the rate is the same as *are female*.
+Generalizations, it seems, do not reduce to precise quantitative statements; this is the major hurdle in providing a formal account of generalizations in language [@Carlson1977; @Leslie2008; @NickelBlackwell].
 
-Generalizations about categories (in the form of *generic language*) have been studied extensively in cognitive and developmental psychology.
+One particular kind of linguistic generalization has been studied extensively in cognitive and developmental psychology: *generic* statements, or generalizations about categories.
 In addition to the flexibility in truth conditions, two phenomena have been noted. 
 The case of *Mosquitos carry malaria* suggests the utterance must in some way be analogous to the quantifier "some" (e.g., *Some mosquitos carry malaria*). 
 Generic language, however, is often interpreted as implying the property is widespread: *Swans have hollow bones* means something different than *Some swans have hollow bones* [@Gelman2002].
