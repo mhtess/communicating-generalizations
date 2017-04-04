@@ -76,6 +76,7 @@ function make_slides(f) {
       this.trialNum = exp.stimscopy.indexOf(stim);
       this.allZeros = 1;
       this.hypothetical = 0;
+      this.askDirect = 0;
 
       $("#tableGenerator").html('<table id="tableGenerator"> </table>');
 
@@ -137,12 +138,14 @@ function make_slides(f) {
 
     button : function() {
       var freqs = [], intervals = [];
+
       for(i=0; i<exp.names.length; i++){
         freqs.push($("#freqbox_response" + i).val())
         intervals.push($("#interval" + i).val())
       }
       // debugger;
-      // console.log(freqs);
+
+      // check if all fields are filled
       if ( (intervals.indexOf("") == -1) && (freqs.indexOf("") == -1 ) ) {
         // check if all frequencies supplied are 0
         for(i = 0; i < freqs.length; ++i) {
@@ -152,53 +155,94 @@ function make_slides(f) {
           }
         }
 
-        // if all frequencies are 0, ask about hypothetical person
+        // if all frequencies are 0, ask about somebody they might know
         if (this.allZeros) {
           i = exp.names.length;
 
          var hypotheticalQuery = $(document.createElement('div'))
               .attr("id", 'hypothetical');
 
-         hypotheticalQuery.after().html('<br>Imagine you meet a person who has '+ this.stim.past+' before. <br>How often do you think they '+this.stim.present + '?<br>' +
-         '<input type="text" maxlength="3" size="3" tabindex="'+(i+1) +'"'+
-               'id="freqbox_response' + i + '" value="" > times per </input>' +
-               ' <select id="interval'+i+'">'+
-               '<label><option value="" ></option></label>'+
-                 '<label><option value="week" >week</option></label>'+
-                   '<label><option value="month">month</option></label>'+
-                   '<label><option value="year">year</option></label>'+
-                   '<label><option value="5 years">5 years</option></label>'+
-                '</select>')
+          var followUpQ = '<br>Do you know anybody who has '+ this.stim.past+' before? <br>'
+          // var followUpQ = '<br>Imagine you meet a person who has '+ this.stim.past+' before. <br>How often do you think they '+this.stim.present + '?<br>'
 
-          hypotheticalQuery.appendTo("#tableGenerator");
-          $("#interval"+i).val('')
+          hypotheticalQuery.after().html(
+            followUpQ +
+            '<label><input type="radio"  name="knowAnybody" value="No"/>No</label>'+
+            '<label><input type="radio"  name="knowAnybody" value="Yes"/>Yes</label>'
+          )
           this.allZeros = 0;
-          this.hypothetical = 1;
-        } else {
-          for(i=0; i<exp.names.length; i++){
-            exp.data_trials.push({
-              action: this.stim.habitual,
-              person: exp.names[i],
-              n_times: $("#freqbox_response" + i).val(),
-              interval: $("#interval" + i).val()
-            })
-          }
-          if (this.hypothetical) {
-            exp.data_trials.push({
-              action: this.stim.habitual,
-              person: "hypothetical",
-              n_times: $("#freqbox_response" + exp.names.length).val(),
-              interval: $("#interval" + exp.names.length).val()
-            })
-          }
+          this.askDirect = 1;
+          hypotheticalQuery.appendTo("#tableGenerator");
+
+        } else if (this.askDirect){
+          if ($('input[name="knowAnybody"]:checked').val()  == null) {
+            $(".err").show();
+          } else if ( $('input[name="knowAnybody"]:checked').val() === "Yes" ){
+            $(".err").hide();
+
+            if (this.hypothetical == 1) {
+              if  (
+                ($("#freqbox_response" + exp.names.length).val() != "") &&
+                ($("#interval" + exp.names.length).val() != "")
+              ) {
+                this.log_responses();
+                _stream.apply(this);
+              } else {
+                $(".err").show();
+              }
+            } else {
+              i = exp.names.length;
+
+              var hypotheticalQuery2 = $(document.createElement('div')).attr("id", 'hypothetical2');
+
+              hypotheticalQuery2.after().html(
+                '<br> How often do you think they '+ this.stim.present + '?<br>' +
+              '<input type="text" maxlength="3" size="3" tabindex="'+(i+1) +'"'+
+                    'id="freqbox_response' + i + '" value="" > times per </input>' +
+                    ' <select id="interval'+i+'">'+
+                    '<label><option value="" ></option></label>'+
+                      '<label><option value="week" >week</option></label>'+
+                        '<label><option value="month">month</option></label>'+
+                        '<label><option value="year">year</option></label>'+
+                        '<label><option value="5 years">5 years</option></label>'+
+                     '</select>'
+                   )
+
+              $("#interval"+i).val('')
+              this.hypothetical = 1;
+              hypotheticalQuery2.appendTo("#tableGenerator");
+            }
+          } else {
+          this.log_responses();
           _stream.apply(this);
         }
-
-      } else {
-        $(".err").show();
+      } else { // if not all 0s
+        this.log_responses();
+        _stream.apply(this);
       }
+    } else  {
+        $(".err").show();
+    }
 
     },
+    log_responses : function() {
+      for(i=0; i<exp.names.length; i++){
+        exp.data_trials.push({
+          action: this.stim.habitual,
+          person: exp.names[i],
+          n_times: $("#freqbox_response" + i).val(),
+          interval: $("#interval" + i).val()
+        })
+      }
+      if (this.hypothetical) {
+        exp.data_trials.push({
+          action: this.stim.habitual,
+          person: "hypothetical",
+          n_times: $("#freqbox_response" + exp.names.length).val(),
+          interval: $("#interval" + exp.names.length).val()
+        })
+      }
+    }
 
   });
 
@@ -252,7 +296,7 @@ function init() {
       }
   })();
 
-  exp.n_friends = 6;
+  exp.n_friends = 8;
   exp.names = [];
   // exp.names = ["John", "Mary", "Sally", "Jim"]
   exp.trials = [];
@@ -260,7 +304,7 @@ function init() {
   exp.stimuli = _.shuffle(stimuli);
   exp.n_trials = stimuli.length
 
-  exp.womenFirst = _.sample([true, false])
+  // exp.womenFirst = _.sample([true, false])
   // debugger;
   exp.stimscopy = exp.stimuli.slice(0);
 
