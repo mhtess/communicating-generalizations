@@ -34,22 +34,28 @@ function make_slides(f) {
 
     },
     button : function() {
-      if (this.counter > exp.n_friends) {
-        for(i=1; i<this.counter; i++){
-          exp.names.push(
-            $('#textbox' + i).val()
-          )
-        }
-        exp.go(); //make sure this is at the *end*, after you log your data
+      var response = $('#textbox' + (this.counter - 1) ).val();
+      if (response == "") {
+        $(".err").show();
       } else {
-        var newTextBoxDiv = $(document.createElement('div'))
-             .attr("id", 'TextBoxDiv' + this.counter);
+        $(".err").hide();
+        if (this.counter > exp.n_friends) {
+          for(i=1; i<this.counter; i++){
+            exp.names.push(
+              $('#textbox' + i).val()
+            )
+          }
+          exp.go(); //make sure this is at the *end*, after you log your data
+        } else {
+          var newTextBoxDiv = $(document.createElement('div'))
+               .attr("id", 'TextBoxDiv' + this.counter);
 
-        newTextBoxDiv.after().html('<label>Name #'+ this.counter + ' : </label>' +
-              '<input type="text" name="textbox' + this.counter +
-              '" id="textbox' + this.counter + '" value="" >');
-        newTextBoxDiv.appendTo("#nameTable");
-        this.counter++;
+          newTextBoxDiv.after().html('<label>Name #'+ this.counter + ' : </label>' +
+                '<input type="text" name="textbox' + this.counter +
+                '" id="textbox' + this.counter + '" value="" >');
+          newTextBoxDiv.appendTo("#nameTable");
+          this.counter++;
+        }
       }
     },
   });
@@ -63,6 +69,9 @@ function make_slides(f) {
       this.startTime = Date.now()
       this.stim =  stim;
       this.trialNum = exp.stimscopy.indexOf(stim);
+      this.allZeros = 1;
+      this.hypothetical = 0;
+
       $("#tableGenerator").html('<table id="tableGenerator"> </table>');
 
       $(".prompt").html(
@@ -74,9 +83,6 @@ function make_slides(f) {
       for(i=0; i<exp.names.length; i++){
         var newRow = $(document.createElement('tr'))
              .attr("id", 'row' + i);
-
-        // newRow.append( $("<td id=nameCol"+i+">").text(exp.names[i] +
-        // " " + stim.habitual + " "));
 
         var freqBox = $(document.createElement('td'))
              .attr("id", 'freqbox' + i);
@@ -112,8 +118,6 @@ function make_slides(f) {
        globalInterval.appendTo("#tableGenerator")
        $("#global_setting").val('')
 
-
-
       // if participant touches global option, change all others
       $( "#global_setting" ).change(function() {
         for(i=0; i<exp.names.length; i++){
@@ -127,58 +131,70 @@ function make_slides(f) {
     },
 
     button : function() {
-
+      var freqs = [], intervals = [];
       for(i=0; i<exp.names.length; i++){
-        exp.data_trials.push({
-          action: this.stim.habitual,
-          person: exp.names[i],
-          n_times: $("#freqbox_response" + i).val(),
-          interval: $("#interval" + i).val()
-        })
+        freqs.push($("#freqbox_response" + i).val())
+        intervals.push($("#interval" + i).val())
+      }
+      // debugger;
+      // console.log(freqs);
+      if ( (intervals.indexOf("") == -1) && (freqs.indexOf("") == -1 ) ) {
+        // check if all frequencies supplied are 0
+        for(i = 0; i < freqs.length; ++i) {
+          if(freqs[i] !== "0") {
+            this.allZeros = 0;
+            break;
+          }
+        }
+
+        // if all frequencies are 0, ask about hypothetical person
+        if (this.allZeros) {
+          i = exp.names.length;
+
+         var hypotheticalQuery = $(document.createElement('div'))
+              .attr("id", 'hypothetical');
+
+         hypotheticalQuery.after().html('<br>Imagine you meet a person who has '+ this.stim.past+' before. <br>How often do you think they '+this.stim.present + '?<br>' +
+         '<input type="text" maxlength="3" size="3" tabindex="'+(i+1) +'"'+
+               'id="freqbox_response' + i + '" value="" > times per </input>' +
+               ' <select id="interval'+i+'">'+
+               '<label><option value="" ></option></label>'+
+                 '<label><option value="week" >week</option></label>'+
+                   '<label><option value="month">month</option></label>'+
+                   '<label><option value="year">year</option></label>'+
+                   '<label><option value="5 years">5 years</option></label>'+
+                '</select>')
+
+          hypotheticalQuery.appendTo("#tableGenerator");
+          $("#interval"+i).val('')
+          this.allZeros = 0;
+          this.hypothetical = 1;
+        } else {
+          for(i=0; i<exp.names.length; i++){
+            exp.data_trials.push({
+              action: this.stim.habitual,
+              person: exp.names[i],
+              n_times: $("#freqbox_response" + i).val(),
+              interval: $("#interval" + i).val()
+            })
+          }
+          if (this.hypothetical) {
+            exp.data_trials.push({
+              action: this.stim.habitual,
+              person: "hypothetical",
+              n_times: $("#freqbox_response" + exp.names.length).val(),
+              interval: $("#interval" + exp.names.length).val()
+            })
+          }
+          _stream.apply(this);
+        }
+
+      } else {
+        $(".err").show();
       }
 
-      // responses = [$("#text_response_a").val(),
-      //              $("#text_response_b").val(),
-      //               $("#n_people_a").val(),
-      //                $("#n_people_b").val()]
-      // if (_.contains(responses, ""))  {
-      //   $(".err").show();
-      // } else {
-      //   this.rt = Date.now() - this.startTime;
-      //   this.log_responses();
-        _stream.apply(this);
-      // }
     },
 
-    // log_responses : function() {
-    //   var m = exp.womenFirst ? "b" : "a"
-    //   var f = exp.womenFirst ? "a" : "b"
-    //   var timeDictionary = {
-    //     "week":7,
-    //     "month":30,
-    //     "year":365,
-    //     "5 years":1825
-    //   }
-    //   exp.data_trials.push({
-    //     "trial_type" : "twostep_elicitation",
-    //     "trial_num": this.trialNum+1,
-    //     "item": this.stim.habitual,
-    //     "category": this.stim.category,
-    //     "nPersons_women" :  $("#n_people_"+f).val(),
-    //     "nPersons_men" : $("#n_people_"+m).val(),
-    //     "comparisonNum_women": $("#comparison_"+f).val(),
-    //     "comparisonNum_men" : $("#comparison_"+m).val(),
-    //     "nInstances_women" : $("#text_response_"+f).val(),
-    //     "nInstances_men" : $("#text_response_"+m).val(),
-    //     "comparisonTime_women" : $("#frequency_"+f).val(),
-    //     "comparisonTime_men" : $("#frequency_"+m).val(),
-    //     "effectiveExistence_women" : $("#n_people_"+f).val() / $("#comparison_"+f).val(),
-    //     "effectiveExistence_men" : $("#n_people_"+m).val() / $("#comparison_"+m).val(),
-    //     "effectiveDayWait_women": timeDictionary[$("#frequency_"+f).val()] / $("#text_response_"+f).val(),
-    //     "effectiveDayWait_men": timeDictionary[$("#frequency_"+m).val()] / $("#text_response_"+m).val(),
-    //     "rt":this.rt
-    //   });
-    // }
   });
 
   slides.subj_info =  slide({
@@ -232,7 +248,7 @@ function init() {
   })();
 
   exp.n_friends = 4;
-  // exp.names = [];
+  exp.names = [];
   exp.names = ["John", "Mary", "Sally", "Jim"]
   exp.trials = [];
   exp.catch_trials = [];
@@ -253,7 +269,9 @@ function init() {
       screenUW: exp.width
     };
   //blocks of the experiment:
-  exp.structure=["priors" ,
+  exp.structure=[
+    // "generateNames",
+    "priors" ,
   // "i0", "instructions","catch", "single_trial", 'subj_info', 'thanks'
 ];
 
