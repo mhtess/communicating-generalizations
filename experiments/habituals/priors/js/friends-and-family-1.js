@@ -11,6 +11,9 @@ function make_slides(f) {
 
   slides.instructions = slide({
     name : "instructions",
+    start: function() {
+     $(".n_people").html(exp.n_friends);
+   },
     button : function() {
       exp.go(); //use exp.go() if and only if there is no "present" data.
     }
@@ -21,6 +24,8 @@ function make_slides(f) {
     name: "generateNames",
     start: function() {
       this.counter = 1;
+      $(".n_people").html(exp.n_friends);
+
       $(".err").hide();
 
       var newTextBoxDiv = $(document.createElement('div'))
@@ -87,7 +92,7 @@ function make_slides(f) {
         var freqBox = $(document.createElement('td'))
              .attr("id", 'freqbox' + i);
 
-        freqBox.after().html(exp.names[i] +
+        freqBox.after().html("<strong>" + exp.names[i] + "</strong>"+
         " " + stim.habitual + " " +
         '<input type="text" maxlength="3" size="3" tabindex="'+(i+1) +'"'+
               'id="freqbox_response' + i + '" value="" > times per </input>' +
@@ -247,9 +252,9 @@ function init() {
       }
   })();
 
-  exp.n_friends = 4;
+  exp.n_friends = 6;
   exp.names = [];
-  exp.names = ["John", "Mary", "Sally", "Jim"]
+  // exp.names = ["John", "Mary", "Sally", "Jim"]
   exp.trials = [];
   exp.catch_trials = [];
   exp.stimuli = _.shuffle(stimuli);
@@ -270,10 +275,13 @@ function init() {
     };
   //blocks of the experiment:
   exp.structure=[
-    // "generateNames",
-    "priors" ,
-  // "i0", "instructions","catch", "single_trial", 'subj_info', 'thanks'
-];
+    "i0",
+    "instructions",
+    "generateNames",
+    "priors",
+    "subj_info",
+    "thanks"
+  ];
 
   exp.data_trials = [];
   //make corresponding slides:
