@@ -13,6 +13,7 @@ function make_slides(f) {
     name : "instructions",
     start: function() {
      $(".n_people").html(exp.n_friends);
+     $(".n_items").html(exp.n_trials);
    },
     button : function() {
       exp.go(); //use exp.go() if and only if there is no "present" data.
@@ -35,34 +36,64 @@ function make_slides(f) {
             '" id="textbox' + this.counter + '" value="" >');
 
       newTextBoxDiv.appendTo("#nameTable");
+      $("#textbox"+ this.counter).focus()
+
       this.counter++;
+      $(document).one("keydown", _s.keyPressHandler);
 
     },
-    button : function() {
-      var response = $('#textbox' + (this.counter - 1) ).val();
-      if (response == "") {
-        $(".err").show();
+    keyPressHandler : function(event) {
+      // console.log(event)
+      var keyCode = event.which;
+
+      if (keyCode != 13) {
+        // If a key that we don't care about is pressed, re-attach the handler (see the end of this script for more info)
+        $(document).one("keydown", _s.keyPressHandler);
       } else {
-        $(".err").hide();
-        if (this.counter > exp.n_friends) {
-          for(i=1; i<this.counter; i++){
-            exp.names.push(
-              $('#textbox' + i).val()
-            )
-          }
-          exp.go(); //make sure this is at the *end*, after you log your data
-        } else {
-          var newTextBoxDiv = $(document.createElement('div'))
-               .attr("id", 'TextBoxDiv' + this.counter);
+        // If a valid key is pressed (code 80 is p, 81 is q),
+          // _s.rt = Date.now() - _s.startTime;
+          // _s.log_responses(keyCode);
 
-          newTextBoxDiv.after().html('<label>Name #'+ this.counter + ' : </label>' +
-                '<input type="text" name="textbox' + this.counter +
-                '" id="textbox' + this.counter + '" value="" >');
-          newTextBoxDiv.appendTo("#nameTable");
-          this.counter++;
-        }
+          var response = $('#textbox' + (_s.counter - 1) ).val();
+          if (response == "") {
+            $(".err").show();
+            $(document).one("keydown", _s.keyPressHandler);
+          } else {
+            $(".err").hide();
+            if (_s.counter > exp.n_friends) {
+              for(i=1; i<(_s.counter); i++){
+                exp.names.push(
+                  $('#textbox' + i).val()
+                )
+              }
+              // setTimeout(function(){_stream.apply(_s)}, 250);
+
+              exp.go(); //make sure this is at the *end*, after you log your data
+            } else {
+              var newTextBoxDiv = $(document.createElement('div'))
+                   .attr("id", 'TextBoxDiv' + _s.counter);
+
+              newTextBoxDiv.after().html('<label>Name #'+ _s.counter + ' : </label>' +
+                    '<input type="text" name="textbox' + _s.counter +
+                    '" id="textbox' + _s.counter + '" value="" >');
+              newTextBoxDiv.appendTo("#nameTable");
+              $("#textbox"+ _s.counter).focus()
+              _s.counter++;
+              $(document).one("keydown", _s.keyPressHandler);
+              // $(document).next('text').focus();
+            }
+          }
+
+
+
+
+          /* use _stream.apply(this); if and only if there is
+          "present" data. (and only *after* responses are logged) */
+        //  setTimeout(function(){_stream.apply(_s)}, 250);
       }
+
     },
+
   });
 
   slides.priors = slide({
@@ -84,6 +115,19 @@ function make_slides(f) {
         "For each of the following people that you know, how often does he or she <strong>" + stim.present + "</strong>?<br><br>"
       )
 
+      // give option to change all intervals at once
+      var globalInterval = $(document.createElement('div'))
+           .attr("id", 'globalInterval');
+      globalInterval.after().html('Set time window for all responses: <select id="global_setting">'+
+      '<label><option value="" ></option></label>'+
+        '<label><option value="week" >week</option></label>'+
+          '<label><option value="month">month</option></label>'+
+          '<label><option value="year">year</option></label>'+
+          '<label><option value="5 years">5 years</option></label>'+
+       '</select><br><br>')
+
+       globalInterval.appendTo("#tableGenerator")
+       $("#global_setting").val('')
 
       // create response table
       for(i=0; i<exp.names.length; i++){
@@ -111,18 +155,7 @@ function make_slides(f) {
         $("#interval"+i).val('')
       }
 
-      // give option to change all intervals at once
-      var globalInterval = $(document.createElement('div'))
-           .attr("id", 'globalInterval');
-      globalInterval.after().html('<br>Set time window for all responses: <select id="global_setting">'+
-      '<label><option value="" ></option></label>'+
-        '<label><option value="week" >week</option></label>'+
-          '<label><option value="month">month</option></label>'+
-          '<label><option value="year">year</option></label>'+
-          '<label><option value="5 years">5 years</option></label>'+
-       '</select>')
-       globalInterval.appendTo("#tableGenerator")
-       $("#global_setting").val('')
+
 
       // if participant touches global option, change all others
       $( "#global_setting" ).change(function() {
@@ -140,16 +173,17 @@ function make_slides(f) {
       var freqs = [], intervals = [];
 
       for(i=0; i<exp.names.length; i++){
-        freqs.push($("#freqbox_response" + i).val())
+        var f = parseInt($("#freqbox_response" + i).val())
+        freqs.push(isNaN(f) ? "" : f)
         intervals.push($("#interval" + i).val())
       }
-      // debugger;
+
 
       // check if all fields are filled
       if ( (intervals.indexOf("") == -1) && (freqs.indexOf("") == -1 ) ) {
         // check if all frequencies supplied are 0
         for(i = 0; i < freqs.length; ++i) {
-          if(freqs[i] !== "0") {
+          if(freqs[i] !== 0) {
             this.allZeros = 0;
             break;
           }
@@ -226,11 +260,15 @@ function make_slides(f) {
 
     },
     log_responses : function() {
+      var rt = Date.now() - this.startTime;
+      var trialNum = exp.stimscopy.indexOf(this.stim) + 1;
       for(i=0; i<exp.names.length; i++){
         exp.data_trials.push({
           action: this.stim.habitual,
           person: exp.names[i],
-          n_times: $("#freqbox_response" + i).val(),
+          rt: rt,
+          trialNum: trialNum,
+          n_times: parseInt($("#freqbox_response" + i).val()),
           interval: $("#interval" + i).val()
         })
       }
@@ -238,7 +276,9 @@ function make_slides(f) {
         exp.data_trials.push({
           action: this.stim.habitual,
           person: "hypothetical",
-          n_times: $("#freqbox_response" + exp.names.length).val(),
+          rt: rt,
+          trialNum: trialNum,
+          n_times: parseInt($("#freqbox_response" + exp.names.length).val()),
           interval: $("#interval" + exp.names.length).val()
         })
       }
@@ -288,7 +328,7 @@ function init() {
 
   repeatWorker = false;
   (function(){
-      var ut_id = "mht-hab-priors-20151221a";
+      var ut_id = "mht-hab-priors-20170405";
       if (UTWorkerLimitReached(ut_id)) {
         $('.slide').empty();
         repeatWorker = true;
@@ -301,8 +341,8 @@ function init() {
   // exp.names = ["John", "Mary", "Sally", "Jim"]
   exp.trials = [];
   exp.catch_trials = [];
-  exp.stimuli = _.shuffle(stimuli);
-  exp.n_trials = stimuli.length
+  exp.stimuli = _.shuffle(stimuli).slice(0, 15);
+  exp.n_trials = exp.stimuli.length
 
   // exp.womenFirst = _.sample([true, false])
   // debugger;
