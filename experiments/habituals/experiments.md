@@ -96,13 +96,19 @@ Also, might include control trials (votes in every presidential election: 4 year
 
 ### Friends and family (Prior 3)
 
-Same 31 items as Priors 2.
+27 items from Priors 2 (removed 4 activities that were illegal activities).
 
-First stage, participants generate the names of 10 close friends or family members.
+First stage, participants generate the names of 8 close friends or family members.
 Names will be in a column of text boxes.
 
-Then, one at a time, the action will come up, and 10 text boxes and drop down menus will appear next to it.
+Then, one at a time, the action will come up, and 8 text boxes and drop down menus will appear next to it.
 Participants rate the frequency with which the person does the action.
+
+4/6/2017 Pilot
+- Each subject does 15 out of 27 items
+- Pilot should be about 20 responses for items
+--> 50 subjects?
+- 50 * 1.25 + 20% = $75
 
 
 ## Truth judgments (S2 task)
