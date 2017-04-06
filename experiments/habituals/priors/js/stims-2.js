@@ -76,7 +76,7 @@ var stimuli = [
 // 	present: "wear a hat",
 // 	past: "wore a hat",
 // 	category: "clothing",
-// 	frequency: ["month","week"]	
+// 	frequency: ["month","week"]
 // },
 // {
 // 	habitual: "wears gloves",
@@ -130,22 +130,22 @@ var stimuli = [
 	frequency: ["5 years", "year","month"],
 	defaultFreq: "year"
 },
-{
-	habitual: "steals cars",
-	present: "steal a car",
-	past: "stolen a car",
-	category: "employment",
-	frequency: ["5 years", "year","month"],
-	defaultFreq: "year"
-},
-{
-	habitual: "steals chewing gum",
-	present: "steal chewing gum",
-	past: "stolen chewing gum",
-	category: "employment",
-	frequency: ["5 years", "year","month", "week"],
-	defaultFreq: "year"
-},
+// {
+// 	habitual: "steals cars",
+// 	present: "steal a car",
+// 	past: "stolen a car",
+// 	category: "employment",
+// 	frequency: ["5 years", "year","month"],
+// 	defaultFreq: "year"
+// },
+// {
+// 	habitual: "steals chewing gum",
+// 	present: "steal chewing gum",
+// 	past: "stolen chewing gum",
+// 	category: "employment",
+// 	frequency: ["5 years", "year","month", "week"],
+// 	defaultFreq: "year"
+// },
 {
 	habitual: "volunteers for soup kitchens",
 	present: "volunteer for a soup kitchen",
@@ -245,22 +245,22 @@ var stimuli = [
 	frequency: ["year","month", "week"],
 	defaultFreq: "year"
 },
-{
-	habitual: "smokes marijuana",
-	present: "smoke marijuana",
-	past: "smoked marijuana",
-	category: "food",
-	frequency: ["5 years", "year","month", "week"],
-	defaultFreq: "year"
-},
-{
-	habitual: "does cocaine",
-	present: "do cocaine",
-	past: "done cocaine",
-	category: "food",
-	frequency: ["5 years", "year","month", "week"],
-	defaultFreq: "year"
-},
+// {
+// 	habitual: "smokes marijuana",
+// 	present: "smoke marijuana",
+// 	past: "smoked marijuana",
+// 	category: "food",
+// 	frequency: ["5 years", "year","month", "week"],
+// 	defaultFreq: "year"
+// },
+// {
+// 	habitual: "does cocaine",
+// 	present: "do cocaine",
+// 	past: "done cocaine",
+// 	category: "food",
+// 	frequency: ["5 years", "year","month", "week"],
+// 	defaultFreq: "year"
+// },
 {
 	habitual: "drinks beer",
 	present: "drink beer",
@@ -346,7 +346,7 @@ var characters = [
 },
 {
 	name: "Jennifer",
-	gender: "female"	
+	gender: "female"
 },
 {
 	name: "Monica",
@@ -358,7 +358,7 @@ var characters = [
 },
 {
 	name: "Veronica",
-	gender: "female"	
+	gender: "female"
 },
 {
 	name: "Alicia",
@@ -399,7 +399,7 @@ var characters = [
 {
 	name: "Kathleen",
 	gender: "female"
-}]	
+}]
 
 
 var maleCharacters = [
@@ -557,7 +557,7 @@ var femaleCharacters = [
 },
 {
 	name: "Jennifer",
-	gender: "female"	
+	gender: "female"
 },
 {
 	name: "Monica",
@@ -569,7 +569,7 @@ var femaleCharacters = [
 },
 {
 	name: "Veronica",
-	gender: "female"	
+	gender: "female"
 },
 {
 	name: "Alicia",
@@ -694,4 +694,4 @@ var femaleCharacters = [
 {
 	name: "Nicole",
 	gender: "female"
-}]	
+}]

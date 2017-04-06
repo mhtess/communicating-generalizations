@@ -341,6 +341,7 @@ function init() {
   // exp.names = ["John", "Mary", "Sally", "Jim"]
   exp.trials = [];
   exp.catch_trials = [];
+  console.log(stimuli.length)
   exp.stimuli = _.shuffle(stimuli).slice(0, 15);
   exp.n_trials = exp.stimuli.length
 
