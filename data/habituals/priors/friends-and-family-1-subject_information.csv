@@ -1,0 +1,51 @@
+"workerid","city","region_code","region_name","language","enjoyment","gender","age","problems","time_zone","comments","metro_code","country_name","asses","fairprice","longitude","country_code","ip","latitude","education","zip_code"
+0,"Hollywood","FL","Florida","English",2,"Male",29,"","America/New_York","",528,"United States","Yes","",-80.3434,"US","98.242.255.44",25.9825,3,33027
+1,"Sacramento","CA","California","English",1,"Male",21,"No problems","America/Los_Angeles","The experiment was straightforward and easy to follow",862,"United States","Yes","1.50",-121.4383,"US","2601:204:d505:f78b:68f5:3ef7:c89e:769",38.5689,2,95819
+2,"Benicia","CA","California","english",1,"Male",30,"No","America/Los_Angeles","",807,"United States","Yes","1.50",-122.1331,"US","2602:306:8b00:6a00:ac4b:b74a:e566:cb6c",38.1129,3,94510
+3,"Carolina","","","English",1,"Male",28,"None","America/Puerto_Rico","",0,"Puerto Rico","Yes","Moderate",-65.9779,"PR","24.55.69.212",18.394,3,NA
+4,"Kingsford","MI","Michigan","English",1,"Female",29,"No problems","America/Menominee","",553,"United States","Yes","1.25+",-88.0706,"US","71.87.66.31",45.8073,3,49802
+5,NA,NA,NA,"ENGLISH",1,"Male",25,"NO",NA,"",NA,NA,"Yes","YES",NA,NA,NA,NA,3,NA
+6,"Fort Worth","TX","Texas","English",2,"Male",24,"No","America/Chicago","",623,"United States","Yes","1.25",-97.3843,"US","68.185.219.17",32.6586,1,76133
+7,"Newark","DE","Delaware","English",2,"Male",32,"","America/New_York","",504,"United States","Yes","1.40",-75.7497,"US","128.175.87.50",39.6837,4,19716
+8,"Fort Lauderdale","FL","Florida","English",1,"Female",53,"None.","America/New_York","None",528,"United States","Yes","1.25",-80.3252,"US","75.74.149.163",26.0584,2,33330
+9,"Spokane","WA","Washington","English",2,"Male",31,"n/a","America/Los_Angeles","n/a",881,"United States","Yes","1.25",-117.4291,"US","73.239.183.160",47.6597,2,99209
+10,"Hollywood","FL","Florida","English",2,"Female",28,"none","America/New_York","none",528,"United States","Yes","1.25",-80.2444,"US","73.0.155.123",26.0206,3,33024
+11,"Eugene","OR","Oregon","english",1,"Female",53,"no","America/Los_Angeles","i don&quotechart know how often people have done or ever done some of those things. did my 60 year old friend ever play the banjo? hell if i know",801,"United States","Yes","2",-123.1341,"US","75.170.51.91",44.1027,3,97404
+12,"Managua","MN","Departamento de Managua","english",2,"Male",29,"no","America/Managua","",0,"Nicaragua","Yes","yes",-86.2683,"NI","186.77.163.172",12.1508,2,NA
+13,NA,NA,NA,"English",2,"Male",23,"Nope",NA,"",NA,NA,"Yes","1.00",NA,NA,NA,NA,1,NA
+14,"Grant","AL","Alabama","English",1,"Male",38,"no","America/Chicago","no",691,"United States","Yes","1.25",-86.3134,"US","68.35.27.130",34.5081,3,35747
+15,"Dallas","TX","Texas","English",1,"Female",27,"","America/Chicago","",623,"United States","Yes","1.5",-96.8441,"US","2605:6001:e188:c900:58b8:23d:5d07:efa5",33.0017,3,75287
+16,"Elkhorn","WI","Wisconsin","English",2,"Female",36,"No","America/Chicago","This was very interesting. Thank you!",617,"United States","Yes","$1.25",-88.5429,"US","75.100.59.63",42.713,4,53121
+17,NA,NA,NA,"English",1,"Female",44,"None",NA,"Interesting and made me think about my friends and  family in the way of what we don&quotechart do and should try.  Thank you!",NA,NA,"Yes","1.25",NA,NA,NA,NA,1,NA
+18,"Swoope","VA","Virginia","English",1,"Male",32,"No","America/New_York","",573,"United States","Yes","Yes",-79.2295,"US","73.147.0.223",38.129,3,24479
+19,"Saint James","NY","New York","English",2,"Female",49,"","America/New_York","",501,"United States","Yes","1.25",-73.1805,"US","71.190.250.26",40.8934,4,11780
+20,"","","","English",2,"Male",25,"No.","","",0,"United States","Yes","10 minutes or so.",-97.822,"US","2607:fcc8:b642:a100:cf3:d15b:9ee6:8310",37.751,2,NA
+21,"","","","English",1,"Male",27,"No.","","",0,"United States","Yes","$2.00",-97.822,"US","2601:18a:8480:6960:8c3a:b272:e5e0:bdf3",37.751,3,NA
+22,NA,NA,NA,"english",2,"Female",37,"no",NA,"",NA,NA,"Yes","1.25",NA,NA,NA,NA,3,NA
+23,"Thousand Oaks","CA","California","English",1,"Male",48,"No problems.","America/Los_Angeles","No comments.",803,"United States","Yes","1.50",-118.8188,"US","2605:e000:6390:6c00:d:a0b8:604a:7e87",34.1965,3,91362
+24,"Colorado Springs","CO","Colorado","english",2,"Female",30,"No","America/Denver","",752,"United States","Confused","1.00",-104.7764,"US","2601:281:c900:7c32:40f4:bc73:af85:a0d3",38.8039,3,80910
+25,"Brooklyn","NY","New York","English",2,"Female",56,"No","America/New_York","",501,"United States","Yes","1.25",-73.9457,"US","98.113.174.246",40.6252,3,11210
+26,"McHenry","IL","Illinois","English",1,"Female",39,"no","America/Chicago","",602,"United States","Yes","2.00",-88.2668,"US","2601:245:4001:7b26:f5b1:ee70:7348:a3df",42.3334,3,60051
+27,"Mustang","OK","Oklahoma","English",1,"Female",51,"no","America/Chicago","",650,"United States","Yes","1.25",-97.7246,"US","2602:306:ce12:9e00:51c9:f01b:43e2:5199",35.3842,2,73064
+28,"Chicago","IL","Illinois","English",1,"Male",60,"none","America/Chicago","I guessed most answers",602,"United States","Yes","1.25",-87.6291,"US","173.234.62.165",41.8483,4,60616
+29,"San Diego","CA","California","English",2,"Male",28,"Nope","America/Los_Angeles","",825,"United States","Yes","1.25",-117.069,"US","72.197.218.140",32.7964,2,92120
+30,NA,NA,NA,"",1,"Female",NA,"",NA,"",NA,NA,"Yes",NA,NA,NA,NA,NA,-1,NA
+31,"Newhall","CA","California","English",2,"Female",47,"No","America/Los_Angeles","",803,"United States","Yes","1.25",-118.4775,"US","2605:e000:254d:3100:d016:a00b:d81b:6e42",34.3667,2,91321
+32,"Singapore","01","Central Singapore Community Development Council","English",0,"Female",33,"no","Asia/Singapore","",0,"Singapore","Yes",NA,103.8565,"SG","175.156.238.63",1.2855,3,NA
+33,"Sioux Falls","SD","South Dakota","english",1,"Male",26,"","America/Chicago","",725,"United States","Yes","2",-96.7323,"US","2001:48f8:2c:94:30bc:df85:6c22:877b",43.519,2,57105
+34,"Oak Harbor","WA","Washington","English",2,"Female",55,"N/A","America/Los_Angeles","I always enjoy your HITs. Thank you.",819,"United States","Yes","1.25",-122.6305,"US","2601:601:4300:9bba:cdac:d1fd:8ab:b1f9",48.3218,3,98277
+35,NA,NA,NA,"English",1,"Female",30,"no",NA,"",NA,NA,"Yes","1.5",NA,NA,NA,NA,2,NA
+36,"Highland Lakes","NJ","New Jersey","english",2,"Male",49,"no","America/New_York","",501,"United States","Yes",".75",-74.4517,"US","70.44.240.36",41.1793,2,7422
+37,"Richmond","VA","Virginia","english",2,"Female",33,"no","America/New_York","no",556,"United States","Yes","complicated...but thank you :)",-77.3195,"US","173.53.53.163",37.506,4,23250
+38,"Ocala","FL","Florida","english",1,"Female",24,"no","America/New_York","",534,"United States","Yes","1.25",-82.0029,"US","2601:883:c201:aa20:cc1e:bece:ea0a:f96b",29.1252,2,34472
+39,"Green Cove Springs","FL","Florida","English",1,"Male",34,"","America/New_York","",561,"United States","Yes","$2",-81.7433,"US","73.224.65.241",29.943,3,32043
+40,"Boiling Springs","SC","South Carolina","English",1,"Female",29,"No","America/New_York","",567,"United States","Yes","2.00",-81.9736,"US","71.12.87.120",35.0519,4,29316
+41,"Pittsburgh","PA","Pennsylvania","English",1,"Female",34,"no","America/New_York","",508,"United States","No","1.5",-79.8661,"US","72.65.235.195",40.4345,3,15221
+42,"Decatur","GA","Georgia","english",1,"Male",32,"no","America/New_York","",524,"United States","Yes","1.25",-84.2751,"US","2602:306:8b34:8a40:60cd:73d4:892d:b0cd",33.749,3,30032
+43,"Scranton","PA","Pennsylvania","english",2,"Male",33,"nope","America/New_York","nope ",577,"United States","Yes","2.00",-75.6461,"US","2601:98a:102:21d8:10ba:54d9:bcfc:e247",41.385,2,18505
+44,"Clinton","TN","Tennessee","English",1,"Male",24,"None","America/New_York","",557,"United States","Yes","1.50",-84.2062,"US","99.93.23.36",36.1033,1,37716
+45,"","","","english",2,"Male",40,"no problems","","This was very interesting and different than most HITs!",0,"United States","Yes","1.50",-97.822,"US","2602:306:31e7:a300:b15f:c4a3:f8fb:1924",37.751,1,NA
+46,"Centralia","IL","Illinois","english",1,"Male",35,"no","America/Chicago","",609,"United States","Yes","1.25",-89.1497,"US","24.216.117.178",38.5032,3,62801
+47,"Beaufort","NC","North Carolina","English",1,"Male",31,"no","America/New_York","",545,"United States","Yes","$1.25",-76.6116,"US","107.12.9.141",34.8481,1,28516
+48,"Westlake","OH","Ohio","English",2,"Female",57,"No problems with the experiment","America/New_York","n/a",510,"United States","Yes","2.00",-81.9179,"US","2602:306:38c5:aec0:6479:b246:6a24:cda7",41.4553,2,44145
+49,"Kennesaw","GA","Georgia","English",2,"Male",20,"No","America/New_York","Fun, thanks!",524,"United States","Yes","1.25",-84.6467,"US","99.36.176.239",33.9876,2,30152
