@@ -95,46 +95,61 @@ If we are starting with habituals and/or doing all 3 kinds of generalizations, w
 
 <!-- Quantitative model, different kinds of generalizations -->
 
-Figuring out that a category tends to have a property, an entity tends to exhibit a behavior, or a cause tends to produce an effect is crucial  knowledge in an uncertain world. <!-- can be crucial and hard-won knowledge. -->
-Without generalizations, human thought would be confined to direct experience: We would be unable to predict if the lion was about to charge or if eating a certain plant could be deadly.
-Generalizations are the life-blood of cognition and they are the foundations of generative, productive thought.
-From a very young age, children generalize from their direct experience to new situations or novel instances of a category [@Dewar2010; @Gelman1986]. 
-(CHECK THESE CITATIONS).
-The human capacity to generalize from experience displays subtle sensitivities to context [@Nisbett1983].
-Quantitative modeling has been crucial in informing our theories of how observers form generalizations.
-Inductive inferences are not subject to not only the details of the observations, but also how those observations are generated [@Gweon2010; @Shafto2012].
+Figuring out that a category tends to have a property, an entity tends to exhibit a behavior, or a cause tends to produce an effect is crucial knowledge in an uncertain world.
+The productivity of human thought rests upon generalizations.
+From a very young age, children make strong inductive inferences from their experience, generalizing to new situations or novel instances of a category [@Dewar2010; @Gelman1986; @Markman1989].
+Understanding inductive inferences from observations is a limited enterprise, however.
+Many properties are difficult to observe (e.g., *cows have four stomachs*) and many events are statistically unlikely (e.g., *lightning strikes tall objects*).
+For abstract, generalizable knowledge to remain in a culture, there must be a way for it to be faithfully transmitted across individuals and generations [@Tomasello1999].
 
-A learner cannot form all of her abstract knowledge through direct experience, however.
-Life is only so long, and you can only be in one place at a time.
-It is not surprising then that language provides simple ways to communicate generalizations: *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*. 
+Indeed, language provides simple ways to communicate generalizations: *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*. 
 Generalizations are among the easiest forms of compositional linguistic expression and appear early in development. 
 The language is so simple that it appears everywhere in human conversation (*Movie theaters are cold.*), pedagogy (*Blickets make the machine go.*), political and scientific discourse (*The President peddles falsehoods.*, *Psychology experiments don’t replicate.*), stereotypes (*Boys are good at math*), motivation (*Big girls eat their broccoli!*), emotion-regulation  (*Accidents happen.*), child-directed (*Mommy works late*) and child-produced speech (*Slides aren't for grown-ups!*), and many other facets of experience [@GelmanEtAl2004; @Gelman2008; @Cimpian2010motivation; @Rhodes2012].
 
-In recent years, there has been tremendous progress in quantitative models of language use that display complex sensitivites to context [@Goodman2016; @Franke2015].
-The Rational Speech Act theory of language use is one such family of models that has succeeded, where others have failed, to explain *pragmatic* language phenomena (i.e., interactions between language and context).
-This framework has been used to explain, in precise mathematical terms, how it is that utterances like "some of the kids failed the test" are interpreted to mean "some (but not all) of the kids failed the test" [@Goodman2013], how "I waited a million years to get a table" is interpreted as "I waited a long time and I was annoyed" [@Kao2014], and how "John is tall" can mean John is 5'4" is John if a 12-year-old but will mean John is 6'2" is he is 24-years-old [@Lassiter2015].
-Computational modeling has pushed our understanding of these commplex phenomena, but so far, rational models of language use have focused on *specific* statements: utterances that convey information about a particular entity or situation. 
-A formal theory of *general* statements about entities or situations that extend beyond the here-and-now has remained elusive.
+The human capacity to generalize from observations has been studied extensively in cognitive and developmental psychology [@Nisbett1983; @Heit2000].
+Inductive inferences show complex sensitivites to the kind of observations, and even how those observations came to be observed in the first place. 
+For instance, observing that an indigenous person living on a remote island *is obese* provides considerably less information about the weights of other islanders in comparison to learning that the islander's skin color *is brown* [@Nisbett1983]. 
+Confounded causal evidence can be suddenly become unconfounded when you know the evidence was generated by an intentional agent [@Goodman2009].
+Quantitative modeling has been crucial in explaining how the subtleties of experience relate to subtleties in generalization [@Tenenbaum2006; @Kemp2008].
+<!-- In stark constrast, a computational understanding of communicating generalizations is not well understood at all.  -->
 
+<!-- Gathering data and observing evidence, however, is costly.  -->
+<!-- The human problem of induction even displays a complex sensitivity to not only the type of data, but how the data was generated [@Gweon2010; @Shafto2012]. -->
+<!-- A learner cannot form all of her abstract knowledge through direct experience, however. -->
+<!-- Life is only so long, and you can only be in one place at a time. -->
+
+Computational modeling has also made tremendous progress in formalizing how information is transmitted among interlocutors through language [@Goodman2016; @Franke2015].
+As an example, the Rational Speech Act theory of language understanding has had considerable success in providing a formal account of *pragmatic* language phenomena (i.e., interactions between language and context).
+This framework has been used to explain, in precise mathematical terms, how it is that utterances like "some of the kids failed the test" are interpreted to mean "some (but not all) of the kids failed the test" [@Goodman2013], how "I waited a million years to get a table" is interpreted as "I waited a long time and I was annoyed" [@Kao2014], and how "John is tall" can mean John is 5'4" is John if a 12-year-old but will mean John is 6'2" if he is 24-years-old [@Lassiter2015].
+Computational modeling has pushed our understanding of these commplex phenomena, but so far, rational models of language use have focused on *specific* statements: utterances that convey information about a particular entity or situation. 
+A formal theory of statements that convey generalizations about entities or situations ---  statements that extend beyond the here-and-now --- has remained elusive.
+
+A computational understanding of communicating generalizations is a formidible challenge.
 Though the language of generalizations is found everywhere and in every language [@Behrens2005; @Carlson1995], the meaning of such linguistic expressions is philosophically puzzling and has resisted precise formalization.
-At first it seems the generalizations conveys something about the propensity or probability of an instance, of a property, or an event to occur, but exactly what is conveyed is unclear.
-*Mary smokes cigarettes* seems to suggest a daily-habit, while *Bill writes poems* implies something much weaker, maybe a poem every few weeks.
+Intuitively, generalizations should convey something about the propensity or probability of an instance, of a property, or of an event to occur, but exactly what is conveyed is unclear.
+The generalization *Mary smokes cigarettes* seems to suggest a daily-habit, while *Bill writes poems* implies something much weaker, perhaps a poem every few weeks.
 *Drinking moonshine makes you go blind* and so does *staring at the sun*, but neither causal statement tells you to precisely the increased relative risk.
 *Mosquitos carry malaria* is a true statement despite the prevalence of carrying malaria among mosquitos being a just a fraction of 1\%, while *Ducks are female* might seem like a weird thing to say, even though the rate is much higher than the malaria-carrying mosquitos.
 As well, *Ducks lay eggs* is a good generalization, though the rate is the same as *are female*.
-Generalizations, it seems, do not reduce to precise quantitative statements; this is the major hurdle in providing a formal account of generalizations in language [@Carlson1977; @Leslie2008; @NickelBlackwell].
+Generalizations, it seems, do not reduce to precise quantitative statements; this is the major stumbling block to providing a formal account of generalizations in language [@Carlson1977; @Leslie2008; @NickelBlackwell].
 
-One particular kind of linguistic generalization has been studied extensively in cognitive and developmental psychology: *generic* statements, or generalizations about categories.
-In addition to the flexibility in truth conditions, two phenomena have been noted. 
-The case of *Mosquitos carry malaria* suggests the utterance must in some way be analogous to the quantifier "some" (e.g., *Some mosquitos carry malaria*). 
-Generic language, however, is often interpreted as implying the property is widespread: *Swans have hollow bones* means something different than *Some swans have hollow bones* [@Gelman2002].
-This characteristically strong interpretation (phenomenon 1) interacts with the flexibile truth conditions to exaggerate evidence (phenomenon 2). 
+Empirical work done on category generalizations --- so called *generic language* --- has elucidated another troubling phenomenon.
+<!-- One case study in the language of generalizations is about category generalizations. -->
+<!-- Category generalizations, called *generic statement*, has been studied extensively in cognitive and developmental psychology: *generic* statements, or generalizations about categories. -->
+Generic statements often imply the property is widespread in the category [e.g., *Swans have hollow bones* is a strong statement; much more so than *Some swans have hollow bones*; @Gelman2002; @Cimpian2010; @Brandone2014].
+This characteristically strong interpretation interacts with the indeterminacy in truth conditions to exaggerate evidence. 
 For a variety of features, both children and adults infer that a property is *more* prevalent when told the generalizations than when judging it true or not [@Cimpian2010; @Brandone2014].
 
-The fact that generalizations in language seem to convey something about the propensity but that there seem to be as many interpretations of generalized statements as there are generalizations have confounded formal models aimed to capture their meaning.
-We take as a starting point the idea that the core meaning of a linguistic generalization is simple (it conveys something about the propensity), but underspecified.
-We situate this idea inside a rational model of communication, and find that general principles of pragmatic reasoning can be used to resolve more precise meanings in context. 
-We apply this framework to explain generalizations about categories, events, and causal forces. 
+<!-- These *strong implications* might underly stereotype formation in social categories [@Rhodes2012]. -->
+<!-- In addition to the flexibility in truth conditions, two phenomena have been noted.  -->
+<!-- The case of *Mosquitos carry malaria* suggests the utterance must in some way be analogous to the quantifier "some" (e.g., *Some mosquitos carry malaria*).  -->
+<!-- Generic language, however, is often interpreted as implying the property is widespread: *Swans have hollow bones* means something different than *Some swans have hollow bones* [@Gelman2002]. -->
+
+In this paper, we introduce a formal modelfor understanding the language of generalizations.
+<!-- The fact that generalizations in language seem to convey something about the propensity but that there seem to be as many interpretations of generalized statements as there are generalizations have confounded formal models aimed to capture their meaning. -->
+We take as a starting point the idea that the core meaning of a linguistic generalization is simple (i.e., it conveys something about the propensity), but underspecified (i.e., there is uncertainty in the meaning).
+We extend a rational model of communication --- the Rational Speech Act theory --- to be able to understand general statements that extend beyond the here-and-now.
+We provide a number of stringest tests of this theory to explain generalizations about categories, events, and causal forces. 
 
 In Section 1, we introduce an information-theoric communicative theory of how generalizations are conveyed in language and flesh out the model's predictions.
 Our model predicts the truth conditions of generalizations should vary with the (A) the propensity of the target to exhibit the feature (e.g., how often Bill smokes) and (B) the prior distribution over the feature propensity (e.g., how often other people smoke).
