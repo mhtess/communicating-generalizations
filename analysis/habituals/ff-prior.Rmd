@@ -1,0 +1,256 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(forcats)
+library(langcog)
+library(knitr)
+project.path <- "~/Documents/research/generics-paper/"
+```
+
+
+### Subject information
+
+```{r}
+df.subj <- read.csv(paste(project.path, "data/habituals/priors/friends-and-family-1-subject_information.csv", sep= ""))
+```
+
+Did people like the HIT?
+```{r}
+table(df.subj$enjoyment)
+```
+
+Where are people from?
+
+```{r}
+table(df.subj$country_name)
+```
+
+### Results
+
+```{r}
+df <- read.csv(paste(project.path, "data/habituals/priors/friends-and-family-1-trials.csv", sep= ""))
+```
+
+How participants filled out each item? (Each participant did 15 items, randomly selected from 27)
+```{r}
+tab.items <- table(unique(
+  df %>% 
+    select(workerid, action)
+)$action)
+
+df.items <- data.frame(tab.items)
+
+df.items[order(df.items$Freq),] %>% kable()
+```
+
+
+How often do you fill out all 0s?
+
+```{r}
+df.allZeros <- df %>%
+  filter(person != "hypothetical") %>%
+  group_by(workerid, action) %>%
+  summarize(counts = sum(n_times)) %>%
+  mutate(zeros = ifelse(counts == 0, 1, 0)) %>% 
+  ungroup() %>%
+  group_by(action) %>%
+  summarize(n = n(),
+            allZeros = sum(zeros)) %>%
+  ungroup() %>%
+  mutate(action = factor(action, levels = action[order(allZeros)]),
+         knowSomebody = n - allZeros) 
+
+ggplot(df.allZeros %>% gather(key, val, knowSomebody, allZeros), 
+       aes(x = action, y = val, fill = key))+
+  geom_bar(stat = 'identity')+
+  theme(axis.text.x = element_text(angle = 90))+
+  scale_fill_solarized()+
+  coord_flip()
+```
+When you fill out "all 0s", do you go for the hypothetical?
+
+```{r allZeros}
+df.hypotheticals <- 
+  left_join(
+    df %>%
+      filter(person != "hypothetical") %>%
+      group_by(workerid, action) %>%
+      summarize(counts = sum(n_times)) %>%
+      filter(counts == 0) %>%
+      ungroup(),
+    df %>%
+      filter(person == "hypothetical") %>%
+      select(workerid, action, person)
+  ) %>%
+  mutate(hypothetical = ifelse(is.na(person), 0, 1)) %>%
+  group_by(action) %>%
+  summarize(nZeros = n(),
+            nHypotheticals = sum(hypothetical)) %>%
+  mutate(action = factor(action, levels = action[order(nZeros)]),
+         noHypothetical = nZeros - nHypotheticals) %>%
+  gather(key, val, noHypothetical, nHypotheticals)
+
+ggplot(df.hypotheticals, aes(x = action, y = val, fill = key)) +
+  geom_bar(stat = 'identity', color = 'black') +
+  theme(axis.text.x = element_text(angle = 90)) +
+  coord_flip() +
+  scale_fill_solarized()
+```
+
+
+What time window do people select?
+
+```{r timeWindow}
+df %>%
+  mutate(interval = fct_relevel(interval, "5 years", "year", "month", "week")) %>%
+  ggplot(., aes ( x = interval, fill = interval ))+
+  geom_bar()+
+  facet_wrap(~action)+
+  scale_fill_solarized()+
+  theme(axis.text.x = element_blank())
+```
+
+
+
+Put rates on the scale of Number of times / year
+
+```{r}
+annualRates = list("5 years" = 1/5, "year" = 1, "month" = 12, "week" = 52)
+
+df.tidy <- df %>%
+  rowwise() %>%
+  mutate(annualRate = annualRates[[as.character(interval)]]*n_times)
+
+df.tidy %>%
+  filter(annualRate > 0 ) %>%
+  ggplot(., aes( x = log(annualRate)))+
+  #geom_histogram()+
+  geom_density()+
+  facet_wrap(~action, scales = 'free')+
+  xlim(-2, 8.5)
+
+ggsave("~/Desktop/habpriors_ff.pdf", width = 12, height = 8)
+```
+
+
+```{r}
+
+df.tidy %>%
+  mutate(annualRate = ifelse(annualRate == 0, 0.05, annualRate)) %>%
+  ggplot(., aes( x = log(annualRate)))+
+  geom_histogram()+
+  #geom_density()+
+  facet_wrap(~action, scales = 'free')+
+  xlim(-3.5, 8.5)
+
+#ggsave("~/Desktop/habpriors_ff_wZeros_Hist.pdf", width = 12, height = 8)
+```
+
+# Comparison with structured elicitation
+
+### Mixture parameter vs. No. 0s
+
+```{r}
+df.s.e <- read.csv(paste(project.path, 
+                       "models/habituals/data/prior2-existence.csv", 
+                       sep = ""))
+
+df.s.e.summ <- df.s.e %>%
+  group_by(item) %>%
+  multi_boot_standard(column = "val")
+```
+
+```{r}
+ df.e.summ <- df %>%
+  mutate(existence = ifelse(n_times > 0, 1, 0)) %>%
+  group_by(action) %>%
+  multi_boot_standard(column = "existence") %>%
+  rename(friends_mean = mean,
+         friends_lower = ci_lower,
+         friends_upper = ci_upper)
+
+df.mixture <- left_join(df.s.e.summ %>% rename(action = item), 
+                        df.e.summ %>%
+                          mutate(action = as.character(action),
+                                 action = 
+                                   ifelse(action == "sell things on eBay",
+                                          "sells things on eBay",
+                                          action)))
+
+df.mixture[complete.cases(df.mixture), ] %>%
+  ggplot(., aes ( x = friends_mean, xmin = friends_lower,
+                  xmax = friends_upper,
+                  y = mean, ymin = ci_lower,
+                  ymax = ci_upper))+
+  geom_point()+
+  geom_errorbar(alpha = 0.4)+
+  geom_errorbarh(alpha = 0.4)+
+  geom_abline(intercept = 0, slope = 1, lty = 3)+
+  xlim(0, 1)+
+  ylim(0, 1)+
+  coord_fixed()+
+  xlab("# of friends who have do X w/ non-0 freq")+
+  ylab("proportion of Americans who have done X before")
+
+ggsave("~/Desktop/habpriors_comparison_scatter_HasDoneIt.pdf", width = 5, 
+       height = 6)
+```
+
+```{r}
+df.mixture.complete <- df.mixture[complete.cases(df.mixture), ] %>%
+  mutate(sqErr = (mean - friends_mean) ^2 )
+
+df.mixture.complete[order(-df.mixture.complete$sqErr), ] %>%
+  select(action, friends_mean, mean, sqErr) %>%
+  kable()
+
+df.mixture.complete[order(-df.mixture.complete$sqErr), ] %>%
+  head(8) %>%
+  select(action, friends_mean, mean, sqErr) %>%
+  kable(format = "markdown")
+```
+
+
+```{r}
+df.s.f <- read.csv(paste(project.path, 
+                       "models/habituals/data/prior2-timesper5yr.csv", 
+                       sep = ""))
+df.f <- bind_rows(df.s.f %>%
+            mutate(val = val/5,
+                   logval = log(val),
+                   src = 'american') %>%
+            rename(action = item) %>%
+              select(action, logval, src),
+          df %>%
+            filter(n_times > 0) %>%
+            rowwise() %>%
+          mutate(friendRate =
+                   annualRates[[as.character(interval)]]*n_times,
+                 logval = log(friendRate),
+                 src = 'friends') %>%
+            select(action, logval, src))
+
+ggplot(df.f %>%
+         filter(!(action %in% c("smokes marijuana", "does cocaine",
+                              "steals cars", "steals chewing gum"))) %>%
+         mutate(action = as.character(action),
+                 action = 
+                   ifelse(action == "sell things on eBay",
+                          "sells things on eBay",
+                                          action)), 
+       aes( x = logval, lty = src, color = src))+
+  stat_ecdf()+
+  facet_wrap(~action)+
+  scale_color_solarized()+
+  scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+
+ggsave("~/Desktop/habpriors_comparison_cdfs_DoesIt.pdf", width = 10, 
+       height = 8)
+
+```
+
