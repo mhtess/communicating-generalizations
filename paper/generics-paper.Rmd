@@ -229,7 +229,6 @@ We find that this formalism resolves the philosophical and empirical puzzles.
 # Communicating Generalizations
 
 Generalizations are used to make predictions about instances that an agent has yet to experience [@HumeTHN].
-What does it mean to form a generalization?
 To form a generalization about a class $k$ (e.g., a category, an event, or a causal force), an observer must be able to individuate an exemplar or instance $x$ as belonging to the class $k$.
 The linguistic expression of this manifests in utterances such as "$x$ is a $k$" or "this $k$ ..."
 To generalize a feature $f$ to that class, it is also necessary to be able to determine if the particular has the feature.
@@ -257,55 +256,177 @@ apa_table(df.tab,
 ```
 
 
-Suppose we observe instances $\{x_1, x_2, ..., x_n\}$ of class $k$ and some number of them have feature $f$: What do we learn about the probability of that feature in a future instance $x_{n+1}$ of $k$?
-Let's call this probability $P(x \in f \mid x \in k)$ the *propensity* of $k$ to have $f$ (or, the *prevalence* of $f$ among $k$).
-We can treat this probability as an unknown latent cause of $f$ in $k$, and use the Bayesian probability calculus to learn from our observations.
+Suppose we observe instances $\{x_1, x_2, ..., x_n\}$ of class $k$ and some number of them have feature $f$: What do we learn about possible future instances of $x_{n+1}$, particularly with respect to $k$?
+For features among entities of a category or an effect following a cause, the relevant propensity $h$ is a probability $h = P(x \in f \mid x \in k)$^[
+This can also be called the *prevalence* of $f$ among $k$.
+].
+Here, $x$ is an object.
+For a behavior exhibited by a entity, the relevant propensity is a rate --- how frequently (in time) does $x \in f$ occur --- which can be described as a probability integral: $h = \int_{t} P(x \in f_t \mid x \in k_t) \diff t$
+Here, $x$ is a instance.
+We can treat propensity as an unknown latent cause of $f$ in $k$, and use Bayesian inference to learn from our observations.
 
-Suppose *a priori* we have no informative beliefs about the propensity (i.e., $P(x \in f \mid x \in k) \sim \text{Uniform}(0, 1)$).
-Observing some number of positive instances of $k$ with $f$ will update this prior belief distribution into a posterior belief distribution.
-As a concrete example, consider the prevalence of \textsc{being friendly} ($f$) among \textsc{dogs} (k); call this $p = P(x \in \{\text{is friendly}\} \mid x \in \{\text{is a dog}\})$.
-We encounter some individual dogs, note how many of them were friendly, and form a posterior belief distribution about the friendliness of dogs.
+<!-- Suppose *a priori* we have no informative beliefs about the propensity (i.e., $P(x \in f \mid x \in k) \sim \text{Uniform}(0, 1)$). -->
+Observing some number of positive instances of $k$ with $f$ will update a prior belief distribution (perhaps in an uninformed prior) into a posterior belief distribution.
+As a concrete example, consider the feature *is friendly* ($f$) for the category *dog* ($k$): $h = P(x \in \{\text{is friendly}\} \mid x \in \{\text{is a dog}\})$.
+We encounter some individual dogs, note how many of them were friendly ($d$), and form a posterior belief distribution about the friendliness of dogs.
 
 $$
-P(p \mid d) = \frac{P(d \mid p) \cdot P(p)}{\int_{p'}P(d \mid p') \cdot P(p')}
+P(h \mid d) = \frac{P(d \mid h) \cdot P(h)}{\int_{h'}P(d \mid h') \cdot P(h')}
 $$
-Our ability to use this updated belief $P(p \mid d)$ in order to make predictions about unobserved instances is a computational description of generalization [e.g., @Tenenbaum2011].
-Life is only so long, however, and a person can only be in one place at a time.
-The amount of data we can gather about any particular category, event, or causal force is extremely limited by these physical constraints.
-Thus, it would be useful if language provided a simple way to communicate these generalizations to one another.
+Our ability to use this updated belief $P(h \mid d)$ in order to make predictions about unobserved instances is a computational description of generalization [e.g., @Tenenbaum2006; @Tenenbaum2011].
+What if we wanted to communicate this belief distribution?
+Using the tools of formal semantics, we need to specify a truth function: A function from states of the world to truth-values. 
+A simple meaning then would be a threshold on this posterior probability: $\denote{u_{generalization}}(h, \theta): \{ h: h > \theta}$.
+$\denote{u_{generalization}}$ represents the semantic meaning of a statement conveying a generalization.
+Following convention in formal semantics, we treat this as a function, applied to variables $h$ (a probability or rate) and $\theta$ (a threshold).
+This function returns the sets of worlds that are consistent with $h > \theta$.
 
-The linguistic outlet for generalizations about categories---so called, *generic language*---has received tremendous attention from psychologists, linguists, and philosophers.
-Generic language is one of the earliest emerging forms of complex, compositional language (CITE).
-Somewhere between 2 and 3 years of age, children recognize that generics convey a generalization about a category, not directly tied to concrete instances in a scene [@Cimpian2008].
-More on development.
-
-What is perhaps surprising from a formal perspective is that generic language is far from trivial to characterize. 
-If generics convey something about the prevalence of feature, we would expect them to be in some way comparable to quantifier statments (e.g., "some", "most", "all", ...).
-Rehash linguistic puzzles.
-The extreme flexibility of generic meaning stands in stark contrast to its early emergence in development.
-In fact, quantified statements, whose formal meaning is much more straight-forward, emerge much *later* in development.
-This has led some to conclude that the normal tools for describing the semantics of quantified utterances (namely, a truth-functional threshold) will not work for generic language [@Leslie2008].
-
-This may be throwing out the baby with the bathwater.
-Consider the acquisition problem, there are two aspects of meaning that a language learner must acquire for the semantics of a quantified utterance: (1) that the meaning is a threshold-function (i.e., $\denote{u}(p, \theta) = \{p :p > \theta\}$ and (2) the value of the threshold (e.g., $\theta = 0$ for "some", $\theta = 0.5$ for "most").
-Perhaps, then, the difficulty in acquiring the meaning of quantifiers is a difficulty in learning the value of the threshold (aspect 2) and not in recognizing that the utterance conveys something about the quantity (e.g., via a semantic threshold; aspect 1).
-This would lead to the prediction that generics could be amenable to a threshold-semantics, but with the value of the threshold left underspecified in the semantics.
-The problem of generic language interpretation then reduces to the problem of inferring the threshold in context.
+Unfortunately, no fixed values of $\theta$ would suffice: *Bills writes poems* might true if Bill does it a few times a year, while we might be hesitant to say *Mary smokes cigarettes* if she only does it once every few months.
+*Ducks lay eggs* is true despite only the female ducks laying eggs, while *Ducks are female* is strange to say (even though only the females are female).
+What if we leave the $\theta$ underspecified in the semantics?
+That is, what would a listener believe if she drew $\theta$ from an uninformed prior belief distribution: $P(\theta)$?^[
+Previous attempts have been made to salvage this threshold semantics, using a semantic a technique called "domain restriction", wherein the scope of generalization is restricted to a smaller subset of entities or instances [e.g., "only female ducks"; @Cohen1999]. 
+Though effective at dealing with at least some of these semantic puzzles, this approach leaves unresolved why the domain should be restricted in some cases and not others.
+We return to this more fully in the General Discussion.
+]
 
 We can formalize this hypothesis with a "literal listener" model from the Rational Speech Act framework [@Frank2012; @Goodman2013; @Goodman2016].
 
 \begin{eqnarray}
-L_{0}(p \mid u) &\propto& {\delta_{\denote{u}(p, \theta)} \cdot P(p) \cdot P(\theta)} \label{eq:L0}
+L_{0}(h, \theta \mid u) &\propto& {\delta_{\denote{u}(h, \theta)} \cdot P(h) \cdot P(\theta)} \label{eq:L0}
 \end{eqnarray}
 
-The $\delta_{\denote{u}(x)}$ likelihood is the Kronecker delta function returning $1$ for states $p$ compatible with utterance $u$ and $0$ otherwise. 
-For the case of a generic utterance, these are states of the world $p$ that are greater than the semantic threshold $\theta$.
+The $\delta_{\denote{u}(h, \theta)}$ likelihood is the Kronecker delta function returning $1$ for states $h$ compatible with utterance $u$ and $0$ otherwise. 
+For the case of our semantics for generalizations, these are degrees of propensity $h$ that are greater than the semantic threshold $\theta$.
+The threshold $\theta$ is assumed to be drawn by an uninformative prior distribution, defined on the same scale as the propensity $h$: $\theta \sim \text{Uniform}(0, 1)$.
+Finally, the prior distribution $P(h)$ is a distribution over the degrees of propensity. 
+The particular form of the prior plausibly depends upon the kind of property or event in question and could be structured as a result of deeper conceptual knowledge about properties and events [cf., @Griffiths2005; @Tenenabum2006; @Kemp2008].
+This is a simple Bayesian model of interpreting a statement conveying a generalization.
 
+For addressing the question of whether or not a generalization is "true" or "felicitous", we consider how a Gricean speaker would act, given the goal of being informative to the literal listener (Eq. \ref{eq:L0}). 
+
+\begin{equation} 
+<!-- S_{1}(u \mid k) \propto \exp{(\lambda \cdot {\mathbb E}_{h\sim P_{k}} \ln{ \int_{\theta} L_0(x, \theta \mid u)}  \diff \theta ) } -->
+S_{1}(u \mid k) \propto \exp{(\lambda \cdot U(u; k)  }
+\label{eq:S1}
+\end{equation}
+
+Following RSA, this speaker is an approximately rational (speech-)actor with degree with rationality governed by parameter $\lambda$.
+Inspired by Bayesian decision theory, the speaker takes actions (i.e., produces utterances) soft-max optimally in accord with his utility function \cite{Baker2009}.
+The utility function of a speaker is based on the informativeness of the utterance, which is computed with respect to what a naive listener $L_0$ would believe after hearing the utterance, taking into account the cost of the utterance $C(u)$. 
+\begin{equation}
+U(u; h) = \ln{ \int_{\theta} L_0(h, \theta \mid u)}  \diff \theta - C(u)
+\label{eq:utility}
+\end{equation}
+Since the speaker doesn't know the threshold $\theta$, he must integrate over the likely values that the listener will infer. ^[
+A more general version of this model could relax the assumption that the speaker has access to a degree of propensity $h$ that he is trying to communicate.
+Rather, the speaker may have a belief distribution over $h$, corresponding to his beliefs about the rate with which an event happens or the prevalence of the property in the kind. 
+In this situation, we would define the utility function to be the expected value of the informativity, which integrates over his belief distribution: 
+$U(u; k) = {\mathbb E}_{h\sim P_{k}} \ln{ \int_{\theta} L_0(h, \theta \mid u)}  \diff \theta$
+]
+<!-- $S_1$ thus seeks to minimize the surprisal of $s$ given $u$ for the naive listener, while bearing in the mind the utterance cost $C(u)$. -->
+
+The proportionality in Eq. \ref{eq:S1} implies normalization over a set of alternative utterances.
+Because we intend $S_1$ to be a model of felicity judgments, we consider only the possibility of staying quiet in addition to saying the generalization as utterances [@Degen2014]. 
+Again, the generalization is a threshold function: $\denote{u_{generalization}}(h, \theta)=\{h: h > \theta \}$.
+The silent or \emph{null} utterance alternative carries no information (i.e., $\denote{u_{silence}}(h, \theta) = \{h\}$) and produces a posterior distribution in the listener identical with the prior.^[
+This alternative can be realized in at least two other ways: the speaker could have said the negation of the utterance (i.e., *The generalization is not true.*) or the negative generalization (i.e., *The opposite is true.*, e.g., *Ks do not have F*).
+All results reported are similar for these two alternatives, and we use the alternative of the *null* utterance for simplicity.
+]
+We assume no utterance cost between these two alternatives: $C(u_{generalization}) = C(u_{silence})$.
+We implemented this model in the probabilisitic programming language WebPPL [@dippl], and a complete, runable version of the modelcan be found at \url{http://forestdb.org/models/generics.html}
+
+This model makes the prediction that the interpretation of a generalizatoin (and hence, its corresponding truth judgment) depends on the prior on propensity $P(h)$.
+We first explore the model qualitatively by running simulations of $L_0$ and $S_1$ under various schematic priors.
+We also compare this to two models with the same prior knowledge but where $\theta$ is fixed to either 0 or 0.5 (corresponding intuitively to *some* or *most*).
+
+
+STOPPED HERE.
+
+$P(x)$ is a distribution on the prevalence of a given property (e.g. \textsc{lays eggs}) across animal categories. 
+In Figure \ref{fig:schematic-unif}, are $L_1$ (Eq.~\ref{eq:L1}) posterior prevalence distributions on $x$ (red solid line) for several example prior prevalence distributions $P(x)$ (blue dashed line), as well as the $S_2$ generic endorsement probability for different levels of prevalence.
+We name these example prior distributions to suggest properties that might be associated with such priors. 
+(Later, we will empirically measure these priors for properties of interest.)
+First, we explore generic interpretation and endorsement for priors of three different shapes (left column). 
+For each of these, the $L_1$ posterior distribution (red solid) over prevalence is heavily driven by the prior (blue dashed).
+$S_2$ endorsement probabilities for the generic (black solid) increase as a function of prevalence, and what counts as "true" (in terms of the prevalence) depends on the prior. 
+
+\begin{figure}
+\centering
+    \includegraphics[width=\columnwidth]{figs/schematics_s2.pdf}
+    \caption{Schematic prior distributions for prevalence $x$ (blue dashed), the pragmatic listener $L_1$ model's posterior distribution over prevalence upon hearing a generic utterance (red), and speaker $S_2$ model's endorsement of a generic utterance for different levels of prevalence (black).
+    The names given to these priors are meant to be suggestive of what kinds of properties these distributions might correspond to.
+    The left column uses prevalence priors modeled as Beta(15,15), Beta(4,1), and Beta(4,16) distributions.
+      The right column uses a prior distribution that is a mixture of the distribution to the left of it with a second component, modeled as Beta(0.5, 4.5), reflecting categories with 0\% property prevalence.
+    Horizontal dashed line at 0.5 is for convenience of comparing the point at which an utterance becomes judged as more true than false for $S_2$.
+	Note that the prior distribution over prevalence will be the same as $L_1$'s posterior distribution upon hearing the "null" utterance.
+    }
+  \label{fig:schematic-unif}
+\end{figure}
+
+
+To take one example, consider the distribution over what might be the property "are female" (top-left facet).
+The \emph{a priori} prevalence is centered around 0.5.
+Because of pragmatics, the pressure to be \emph{truthful} will drive likely threshold values below 0.5 (lower values are more likely to be true). 
+At the same time, the pressure to be \emph{informative} will drive the threshold values up: Higher values are more likely to be informative. 
+The result is a posterior over prevalence that is only marginally greater than the prior, making higher prevalence values more likely after hearing the generic. 
+But the relative information gain is very little (the posterior is not very different from the prior), and thus the $S_2$ model is reluctant to endorse the generic unless the property is exceedingly prevalent. 
+The same basic phenomenon can be observed for the other two example priors (left column): The posterior over prevalence heavily depends upon the prior, but is also not very different from the prior.
+
+We now imagine what would happen if there were some kinds where the property was completely absent, while being present at some rate in other kinds.
+Figure \ref{fig:schematic-unif} (right column) shows this possibility: mixing the distribution to the left of it with a second component at 0\% prevalence.
+Consider the schematic prior over "lay eggs".
+We see the pragmatic listener $L_1$'s posterior prevalence distribution is not very different from the interpretation that doesn't include the second component in the prior (here, "are female"), but it is dramatically different from the prior with two components (compare red with blue dashed line for the right column).
+This suggests that when many categories have 0\% prevalence, lower thresholds are informative. 
+Indeed, the $S_2$ model predicts that the generic becomes felicitous at lower prevalence levels (compare black line of left v. right column).
+For "lay eggs", when the property is prevalent in 50\% of the kind (e.g., 50\% of birds lay eggs), endorsement of the generic (e.g., \emph{Birds lay eggs}) by the $S_2$ is roughly 0.85; for "are female", with the same prevalence (50\% of birds are female), endorsement for \emph{Birds are female} is only 0.50: It is judged to be neither true nor false. 
+The important result is the asymmetry: the first generic can be endorsed more strongly than the second, at the same prevalence level; the exact endorsement rates depend on quantitative aspects of the priors, which must be determined empirically.
+
+The model thus predicts differences in truth judgments depending on the prevalence prior. 
+The first test of our theory, then, will be to see if these predictions correspond to human truth judgments of familiar generic sentences. 
+
+
+
+
+Next is a hypothetical speaker, who reasons about the literal listener when deciding which utterance to produce.
+\begin{eqnarray}
+S_{1}(u \mid x, \theta) &\propto& \exp{(\lambda_1 \cdot \ln {L_{0}(x \mid u, \theta)} ) }\label{eq:S1}
+\end{eqnarray}
+This speaker $S_1$ also knows the threshold $\theta$ and chooses utterances to convey information to the literal listener $L_0$ .
+Following RSA, this speaker is an approximately rational (speech-)actor with degree with rationality governed by parameter $\lambda_1$.
+
+
+For the case of understanding a generic (e.g., *Dogs are friendly*), the relevant dimension for the adopted semantics is the prevalence of property within the category (e.g., the \% of dogs that are friendly).
+In this model, a threshold $\theta$ is established in context by a Bayesian listener reasoning about what threshold would make this utterance true?
+
+
+
+The model begins with a simple Bayesian agent---a literal listener---who updates her prior beliefs $P(x)$ according to the truth-functional meaning of the utterance heard $\denote{u}$.
+\begin{eqnarray}
+L_{0}(x \mid u, \theta) &\propto& {\delta_{\denote{u}(x, \theta)} \cdot P(x)} \label{eq:L0}
+\end{eqnarray}
 For the generic sentence, we assign the simplest possible meaning, a threshold on the prevalence: $\denote{u_{generic}} = P(F\mid K)>\theta$.
-The prior distribution $P(x)$ is a distribution over likely states of the world. 
+
+The likelihood $\delta_{\denote{u}(x)}$ is the Kronecker delta function returning $1$ for states $x$ compatible with utterance $u$ (i.e., where the prevalence $x$ is above the threshold $\theta$), and $0$ otherwise.
+The literal listener is a hypothetical agent who knows the threshold $\theta$.
+
+Next is a hypothetical speaker, who reasons about the literal listener when deciding which utterance to produce.
+\begin{eqnarray}
+S_{1}(u \mid x, \theta) &\propto& \exp{(\lambda_1 \cdot \ln {L_{0}(x \mid u, \theta)} ) }\label{eq:S1}
+\end{eqnarray}
+This speaker $S_1$ also knows the threshold $\theta$ and chooses utterances to convey information to the literal listener $L_0$ .
+Following RSA, this speaker is an approximately rational (speech-)actor with degree with rationality governed by parameter $\lambda_1$.
+
+
+
+For the generic sentence, we assign the simplest possible meaning, a threshold on the propensity: $\denote{u_{generic}} = P(F\mid K)>\theta$.
+The prior distribution $P(h)$ is a distribution over likely degrees of propensity. 
 For the case of understanding a generic (e.g., *Dogs are friendly*), the relevant dimension for the adopted semantics is the prevalence of property within the category (e.g., the \% of dogs that are friendly).
 
-The literal listener is a hypothetical agent who knows the threshold $\theta$.
+Life is only so long, however, and a person can only be in one place at a time.
+The amount of data we can gather about any particular category, event, or causal force is extremely limited by these physical constraints.
+Thus, it would be useful if language provided a simple way to communicate these generalizations to one another.
+
 
 
 
@@ -367,12 +488,6 @@ For the case of understanding a generic (e.g., *Dogs are friendly*), the relevan
 The likelihood $\delta_{\denote{u}(x)}$ is the Kronecker delta function returning $1$ for states $x$ compatible with utterance $u$ (i.e., where the prevalence $x$ is above the threshold $\theta$), and $0$ otherwise.
 The literal listener is a hypothetical agent who knows the threshold $\theta$.
 
-Next is a hypothetical speaker, who reasons about the literal listener when deciding which utterance to produce.
-\begin{eqnarray}
-S_{1}(u \mid x, \theta) &\propto& \exp{(\lambda_1 \cdot \ln {L_{0}(x \mid u, \theta)} ) }\label{eq:S1}
-\end{eqnarray}
-This speaker $S_1$ also knows the threshold $\theta$ and chooses utterances to convey information to the literal listener $L_0$ .
-Following RSA, this speaker is an approximately rational (speech-)actor with degree with rationality governed by parameter $\lambda_1$.
 
 To understand how language is interpreted pragmatically, we model a pragmatic listener $L_1$ who updates her prior beliefs $P(x)$ by reasoning about the generative process of the utterance, the speaker model $S_1$.
 \begin{eqnarray}
@@ -382,79 +497,6 @@ Following @Lassiter2013, we model the pragmatic listener as having uncertainty a
 Though the listener doesn't know the threshold *a priori*, she resolves the threshold (i.e., the meaning) in context by integrating her prior beliefs $P(x)$ with the basic principles of communication to be truthful and informative, instantiated in her model of the speaker $S_1$ [@Lassiter2015; @GoodmanLassiter].
 In principle, thresholds could be learned over time for different contexts, but here we assume the listener has no informative knowledge about the semantic variable $P(\theta) = \text{Uniform([0, 1])}$.
 The pragmatic listener $L_1$ (Eq. \ref{eq:L1}) is thus a model of *generic interpretation*: Upon hearing a generic, how should a listener update her beliefs?
-
-To model *generic production*, we introduce a model of the speaker who reasons about this kind of listener:
-\begin{equation} 
-S_{2}(u \mid k) \propto \exp{(\lambda_2 \cdot {\mathbb E}_{x\sim P_{k}} \ln{ \int_{\theta} L_1(x, \theta \mid u)}  \diff \theta ) }
-\label{eq:S2}
-\end{equation}
-This speaker model is similar to the simpler $S_1$ speaker model but instead reasons about the pragmatic listener $L_1$ with two additional modifications. 
-First, the speaker is not assumed to have a particular state of the world $x$ that he wants to communicate to the listener.
-Instead, this speaker has a belief distribution governed by his knowlege of category $k$ over the likely states of the world $x\sim P_k$, and information gain is calculated with respect to communicating that belief distribution to the listener.^[
-As a special case of this belief distribution, one could imagine a delta function at some particular level of prevalence (e.g., 50\% of birds lay eggs).
-We use a more general formulation to allow for the case when the speaker only has a vague sense of the prevalence of the property in the category.
-]
-Second, the speaker is not assumed to know the value of the threshold $\theta$.
-All that is assumed is that the listener infers the value of this variable; the speaker thus integrates over the likely values the listener will infer.
-
-The proportionalities in Eqs. \ref{eq:S1}, \ref{eq:S2} imply normalization over a set of alternative utterances.
-As a first test of this theory, we consider the simplest set of alternatives, including only the possibility of staying quiet in addition to saying the generic (and we assume no difference in production cost between these alternatives). 
-We adopt the simplest meaning of a generic utterance in terms of prevalence, a threshold function: $\denote{u_{gen}}(x, \theta)=x>\theta$.
-The silent or \emph{null} utterance alternative carries no information (i.e., $\denote{u_{null}}(x, \theta)=T$) and produces a posterior distribution in the listener identical with the prior.^[
-This alternative can be realized in at least two other ways: the speaker could have said the negation of the utterance (i.e., *It is not the case that Ks F.*) or the negative generic (i.e., *Ks do not F.*). All results reported are similar for these two alternatives, and we use the alternative of the *null* utterance for simplicity.
-]
-Since the only alternative to producing the generic is to stay silent, $S_2$ is interpreted as a model of endorsement, felicity, or truth judgments [@Degen2014].
-
-A similar model structure has been used to explain the context-sensitivity of gradable adjectives like *tall* [@Lassiter2013]. 
-The model thus makes the claim that generic language is *vague language*, and that the same principles that govern interpreting vague language also are at play in interpreting generic language.
-This model assumes a threshold semantics which has been argued before as a simple and useful semantics for generics [@Cohen1999], but doesn't require us to specify the threshold \emph{a priori}: It is inferred with pragmatic reasoning.
-We implemented this model in the probabilisitic programming language WebPPL [@dippl], and a fully specified version of the model can be found at \url{http://forestdb.org/models/generics.html}
-
-<!--S_{2}(u \mid k) \propto  \exp{(\lambda_2 \cdot \ln \int_{\theta} L_{1}(x , \theta \mid u) \diff \theta ) }-->
-
-This model makes the prediction that the interpretation of a generic statement (and hence, it's corresponding truth judgment) depends on the prior on prevalence $P(x)$.
-We can explore the model by running simulations of $L_1$ and $S_2$ under various schematic priors.
-$P(x)$ is a distribution on the prevalence of a given property (e.g. \textsc{lays eggs}) across animal categories. 
-In Figure \ref{fig:schematic-unif}, are $L_1$ (Eq.~\ref{eq:L1}) posterior prevalence distributions on $x$ (red solid line) for several example prior prevalence distributions $P(x)$ (blue dashed line), as well as the $S_2$ generic endorsement probability for different levels of prevalence.
-We name these example prior distributions to suggest properties that might be associated with such priors. 
-(Later, we will empirically measure these priors for properties of interest.)
-First, we explore generic interpretation and endorsement for priors of three different shapes (left column). 
-For each of these, the $L_1$ posterior distribution (red solid) over prevalence is heavily driven by the prior (blue dashed).
-$S_2$ endorsement probabilities for the generic (black solid) increase as a function of prevalence, and what counts as "true" (in terms of the prevalence) depends on the prior. 
-
-\begin{figure}
-\centering
-    \includegraphics[width=\columnwidth]{figs/schematics_s2.pdf}
-    \caption{Schematic prior distributions for prevalence $x$ (blue dashed), the pragmatic listener $L_1$ model's posterior distribution over prevalence upon hearing a generic utterance (red), and speaker $S_2$ model's endorsement of a generic utterance for different levels of prevalence (black).
-    The names given to these priors are meant to be suggestive of what kinds of properties these distributions might correspond to.
-    The left column uses prevalence priors modeled as Beta(15,15), Beta(4,1), and Beta(4,16) distributions.
-      The right column uses a prior distribution that is a mixture of the distribution to the left of it with a second component, modeled as Beta(0.5, 4.5), reflecting categories with 0\% property prevalence.
-    Horizontal dashed line at 0.5 is for convenience of comparing the point at which an utterance becomes judged as more true than false for $S_2$.
-	Note that the prior distribution over prevalence will be the same as $L_1$'s posterior distribution upon hearing the "null" utterance.
-    }
-  \label{fig:schematic-unif}
-\end{figure}
-
-
-To take one example, consider the distribution over what might be the property "are female" (top-left facet).
-The \emph{a priori} prevalence is centered around 0.5.
-Because of pragmatics, the pressure to be \emph{truthful} will drive likely threshold values below 0.5 (lower values are more likely to be true). 
-At the same time, the pressure to be \emph{informative} will drive the threshold values up: Higher values are more likely to be informative. 
-The result is a posterior over prevalence that is only marginally greater than the prior, making higher prevalence values more likely after hearing the generic. 
-But the relative information gain is very little (the posterior is not very different from the prior), and thus the $S_2$ model is reluctant to endorse the generic unless the property is exceedingly prevalent. 
-The same basic phenomenon can be observed for the other two example priors (left column): The posterior over prevalence heavily depends upon the prior, but is also not very different from the prior.
-
-We now imagine what would happen if there were some kinds where the property was completely absent, while being present at some rate in other kinds.
-Figure \ref{fig:schematic-unif} (right column) shows this possibility: mixing the distribution to the left of it with a second component at 0\% prevalence.
-Consider the schematic prior over "lay eggs".
-We see the pragmatic listener $L_1$'s posterior prevalence distribution is not very different from the interpretation that doesn't include the second component in the prior (here, "are female"), but it is dramatically different from the prior with two components (compare red with blue dashed line for the right column).
-This suggests that when many categories have 0\% prevalence, lower thresholds are informative. 
-Indeed, the $S_2$ model predicts that the generic becomes felicitous at lower prevalence levels (compare black line of left v. right column).
-For "lay eggs", when the property is prevalent in 50\% of the kind (e.g., 50\% of birds lay eggs), endorsement of the generic (e.g., \emph{Birds lay eggs}) by the $S_2$ is roughly 0.85; for "are female", with the same prevalence (50\% of birds are female), endorsement for \emph{Birds are female} is only 0.50: It is judged to be neither true nor false. 
-The important result is the asymmetry: the first generic can be endorsed more strongly than the second, at the same prevalence level; the exact endorsement rates depend on quantitative aspects of the priors, which must be determined empirically.
-
-The model thus predicts differences in truth judgments depending on the prevalence prior. 
-The first test of our theory, then, will be to see if these predictions correspond to human truth judgments of familiar generic sentences. 
 
 # Communicating generalizations about events
 
@@ -1240,6 +1282,28 @@ We found that empirical prevalence distributions are structured in a way that re
 It is plausible that richer conceptual knowledge also influences these distributions, such as higher-order conceptual knowledge about the nature of properties and categories [@Gelman2003; @Keil1992].
 Indeed, it has been argued that conceptual structure in general, including higher-order abstractions, can be captured by probabilisitic causal models and their generalizations [@pearl1988probabilistic; @Gopnik2003theory; @Goodmanconcepts].
 Future work will be needed to explore whether probabilistic representations of conceptual knowledge can capture the relations identified in other accounts of generics (such as characteristic, essential, and striking properties), and whether the effect of these relations can then be adequately captured via their impact on subjective prevalence.
+
+
+## The acquisition problem 
+
+The linguistic outlet for generalizations about categories---so called, *generic language*---has received tremendous attention from psychologists, linguists, and philosophers.
+Generic language is one of the earliest emerging forms of complex, compositional language (CITE).
+Somewhere between 2 and 3 years of age, children recognize that generics convey a generalization about a category, not directly tied to concrete instances in a scene [@Cimpian2008].
+More on development.
+
+What is perhaps surprising from a formal perspective is that generic language is far from trivial to characterize. 
+If generics convey something about the prevalence of feature, we would expect them to be in some way comparable to quantifier statments (e.g., "some", "most", "all", ...).
+Rehash linguistic puzzles.
+The extreme flexibility of generic meaning stands in stark contrast to its early emergence in development.
+In fact, quantified statements, whose formal meaning is much more straight-forward, emerge much *later* in development.
+This has led some to conclude that the normal tools for describing the semantics of quantified utterances (namely, a truth-functional threshold) will not work for generic language [@Leslie2008].
+
+This may be throwing out the baby with the bathwater.
+
+Consider the acquisition problem, there are two aspects of meaning that a language learner must acquire for the semantics of a quantified utterance: (1) that the meaning is a threshold-function (i.e., $\denote{u}(p, \theta) = \{p :p > \theta\}$ and (2) the value of the threshold (e.g., $\theta = 0$ for "some", $\theta = 0.5$ for "most").
+Perhaps, then, the difficulty in acquiring the meaning of quantifiers is a difficulty in learning the value of the threshold (aspect 2) and not in recognizing that the utterance conveys something about the quantity (e.g., via a semantic threshold; aspect 1).
+This would lead to the prediction that generics could be amenable to a threshold-semantics, but with the value of the threshold left underspecified in the semantics.
+The problem of generic language interpretation then reduces to the problem of inferring the threshold in context.
 
 
 ## Communicating probabilities
