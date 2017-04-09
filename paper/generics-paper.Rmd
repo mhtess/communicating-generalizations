@@ -336,9 +336,191 @@ All results reported are similar for these two alternatives, and we use the alte
 We assume no utterance cost between these two alternatives: $C(u_{generalization}) = C(u_{silence})$.
 We implemented this model in the probabilisitic programming language WebPPL [@dippl], and a complete, runable version of the modelcan be found at \url{http://forestdb.org/models/generics.html}
 
+## Model simulations
+
 This model makes the prediction that the interpretation of a generalizatoin (and hence, its corresponding truth judgment) depends on the prior on propensity $P(h)$.
 We first explore the model qualitatively by running simulations of $L_0$ and $S_1$ under various schematic priors.
 We also compare this to two models with the same prior knowledge but where $\theta$ is fixed to either 0 or 0.5 (corresponding intuitively to *some* or *most*).
+
+Before describing the results of the simulations, consider how an uniformly underspecified threshold would interact with a uniformly uncertain belief about a probability or propensity.
+When the threshold is very high, only the highest probabilities would pass the threshold.
+When the threshold is slightly lower but still high, the highest probabilities would still pass the threshold, as would some that are slightly lower.
+As the threshold takes on lower and lower values, more and more probabilities would surpass it.
+Taken together, the higher the probability, the more thresholds it passes.
+
+
+When the threshold is at 0.5, everything greater than 
+```{r simluations, eval = F}
+
+l0.model <- '
+var probability = function(Dist, x) {
+    return Math.exp(Dist.score(x));
+}
+var targetUtterance = "generic";
+
+var utterancePrior = Infer({model: function(){
+  return uniformDraw([targetUtterance,"silence"])
+}});
+
+var thetaPrior = Infer({model: function(){
+ return uniformDraw([
+   0.01, 0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
+   0.5, 0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95
+ ])}
+});
+
+var bins = [
+  0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,
+  0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,0.99
+];
+
+
+var meaning = function(utt,state, theta) {
+  return utt=="generic"? state > theta :
+         utt=="generic is false"? state<=theta :
+         utt=="silence"? true :
+         utt=="some"? state>0.01:
+         utt=="most"? state> 0.5:
+         utt=="all"? state >= 0.99:
+         true
+}
+
+var mixture = data.mix[0];
+var priorParams = data.params[0];
+
+var statePrior = Infer({model: function(){
+  var component = flip(mixture);
+  return component ?
+    categorical({
+      vs: bins,
+      ps: map(function(b) {
+        return probability(Beta(priorParams), b) + Number.EPSILON
+      }, bins )
+    }) :
+    categorical({
+      vs: bins,
+      ps: map(function(b) {
+        return probability(Beta({a:1,b:50}), b) + Number.EPSILON
+      }, bins )
+    })
+}});
+
+var listener0 = cache(function(utterance) {
+  Infer({model: function(){
+    var state = sample(statePrior)
+    var state_prior = sample(statePrior)
+    var theta = utterance == "generic" ? sample(thetaPrior) : -99
+    condition(meaning(utterance, state, theta))
+    return {
+      state_Posterior: state, 
+      state_Prior: state_prior
+  }
+ }})}, 10000)
+
+var out = {generic: listener0("generic"), some: listener0("some"), most: listener0("most")}
+out
+'
+```
+
+```{r}
+
+# l0.model <- '
+# var nullParams = {a : 1, b: 20};
+# var mixture = data.mix[0];
+# var priorParams = data.params[0];
+# 
+# var literalListener = Infer({
+#   model: function(){
+#     var state = flip(mixture) ? beta(priorParams) : beta(nullParams)
+#     var state_0 = flip(mixture) ? beta(priorParams) : beta(nullParams)
+#     var state_05 = flip(mixture) ? beta(priorParams) : beta(nullParams)
+#     var statePrior = flip(mixture) ? beta(priorParams) : beta(nullParams)
+#     var theta = uniform(0,1)
+#     condition(state > theta)
+#     condition(state_0 > 0)
+#     condition(state_05 > 0.5)
+#     return {
+#       state_PosteriorGeneralization: state, 
+#       state_Posterior0: state_0, 
+#       state_Posterior05: state_05, 
+#      // theta_posterior: theta, 
+#       state_Prior: statePrior
+#     }
+#  }, method: "rejection", samples: 10000
+# })
+# 
+# literalListener
+# '
+
+priorNames <- c("uniform", "uniformRare", "isFemale", "laysEggs", "eatsFood", "hasWings", "carriesMalaria", "areSick")
+priorShapes <- list(
+  uniform =  list(params = data.frame(a = 1, b = 1), mix = 1), 
+  uniformRare =  list(params = data.frame(a = 1, b = 1), mix = 0.25), 
+  isFemale =  list(params = data.frame(a = 10, b = 10), mix = 1), 
+  laysEggs =  list(params = data.frame(a = 10, b = 10), mix = 0.25), 
+  eatsFood =  list(params = data.frame(a = 50, b = 1), mix = 1), 
+  hasWings =  list(params = data.frame(a = 50, b = 1), mix = 0.25), 
+  areSick =  list(params = data.frame(a = 1, b = 5), mix = 1), 
+  carriesMalaria =  list(params = data.frame(a = 1, b = 5), mix = 0.25)
+)
+
+all.simulations <- data.frame()
+for (p in priorNames){
+  inputData = priorShapes[[p]]
+  
+  l0.rs <- webppl(l0.model, data = inputData, data_var = "data")
+  
+  all.simulations <- bind_rows(all.simulations,
+                          bind_rows(
+                            data.frame(l0.rs$generic) %>%
+                              gather(key, val, -probs) %>%
+                               group_by(key, val) %>%
+                               summarize(prob = sum(probs)) %>%
+                              ungroup() %>%
+                                mutate(key = gsub("support.", "", key)) %>%
+                               separate(key, into = c("Parameter","Distribution")) %>%
+                                mutate(Distribution = gsub("Posterior", "Posterior_Generalization", Distribution)),
+                            data.frame(l0.rs$some) %>%
+                              gather(key, val, -probs) %>%
+                              group_by(key, val) %>%
+                              summarize(prob = sum(probs)) %>%
+                              ungroup() %>%
+                              mutate(key = gsub("support.", "", key)) %>%
+                              separate(key, into = c("Parameter","Distribution")) %>%
+                              mutate(Distribution = gsub("Posterior", "Posterior_0", Distribution)) %>%
+                              filter(Distribution != "Prior"),
+                            data.frame(l0.rs$most) %>%
+                              gather(key, val, -probs) %>%
+                              group_by(key, val) %>%
+                              summarize(prob = sum(probs)) %>%
+                              ungroup() %>%
+                              mutate(key = gsub("support.", "", key)) %>%
+                              separate(key, into = c("Parameter","Distribution")) %>%
+                              mutate(Distribution = gsub("Posterior", "Posterior_05", Distribution)) %>%
+                              filter(Distribution != "Prior")
+                          ) %>%
+                            mutate(PriorShape = p)
+  )
+  print(p)
+}
+```
+
+```{r fig.width = 10, fig.height=4.5}
+all.simulations %>%
+  mutate(Distribution = fct_relevel(Distribution, "Prior", "Posterior_0", "Posterior_05", "Posterior_Generalization"),
+         PriorShape = fct_relevel(PriorShape, "uniform", "isFemale", "eatsFood","areSick", "uniformRare", "laysEggs",    "hasWings", "carriesMalaria")) %>%
+  ggplot(., aes(x = val, y = prob, lty = Distribution, color = Distribution, fill = Distribution))+
+    geom_density(stat= 'identity', size = 0.8, alpha = 0.3)+
+    #geom_bar(stat = 'identity', position = position_dodge(), color = 'black')+
+    theme_few() +
+    scale_color_solarized()+
+    scale_fill_solarized()+
+    scale_linetype_manual(values = c(3, 2, 4, 1))+
+    scale_x_continuous(breaks = c(0, 0.5, 1))+
+    xlab("Degree of propensity (probability)") +
+    ylab("Probability density") +
+  facet_wrap(~PriorShape, scales = 'free', nrow = 2)
+```
 
 
 STOPPED HERE.
@@ -450,32 +632,6 @@ We formalize this hypothesis in the Rational Speech Act (RSA) theory---a formal,
 RSA is derived from social reasoning, formalized as recursive Bayesian inference between speaker and listener [@Frank2012; @Goodman2013; @Goodman2016; see also, @Franke2009; @Franke2015].
 @Goodman2016 provides a good introduction to the RSA framework and Appendix A presents a brief tutorial on RSA for the reader unfamiliar.
 
-```{r eval = F}
-l0.model <- '
-var literalListener = Infer({
-  model: function(){
-    var state = uniform(0,1)
-    var statePrior = uniform(0,1)
-    var theta = uniform(0,1)
-    var thetaPrior = uniform(0,1)
-    condition(state > theta)
-    return {state_posterior: state, state_prior: statePrior, theta_prior: thetaPrior}
- }, method: "rejection", samples: 50000
-})
-
-literalListener
-'
-
-l0.rs <- webppl(l0.model)
-
-l0.rs %>% select(Parameter, value) %>%
-  separate(Parameter, into = c("Parameter","Distribution")) %>%
-  ggplot(., aes(x = value, fill = Parameter, lty = Distribution))+
-    geom_density(alpha = 0.3, adjust = 1.2)+
-    theme_few() + 
-    theme_solarized(light = FALSE)+
-    scale_fill_solarized("red")
-```
 
 
 The model begins with a simple Bayesian agent---a literal listener---who updates her prior beliefs $P(x)$ according to the truth-functional meaning of the utterance heard $\denote{u}$.
