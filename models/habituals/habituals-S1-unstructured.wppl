@@ -1,0 +1,131 @@
+// time ~/webppl-fork/webppl habituals-S1-unstructured.wppl --require utils 1
+
+var chain = last(process.argv) // load index as last command line index
+
+var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
+
+var dataPath = "data/"
+var targetUtterance = "habitual"
+
+var priorFile = dataPath + "ff-prior-n50.csv";
+var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
+
+var d0 = dataFrame(utils.readCSV(priorFile).data, ["-2","-1.5","-1","-0.5","0","0.5","1","1.5","2","2.5","3","3.5","4","4.5","5","5.5","6","6.5","7","7.5","8","8.5","9"]);
+var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data,
+				["n_times", "log_times"]);
+
+var data = {
+	speaker: map(function(d){
+			extend(d, {
+				// rate: d.n_times / 5,
+				// roundedRate: utils.closest(midBins, d.n_times / 5),
+				rate: Math.log(d.n_times / 5),
+				roundedRate: utils.closest(midBins, Math.log(d.n_times / 5)),
+				alignedResponse : responseDictionary[d.response]
+			})
+		}, d2.slice(0, d2.length - 1)),
+		prior: _.fromPairs(map(function(d){
+				return [d.action, map(function(b){
+					d[b] + 1;
+				},["-2","-1.5","-1","-0.5","0","0.5","1","1.5","2","2.5","3","3.5","4","4.5","5","5.5","6","6.5","7","7.5","8","8.5","9"])]
+			}, d0.slice(0, d0.length -1)))
+};
+
+var items = _.keys(data.prior);
+var utterancePrior = Infer({model: function(){
+	return uniformDraw([targetUtterance,"silence"])
+}});
+
+var meaning = function(utt,state, theta) {
+  return utt=="habitual"? state > theta :
+         utt=="habitual is false"? state<=theta :
+         utt=='silence'? true :
+         utt=='some'? state > 0 :
+         true
+}
+
+var model = function(){
+
+	var speakerOptimality = {
+		s1: uniformDrift({a: 0, b: 20, width:2})
+	}
+
+	foreach(items, function(i){
+
+		var itemData = _.filter(data.speaker, {habitual: i});
+
+		var statePrior = Categorical({vs: midBins, ps: data["prior"][i]})
+
+		/// RSA model
+		var listener0 = cache(function(utterance) {
+		  Infer({model: function(){
+		    var state = sample(statePrior)
+				var theta = sample(thetaPrior);
+		    var m = meaning(utterance, state, theta)
+		    condition(m)
+		    return state
+		 }})}, 10000)
+
+		var speaker1 = cache(function(freq) {
+			Infer({model: function(){
+		    var utterance = sample(utterancePrior);
+		    var L0 = listener0(utterance);
+		    factor(speakerOptimality.s1 * L0.score(freq))
+		    return utterance === targetUtterance ? 1 : 0
+			}})}, 10000)
+
+		var observedFrequencies = levels(itemData, "roundedRate");
+
+		foreach(observedFrequencies, function(freq){
+			// display(freq)
+			var freqData = _.filter(itemData, {roundedRate: freq});
+			var s1prediction = speaker1(freq);
+			// display(map(function(s){return [s, s1prediction.score(s)]},
+			//  s1prediction.support()))
+
+			mapData({data:freqData}, function(d){
+				// display(d)
+				// display("speaker score = " + s1prediction.score(d.alignedResponse))
+				observe(s1prediction, d.alignedResponse)
+			})
+
+			// query.add(["predictive", i, freqData[0]["time_period"]], [
+			// 	freq, "s2", expectation(s2prediction),
+			// 	"NA",  "NA",  "NA",  "NA" ])
+
+			query.add(["predictive", i, "s1", freqData[0]["time_period"], freq], expectation(s1prediction));
+
+		})
+
+	})
+
+	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
+	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+
+	// query.add(["param", "speakerOptimality", "s1"], [
+	// 	 speakerOptimality.s1, "NA", "NA",
+	// 	"nullParams_mu",  nullParams.mu,
+	// 	"nullParams_sigma",  nullParams.sigma])
+
+	return query
+}
+
+var totalIterations = 500, lag = 10;
+var mhiter = totalIterations/lag, burn = totalIterations / 2;
+var outfile = 'results-habituals-S1-ffPrior-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+
+var posterior = Infer({
+  model: model,
+  method: "MCMC",
+	// kernel: {HMC: {steps:5, stepSize: 0.01}},
+  samples: mhiter, burn: burn, lag: lag,
+  verbose: T, verboseLag: totalIterations / 20,
+	stream: {
+		path: "results/" + outfile,
+		header: [
+			"type", "item", "cat", "param", "gender", "val"
+		]
+	}
+})
+
+display("written to " + outfile)
