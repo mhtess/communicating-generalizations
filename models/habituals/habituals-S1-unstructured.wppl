@@ -110,7 +110,7 @@ var model = function(){
 	return query
 }
 
-var totalIterations = 500, lag = 10;
+var totalIterations = 50, lag = 10;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 var outfile = 'results-habituals-S1-ffPrior-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
@@ -118,14 +118,16 @@ var posterior = Infer({
   model: model,
   method: "MCMC",
 	// kernel: {HMC: {steps:5, stepSize: 0.01}},
-  samples: mhiter, burn: burn, lag: lag,
-  verbose: T, verboseLag: totalIterations / 20,
-	stream: {
-		path: "results/" + outfile,
-		header: [
-			"type", "item", "cat", "param", "gender", "val"
-		]
-	}
+  samples: mhiter, burn: burn, lag: lag, verbose: T
+	// stream: {
+	// 	path: "results/" + outfile,
+	// 	header: [
+	// 		"type", "item", "cat", "param", "gender", "val"
+	// 	]
+	// }
 })
+
+utils.writeQueryERP(posterior, "results/" + outfile,
+	["type", "item", "cat", "param", 'freq', "val"])
 
 display("written to " + outfile)
