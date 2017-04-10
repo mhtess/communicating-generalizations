@@ -156,7 +156,7 @@ var model = function(){
 		})
 
 		foreach(_.range(0, prior.length), function(pi){
-			query.add(["prior",i, midBins[i], pi, "NA"], prior[pi])
+			query.add(["prior",i, midBins[pi], pi, "NA"], prior[pi])
 		})
 
 	})
