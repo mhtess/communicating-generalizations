@@ -1,5 +1,5 @@
 ---
-title             : "Communicating generalizations"
+title             : "Communicating generalizations about categories, events, and causes"
 shorttitle        : "Communicating generalizations"
 
 author: 
@@ -78,6 +78,7 @@ library("papaja")
 library(rwebppl)
 library(xtable)
 library(tidyverse)
+library(forcats)
 ```
 
 # Introduction 
@@ -276,7 +277,7 @@ $$
 Our ability to use this updated belief $P(h \mid d)$ in order to make predictions about unobserved instances is a computational description of generalization [e.g., @Tenenbaum2006; @Tenenbaum2011].
 What if we wanted to communicate this belief distribution?
 Using the tools of formal semantics, we need to specify a truth function: A function from states of the world to truth-values. 
-A simple meaning then would be a threshold on this posterior probability: $\denote{u_{generalization}}(h, \theta): \{ h: h > \theta}$.
+A simple meaning then would be a threshold on this posterior probability: $\denote{u_{generalization}}(h, \theta): \{ h: h > \theta\}$.
 $\denote{u_{generalization}}$ represents the semantic meaning of a statement conveying a generalization.
 Following convention in formal semantics, we treat this as a function, applied to variables $h$ (a probability or rate) and $\theta$ (a threshold).
 This function returns the sets of worlds that are consistent with $h > \theta$.
@@ -305,8 +306,8 @@ This is a simple Bayesian model of interpreting a statement conveying a generali
 
 For addressing the question of whether or not a generalization is "true" or "felicitous", we consider how a Gricean speaker would act, given the goal of being informative to the literal listener (Eq. \ref{eq:L0}). 
 
-\begin{equation} 
 <!-- S_{1}(u \mid k) \propto \exp{(\lambda \cdot {\mathbb E}_{h\sim P_{k}} \ln{ \int_{\theta} L_0(x, \theta \mid u)}  \diff \theta ) } -->
+\begin{equation} 
 S_{1}(u \mid k) \propto \exp{(\lambda \cdot U(u; k)  }
 \label{eq:S1}
 \end{equation}
@@ -350,7 +351,7 @@ Taken together, the higher the probability, the more thresholds it passes.
 
 
 When the threshold is at 0.5, everything greater than 
-```{r simluations, eval = F}
+```{r simluations, eval = T, cache = T}
 
 l0.model <- '
 var probability = function(Dist, x) {
@@ -420,37 +421,6 @@ var listener0 = cache(function(utterance) {
 var out = {generic: listener0("generic"), some: listener0("some"), most: listener0("most")}
 out
 '
-```
-
-```{r}
-
-# l0.model <- '
-# var nullParams = {a : 1, b: 20};
-# var mixture = data.mix[0];
-# var priorParams = data.params[0];
-# 
-# var literalListener = Infer({
-#   model: function(){
-#     var state = flip(mixture) ? beta(priorParams) : beta(nullParams)
-#     var state_0 = flip(mixture) ? beta(priorParams) : beta(nullParams)
-#     var state_05 = flip(mixture) ? beta(priorParams) : beta(nullParams)
-#     var statePrior = flip(mixture) ? beta(priorParams) : beta(nullParams)
-#     var theta = uniform(0,1)
-#     condition(state > theta)
-#     condition(state_0 > 0)
-#     condition(state_05 > 0.5)
-#     return {
-#       state_PosteriorGeneralization: state, 
-#       state_Posterior0: state_0, 
-#       state_Posterior05: state_05, 
-#      // theta_posterior: theta, 
-#       state_Prior: statePrior
-#     }
-#  }, method: "rejection", samples: 10000
-# })
-# 
-# literalListener
-# '
 
 priorNames <- c("uniform", "uniformRare", "isFemale", "laysEggs", "eatsFood", "hasWings", "carriesMalaria", "areSick")
 priorShapes <- list(
@@ -501,7 +471,7 @@ for (p in priorNames){
                           ) %>%
                             mutate(PriorShape = p)
   )
-  print(p)
+  #print(p)
 }
 ```
 
@@ -523,166 +493,167 @@ all.simulations %>%
 ```
 
 
-STOPPED HERE.
+<!-- $P(x)$ is a distribution on the prevalence of a given property (e.g. \textsc{lays eggs}) across animal categories.  -->
+<!-- In Figure \ref{fig:schematic-unif}, are $L_1$ (Eq.~\ref{eq:L1}) posterior prevalence distributions on $x$ (red solid line) for several example prior prevalence distributions $P(x)$ (blue dashed line), as well as the $S_2$ generic endorsement probability for different levels of prevalence. -->
+<!-- We name these example prior distributions to suggest properties that might be associated with such priors.  -->
+<!-- (Later, we will empirically measure these priors for properties of interest.) -->
+<!-- First, we explore generic interpretation and endorsement for priors of three different shapes (left column).  -->
+<!-- For each of these, the $L_1$ posterior distribution (red solid) over prevalence is heavily driven by the prior (blue dashed). -->
+<!-- $S_2$ endorsement probabilities for the generic (black solid) increase as a function of prevalence, and what counts as "true" (in terms of the prevalence) depends on the prior.  -->
 
-$P(x)$ is a distribution on the prevalence of a given property (e.g. \textsc{lays eggs}) across animal categories. 
-In Figure \ref{fig:schematic-unif}, are $L_1$ (Eq.~\ref{eq:L1}) posterior prevalence distributions on $x$ (red solid line) for several example prior prevalence distributions $P(x)$ (blue dashed line), as well as the $S_2$ generic endorsement probability for different levels of prevalence.
-We name these example prior distributions to suggest properties that might be associated with such priors. 
-(Later, we will empirically measure these priors for properties of interest.)
-First, we explore generic interpretation and endorsement for priors of three different shapes (left column). 
-For each of these, the $L_1$ posterior distribution (red solid) over prevalence is heavily driven by the prior (blue dashed).
-$S_2$ endorsement probabilities for the generic (black solid) increase as a function of prevalence, and what counts as "true" (in terms of the prevalence) depends on the prior. 
-
-\begin{figure}
-\centering
-    \includegraphics[width=\columnwidth]{figs/schematics_s2.pdf}
-    \caption{Schematic prior distributions for prevalence $x$ (blue dashed), the pragmatic listener $L_1$ model's posterior distribution over prevalence upon hearing a generic utterance (red), and speaker $S_2$ model's endorsement of a generic utterance for different levels of prevalence (black).
-    The names given to these priors are meant to be suggestive of what kinds of properties these distributions might correspond to.
-    The left column uses prevalence priors modeled as Beta(15,15), Beta(4,1), and Beta(4,16) distributions.
-      The right column uses a prior distribution that is a mixture of the distribution to the left of it with a second component, modeled as Beta(0.5, 4.5), reflecting categories with 0\% property prevalence.
-    Horizontal dashed line at 0.5 is for convenience of comparing the point at which an utterance becomes judged as more true than false for $S_2$.
-	Note that the prior distribution over prevalence will be the same as $L_1$'s posterior distribution upon hearing the "null" utterance.
-    }
-  \label{fig:schematic-unif}
-\end{figure}
+<!-- \begin{figure} -->
+<!-- \centering -->
+<!--     \includegraphics[width=\columnwidth]{figs/schematics_s2.pdf} -->
+<!--     \caption{Schematic prior distributions for prevalence $x$ (blue dashed), the pragmatic listener $L_1$ model's posterior distribution over prevalence upon hearing a generic utterance (red), and speaker $S_2$ model's endorsement of a generic utterance for different levels of prevalence (black). -->
+<!--     The names given to these priors are meant to be suggestive of what kinds of properties these distributions might correspond to. -->
+<!--     The left column uses prevalence priors modeled as Beta(15,15), Beta(4,1), and Beta(4,16) distributions. -->
+<!--       The right column uses a prior distribution that is a mixture of the distribution to the left of it with a second component, modeled as Beta(0.5, 4.5), reflecting categories with 0\% property prevalence. -->
+<!--     Horizontal dashed line at 0.5 is for convenience of comparing the point at which an utterance becomes judged as more true than false for $S_2$. -->
+<!-- 	Note that the prior distribution over prevalence will be the same as $L_1$'s posterior distribution upon hearing the "null" utterance. -->
+<!--     } -->
+<!--   \label{fig:schematic-unif} -->
+<!-- \end{figure} -->
 
 
-To take one example, consider the distribution over what might be the property "are female" (top-left facet).
-The \emph{a priori} prevalence is centered around 0.5.
-Because of pragmatics, the pressure to be \emph{truthful} will drive likely threshold values below 0.5 (lower values are more likely to be true). 
-At the same time, the pressure to be \emph{informative} will drive the threshold values up: Higher values are more likely to be informative. 
-The result is a posterior over prevalence that is only marginally greater than the prior, making higher prevalence values more likely after hearing the generic. 
-But the relative information gain is very little (the posterior is not very different from the prior), and thus the $S_2$ model is reluctant to endorse the generic unless the property is exceedingly prevalent. 
-The same basic phenomenon can be observed for the other two example priors (left column): The posterior over prevalence heavily depends upon the prior, but is also not very different from the prior.
+<!-- To take one example, consider the distribution over what might be the property "are female" (top-left facet). -->
+<!-- The \emph{a priori} prevalence is centered around 0.5. -->
+<!-- Because of pragmatics, the pressure to be \emph{truthful} will drive likely threshold values below 0.5 (lower values are more likely to be true).  -->
+<!-- At the same time, the pressure to be \emph{informative} will drive the threshold values up: Higher values are more likely to be informative.  -->
+<!-- The result is a posterior over prevalence that is only marginally greater than the prior, making higher prevalence values more likely after hearing the generic.  -->
+<!-- But the relative information gain is very little (the posterior is not very different from the prior), and thus the $S_2$ model is reluctant to endorse the generic unless the property is exceedingly prevalent.  -->
+<!-- The same basic phenomenon can be observed for the other two example priors (left column): The posterior over prevalence heavily depends upon the prior, but is also not very different from the prior. -->
 
-We now imagine what would happen if there were some kinds where the property was completely absent, while being present at some rate in other kinds.
-Figure \ref{fig:schematic-unif} (right column) shows this possibility: mixing the distribution to the left of it with a second component at 0\% prevalence.
-Consider the schematic prior over "lay eggs".
-We see the pragmatic listener $L_1$'s posterior prevalence distribution is not very different from the interpretation that doesn't include the second component in the prior (here, "are female"), but it is dramatically different from the prior with two components (compare red with blue dashed line for the right column).
-This suggests that when many categories have 0\% prevalence, lower thresholds are informative. 
-Indeed, the $S_2$ model predicts that the generic becomes felicitous at lower prevalence levels (compare black line of left v. right column).
-For "lay eggs", when the property is prevalent in 50\% of the kind (e.g., 50\% of birds lay eggs), endorsement of the generic (e.g., \emph{Birds lay eggs}) by the $S_2$ is roughly 0.85; for "are female", with the same prevalence (50\% of birds are female), endorsement for \emph{Birds are female} is only 0.50: It is judged to be neither true nor false. 
-The important result is the asymmetry: the first generic can be endorsed more strongly than the second, at the same prevalence level; the exact endorsement rates depend on quantitative aspects of the priors, which must be determined empirically.
+<!-- We now imagine what would happen if there were some kinds where the property was completely absent, while being present at some rate in other kinds. -->
+<!-- Figure \ref{fig:schematic-unif} (right column) shows this possibility: mixing the distribution to the left of it with a second component at 0\% prevalence. -->
+<!-- Consider the schematic prior over "lay eggs". -->
+<!-- We see the pragmatic listener $L_1$'s posterior prevalence distribution is not very different from the interpretation that doesn't include the second component in the prior (here, "are female"), but it is dramatically different from the prior with two components (compare red with blue dashed line for the right column). -->
+<!-- This suggests that when many categories have 0\% prevalence, lower thresholds are informative.  -->
+<!-- Indeed, the $S_2$ model predicts that the generic becomes felicitous at lower prevalence levels (compare black line of left v. right column). -->
+<!-- For "lay eggs", when the property is prevalent in 50\% of the kind (e.g., 50\% of birds lay eggs), endorsement of the generic (e.g., \emph{Birds lay eggs}) by the $S_2$ is roughly 0.85; for "are female", with the same prevalence (50\% of birds are female), endorsement for \emph{Birds are female} is only 0.50: It is judged to be neither true nor false.  -->
+<!-- The important result is the asymmetry: the first generic can be endorsed more strongly than the second, at the same prevalence level; the exact endorsement rates depend on quantitative aspects of the priors, which must be determined empirically. -->
 
-The model thus predicts differences in truth judgments depending on the prevalence prior. 
-The first test of our theory, then, will be to see if these predictions correspond to human truth judgments of familiar generic sentences. 
+<!-- The model thus predicts differences in truth judgments depending on the prevalence prior.  -->
+<!-- The first test of our theory, then, will be to see if these predictions correspond to human truth judgments of familiar generic sentences.  -->
 
 
 
 
-Next is a hypothetical speaker, who reasons about the literal listener when deciding which utterance to produce.
-\begin{eqnarray}
-S_{1}(u \mid x, \theta) &\propto& \exp{(\lambda_1 \cdot \ln {L_{0}(x \mid u, \theta)} ) }\label{eq:S1}
-\end{eqnarray}
-This speaker $S_1$ also knows the threshold $\theta$ and chooses utterances to convey information to the literal listener $L_0$ .
-Following RSA, this speaker is an approximately rational (speech-)actor with degree with rationality governed by parameter $\lambda_1$.
+<!-- Next is a hypothetical speaker, who reasons about the literal listener when deciding which utterance to produce. -->
+<!-- \begin{eqnarray} -->
+<!-- S_{1}(u \mid x, \theta) &\propto& \exp{(\lambda_1 \cdot \ln {L_{0}(x \mid u, \theta)} ) }\label{eq:S1} -->
+<!-- \end{eqnarray} -->
+<!-- This speaker $S_1$ also knows the threshold $\theta$ and chooses utterances to convey information to the literal listener $L_0$ . -->
+<!-- Following RSA, this speaker is an approximately rational (speech-)actor with degree with rationality governed by parameter $\lambda_1$. -->
 
 
-For the case of understanding a generic (e.g., *Dogs are friendly*), the relevant dimension for the adopted semantics is the prevalence of property within the category (e.g., the \% of dogs that are friendly).
-In this model, a threshold $\theta$ is established in context by a Bayesian listener reasoning about what threshold would make this utterance true?
-
-
-
-The model begins with a simple Bayesian agent---a literal listener---who updates her prior beliefs $P(x)$ according to the truth-functional meaning of the utterance heard $\denote{u}$.
-\begin{eqnarray}
-L_{0}(x \mid u, \theta) &\propto& {\delta_{\denote{u}(x, \theta)} \cdot P(x)} \label{eq:L0}
-\end{eqnarray}
-For the generic sentence, we assign the simplest possible meaning, a threshold on the prevalence: $\denote{u_{generic}} = P(F\mid K)>\theta$.
-
-The likelihood $\delta_{\denote{u}(x)}$ is the Kronecker delta function returning $1$ for states $x$ compatible with utterance $u$ (i.e., where the prevalence $x$ is above the threshold $\theta$), and $0$ otherwise.
-The literal listener is a hypothetical agent who knows the threshold $\theta$.
-
-Next is a hypothetical speaker, who reasons about the literal listener when deciding which utterance to produce.
-\begin{eqnarray}
-S_{1}(u \mid x, \theta) &\propto& \exp{(\lambda_1 \cdot \ln {L_{0}(x \mid u, \theta)} ) }\label{eq:S1}
-\end{eqnarray}
-This speaker $S_1$ also knows the threshold $\theta$ and chooses utterances to convey information to the literal listener $L_0$ .
-Following RSA, this speaker is an approximately rational (speech-)actor with degree with rationality governed by parameter $\lambda_1$.
+<!-- For the case of understanding a generic (e.g., *Dogs are friendly*), the relevant dimension for the adopted semantics is the prevalence of property within the category (e.g., the \% of dogs that are friendly). -->
+<!-- In this model, a threshold $\theta$ is established in context by a Bayesian listener reasoning about what threshold would make this utterance true? -->
 
 
 
-For the generic sentence, we assign the simplest possible meaning, a threshold on the propensity: $\denote{u_{generic}} = P(F\mid K)>\theta$.
-The prior distribution $P(h)$ is a distribution over likely degrees of propensity. 
-For the case of understanding a generic (e.g., *Dogs are friendly*), the relevant dimension for the adopted semantics is the prevalence of property within the category (e.g., the \% of dogs that are friendly).
+<!-- The model begins with a simple Bayesian agent---a literal listener---who updates her prior beliefs $P(x)$ according to the truth-functional meaning of the utterance heard $\denote{u}$. -->
+<!-- \begin{eqnarray} -->
+<!-- L_{0}(x \mid u, \theta) &\propto& {\delta_{\denote{u}(x, \theta)} \cdot P(x)} \label{eq:L0} -->
+<!-- \end{eqnarray} -->
+<!-- For the generic sentence, we assign the simplest possible meaning, a threshold on the prevalence: $\denote{u_{generic}} = P(F\mid K)>\theta$. -->
 
-Life is only so long, however, and a person can only be in one place at a time.
-The amount of data we can gather about any particular category, event, or causal force is extremely limited by these physical constraints.
-Thus, it would be useful if language provided a simple way to communicate these generalizations to one another.
+<!-- The likelihood $\delta_{\denote{u}(x)}$ is the Kronecker delta function returning $1$ for states $x$ compatible with utterance $u$ (i.e., where the prevalence $x$ is above the threshold $\theta$), and $0$ otherwise. -->
+<!-- The literal listener is a hypothetical agent who knows the threshold $\theta$. -->
+
+<!-- Next is a hypothetical speaker, who reasons about the literal listener when deciding which utterance to produce. -->
+<!-- \begin{eqnarray} -->
+<!-- S_{1}(u \mid x, \theta) &\propto& \exp{(\lambda_1 \cdot \ln {L_{0}(x \mid u, \theta)} ) }\label{eq:S1} -->
+<!-- \end{eqnarray} -->
+<!-- This speaker $S_1$ also knows the threshold $\theta$ and chooses utterances to convey information to the literal listener $L_0$ . -->
+<!-- Following RSA, this speaker is an approximately rational (speech-)actor with degree with rationality governed by parameter $\lambda_1$. -->
+
+
+
+<!-- For the generic sentence, we assign the simplest possible meaning, a threshold on the propensity: $\denote{u_{generic}} = P(F\mid K)>\theta$. -->
+<!-- The prior distribution $P(h)$ is a distribution over likely degrees of propensity.  -->
+<!-- For the case of understanding a generic (e.g., *Dogs are friendly*), the relevant dimension for the adopted semantics is the prevalence of property within the category (e.g., the \% of dogs that are friendly). -->
+
+<!-- Life is only so long, however, and a person can only be in one place at a time. -->
+<!-- The amount of data we can gather about any particular category, event, or causal force is extremely limited by these physical constraints. -->
+<!-- Thus, it would be useful if language provided a simple way to communicate these generalizations to one another. -->
 
 
 
 
 
-# A Formal Theory of Generalizations in Language
+<!-- # A Formal Theory of Generalizations in Language -->
 
-We find both the statistical and conceptual accounts compelling, but an important perspective is missing.
-Linguistic generalizations are not unique in their flexibility.
-Understanding language in general depends upon assumptions interlocutors make about each other and what content is under discussion. 
-Viewing language understanding as a social reasoning process reveals that utterances carry a mosaic of interpretations with a complex sensitivity to context [@Clark1996; @Grice1975; @Levinson2000]. 
-Can the puzzles of generic language be understood as effects of pragmatic reasoning?
-If so, we may be able to get away with a relatively simple, statistical,  semantic theory.
-Abstract mental representations, then, may be the conceptual backdrop against which generic language is interpreted. 
+<!-- We find both the statistical and conceptual accounts compelling, but an important perspective is missing. -->
+<!-- Linguistic generalizations are not unique in their flexibility. -->
+<!-- Understanding language in general depends upon assumptions interlocutors make about each other and what content is under discussion.  -->
+<!-- Viewing language understanding as a social reasoning process reveals that utterances carry a mosaic of interpretations with a complex sensitivity to context [@Clark1996; @Grice1975; @Levinson2000].  -->
+<!-- Can the puzzles of generic language be understood as effects of pragmatic reasoning? -->
+<!-- If so, we may be able to get away with a relatively simple, statistical,  semantic theory. -->
+<!-- Abstract mental representations, then, may be the conceptual backdrop against which generic language is interpreted.  -->
 
-We pursue such a line of inquiry, assuming the simplest truth-conditional meaning: a threshold on prevalence $P(F\mid K)>\theta$ [c.f., @Cohen1999].
-No fixed value of the threshold, $\theta$, would allow for the extreme flexibility generics exhibit (e.g. \emph{Mosquitos carry malaria}; \emph{Robins lay eggs} v. \emph{Robins are female}), 
-so instead we allow this threshold to be established in context through pragmatic reasoning.
-Such an inference would depend on background knowledge about properties and categories---potentially structured, conceptual knowledge.
-This inference, nonetheless, is a general mechanism of understanding language, not specific to interpreting generic statements.
-We formalize this hypothesis in the Rational Speech Act (RSA) theory---a formal, probabilistic theory of language understanding.
-RSA is derived from social reasoning, formalized as recursive Bayesian inference between speaker and listener [@Frank2012; @Goodman2013; @Goodman2016; see also, @Franke2009; @Franke2015].
-@Goodman2016 provides a good introduction to the RSA framework and Appendix A presents a brief tutorial on RSA for the reader unfamiliar.
-
-
-
-The model begins with a simple Bayesian agent---a literal listener---who updates her prior beliefs $P(x)$ according to the truth-functional meaning of the utterance heard $\denote{u}$.
-\begin{eqnarray}
-L_{0}(x \mid u, \theta) &\propto& {\delta_{\denote{u}(x, \theta)} \cdot P(x)} \label{eq:L0}
-\end{eqnarray}
-For the generic sentence, we assign the simplest possible meaning, a threshold on the prevalence: $\denote{u_{generic}} = P(F\mid K)>\theta$.
-The prior distribution $P(x)$ is a distribution over likely states of the world. 
-For the case of understanding a generic (e.g., *Dogs are friendly*), the relevant dimension for the adopted semantics is the prevalence of property within the category (e.g., the \% of dogs that are friendly).
-The likelihood $\delta_{\denote{u}(x)}$ is the Kronecker delta function returning $1$ for states $x$ compatible with utterance $u$ (i.e., where the prevalence $x$ is above the threshold $\theta$), and $0$ otherwise.
-The literal listener is a hypothetical agent who knows the threshold $\theta$.
+<!-- We pursue such a line of inquiry, assuming the simplest truth-conditional meaning: a threshold on prevalence $P(F\mid K)>\theta$ [c.f., @Cohen1999]. -->
+<!-- No fixed value of the threshold, $\theta$, would allow for the extreme flexibility generics exhibit (e.g. \emph{Mosquitos carry malaria}; \emph{Robins lay eggs} v. \emph{Robins are female}),  -->
+<!-- so instead we allow this threshold to be established in context through pragmatic reasoning. -->
+<!-- Such an inference would depend on background knowledge about properties and categories---potentially structured, conceptual knowledge. -->
+<!-- This inference, nonetheless, is a general mechanism of understanding language, not specific to interpreting generic statements. -->
+<!-- We formalize this hypothesis in the Rational Speech Act (RSA) theory---a formal, probabilistic theory of language understanding. -->
+<!-- RSA is derived from social reasoning, formalized as recursive Bayesian inference between speaker and listener [@Frank2012; @Goodman2013; @Goodman2016; see also, @Franke2009; @Franke2015]. -->
+<!-- @Goodman2016 provides a good introduction to the RSA framework and Appendix A presents a brief tutorial on RSA for the reader unfamiliar. -->
 
 
-To understand how language is interpreted pragmatically, we model a pragmatic listener $L_1$ who updates her prior beliefs $P(x)$ by reasoning about the generative process of the utterance, the speaker model $S_1$.
-\begin{eqnarray}
-L_{1}(x , \theta \mid u) &\propto& S_{1}(u \mid x, \theta) \cdot P(x) \cdot P(\theta) \label{eq:L1}
-\end{eqnarray}
-Following @Lassiter2013, we model the pragmatic listener as having uncertainty about the threshold: $P(\theta)$.
-Though the listener doesn't know the threshold *a priori*, she resolves the threshold (i.e., the meaning) in context by integrating her prior beliefs $P(x)$ with the basic principles of communication to be truthful and informative, instantiated in her model of the speaker $S_1$ [@Lassiter2015; @GoodmanLassiter].
-In principle, thresholds could be learned over time for different contexts, but here we assume the listener has no informative knowledge about the semantic variable $P(\theta) = \text{Uniform([0, 1])}$.
-The pragmatic listener $L_1$ (Eq. \ref{eq:L1}) is thus a model of *generic interpretation*: Upon hearing a generic, how should a listener update her beliefs?
+<!-- The model begins with a simple Bayesian agent---a literal listener---who updates her prior beliefs $P(x)$ according to the truth-functional meaning of the utterance heard $\denote{u}$. -->
+<!-- \begin{eqnarray} -->
+<!-- L_{0}(x \mid u, \theta) &\propto& {\delta_{\denote{u}(x, \theta)} \cdot P(x)} \label{eq:L0} -->
+<!-- \end{eqnarray} -->
+<!-- For the generic sentence, we assign the simplest possible meaning, a threshold on the prevalence: $\denote{u_{generic}} = P(F\mid K)>\theta$. -->
+<!-- The prior distribution $P(x)$ is a distribution over likely states of the world.  -->
+<!-- For the case of understanding a generic (e.g., *Dogs are friendly*), the relevant dimension for the adopted semantics is the prevalence of property within the category (e.g., the \% of dogs that are friendly). -->
+<!-- The likelihood $\delta_{\denote{u}(x)}$ is the Kronecker delta function returning $1$ for states $x$ compatible with utterance $u$ (i.e., where the prevalence $x$ is above the threshold $\theta$), and $0$ otherwise. -->
+<!-- The literal listener is a hypothetical agent who knows the threshold $\theta$. -->
+
+
+<!-- To understand how language is interpreted pragmatically, we model a pragmatic listener $L_1$ who updates her prior beliefs $P(x)$ by reasoning about the generative process of the utterance, the speaker model $S_1$. -->
+<!-- \begin{eqnarray} -->
+<!-- L_{1}(x , \theta \mid u) &\propto& S_{1}(u \mid x, \theta) \cdot P(x) \cdot P(\theta) \label{eq:L1} -->
+<!-- \end{eqnarray} -->
+<!-- Following @Lassiter2013, we model the pragmatic listener as having uncertainty about the threshold: $P(\theta)$. -->
+<!-- Though the listener doesn't know the threshold *a priori*, she resolves the threshold (i.e., the meaning) in context by integrating her prior beliefs $P(x)$ with the basic principles of communication to be truthful and informative, instantiated in her model of the speaker $S_1$ [@Lassiter2015; @GoodmanLassiter]. -->
+<!-- In principle, thresholds could be learned over time for different contexts, but here we assume the listener has no informative knowledge about the semantic variable $P(\theta) = \text{Uniform([0, 1])}$. -->
+<!-- The pragmatic listener $L_1$ (Eq. \ref{eq:L1}) is thus a model of *generic interpretation*: Upon hearing a generic, how should a listener update her beliefs? -->
 
 # Communicating generalizations about events
 
-*Habitual* language (e.g,. "Mary smokes.") conveys generalizations about events. 
-In this first set of experiments, we test whether or not the context-sensitivity of these generalizations can be explained by our computational model of pragmatic reasoning. 
-We focus on a special kind of event: a person doing an action. 
+*Habitual* language (e.g,. "Mary smokes."; "My car won't start.") conveys generalizations about events. 
+In this first set of experiments, we test whether or not the context-sensitivity of these generalizations can be explained by an underspecified threshold semantics.
+As our first case study, we focus on a particular class of events: people doing actions.
 
-The internal structure of events can differ in several ways [CITE event people?].
-For example, the event of *smoking a cigarette* takes between 5 - 10 minutes, while the event of *wearing socks* probably lasts for several hours. 
-In these experiments, we focus on the dimension of the likely frequency of the event (how often a person does it), taking for granted that observers can segment time into discrete events. 
+The internal structure of events can differ in several ways, one obvious way being the duration of the event [CITE event people?].
+For example, the event of *smoking a cigarette* takes between 5 - 10 minutes, while the event of *wearing socks* probably lasts for several hours.
+We take as a starting point the fact that events can be segmented and aggregated; the relevant dimension becomes the frequency with which the event occurs.
 
-In order for the computational model described in Eq. \ref{eq:S2} to make predictions, we must first measure the prior over the frequency of different events $P(p)$.
+In our main test of the hypothesis, we collect felicity or truth judgments for habitual statements about people's actions.
+The computational model described in Eq. \ref{eq:S1} is fully specified except for the prior distribution over the frequency of an event $P(h)$, which plausibly varies across different kinds of events.
+First, we measure the prior distribution, and use it and the computational model to predict human endorsement of habitual statements.
 
 ## Prior elicitation
 
-In this experiment we elicit the prior $P(p)$ for different events in order to generate model predictions for corresponding habitual statements.
-Given that some individuals rarely or never engage in an action (e.g., "non-smokers" for smoking), while others do quite frequently, we would expect the prior to be a mixture distribution between (at least) these two possibilities, similar in spirit to Zero-inflated or Hurdle Models of epidemiological data \cite{hurdleModels}.
-Indeed, there may be more than these two possibilities, corresponding to individuals with different traits or demographics (e.g., different expected frequencies depending on age or gender). 
+In this experiment we elicit the prior $P(h)$ for different events in order to generate model predictions for corresponding habitual statements.
+For the case of statements about the behaviors of people, $P(h)$ can be conceived as a distribution over *different people*, each of whom do the behavior with a different frequency.
+To better understand what frequencies should be expected for different actions, we had participants judge the frequency of action for people they were familiar with.
+
 
 ### Method
 
 #### Participants
 
-We recruited 40 participants from Amazon's Mechanical Turk.
+We recruited 50 participants from Amazon's Mechanical Turk.
 Participants were restricted to those with U.S. IP addresses and who had at least a 95\% work approval rating.
 The experiment took on average 12 minutes and participants were compensated \$1.25 for their work.
 
 #### Materials
 
-We created thirty-one events organized into pairs or triplets from 5 different conceptual categories: 
+<!-- We created thirty-one events organized into pairs or triplets from 5 different conceptual categories:  -->
+We created twenty-seven events organized into pairs or triplets from 5 different conceptual categories: 
 food and drug (e.g. \emph{eats caviar}, \emph{eats peanut butter}), 
 work (e.g. \emph{sells things on eBay}, \emph{sells companies}), 
 clothing (e.g. \emph{wears a suit}, \emph{wears a bra}), 
@@ -692,19 +663,22 @@ Items were chosen to intuitively cover a range of likely frequencies of action, 
 
 #### Procedure
 
-For each event, participants were asked two questions, with associated dependent measures:
-\begin{enumerate}
-\item "How many \{men, women\} have \textsc{done action} before?" \\
-Participants responded "N out of every J." by entering a number for N and choosing J from a drop-down menu (options for J: \{1000 - 10 million\}; default: 1000).
-\item For a typical \{man, woman\} who has \textsc{done action} before, how frequently does he or she \textsc{do action}?"\\  
-Participants responded "M times in K." by entering a number for M and choosing K from a drop-down menu (options for K: \{week, month, year, 5 years\}; default: year).
-\end{enumerate}
+The experiment began by having participants input the names of eight friends or family members that they could answer some questions about.
+Participants were told that these names would only be used to assist them in reasoning through the second part of the experiment. 
+They were advised to restrict themselves to consider only adult friends or family members.
 
-For example, one set read: "How many men have smoked cigarettes before?"; "For a typical man who has smoked cigarettes before, how frequently does he smoke cigarettes?"
+In the second phase of the experiment, participants were asked: "For each of the following people, how often does he or she \textsc{do action}?"
+Participants had to fill in the blanks in sentences of the form: "\text{friend does action} ___ times per ___".
+The first blank was a text box where participants could enter a number.
+The second blank was a drop-down menu where participants could select a time interval from the following options: \{week, month, year, 5 years\}
+They completed this task for each of their eight listed friends or family members.
+To make the task slightly less tedious, there was an option where participants could set the time window for all eight of their responses.
 
-We anticipated there might be different beliefs about the frequency of events depending on whether the actor is male or female, so we asked about both genders.
-Participants answered both questions for each gender on each slide (4 questions total per slide, order of male / female randomized between-subjects), and every participant completed all 31 items in a randomized order.
-The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/experiments/priors/priors-2.html}.
+In order to get sufficient data for actions that are relatively uncommon (e.g., *climbs mountains*, *writes novels*), if participants responded that all of their friends do the action with a frequency of "0 times" (in whatever interval), a follow-up question appeared that read: "Do you know anybody who has \textsc{done action} before?". 
+If they responded "Yes", another follow-up question appeared that read: "How often do you think that person \textsc{does action}?", with the same dependent measure format as before.
+
+Participants completed these elicitation trials for a random subset of 15 items, presented in a randomized order.
+The experiment can be viewed at \url{http://stanford.edu/~mtessler/generics-paper/experiments/habituals/priors/friends-and-family-1.html}.
 
 \begin{figure*}[t]
 \centering
@@ -719,52 +693,84 @@ The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/exp
   \label{fig:tjScatters}
 \end{figure*}
 
+### Data preprocessing
+
+Every response for a frequency of a person doing an action is a sample from $P_{event}(h)$.
+We first transformed all responses onto the same scale of "times per year" (assuming 52 weeks per year; 12 months per year).
+An empirical distribution can be found by making a histogram of these responses. 
+The empirical distributions follows a kind-of log-normal distribution, with the additional feature of having a substantial probability mass at the frequency of 0 (for those individuals who never do the action). 
+We thus log-transformed the empirical data. 
+To avoid values of -Infinity, we set the responses of 0 to mean roughly "once every twenty years".
+
+We took the log-transformed (and "-Infinity"-adjusted) raw data and binned each response to the closest bins on a grid with binwidth of 0.5 in the log-"times per year" scale.
+This yields a grid of 23 points with frequencies ranging from "once every twenty years" (log-frequency = -3) to "twenty times per day" (log-frequency = 9).
+
 ### Data analysis and results
 
-We built a Bayesian data analysis model for this prior elicitation task.
-Question 1 elicits the proportion of people who have done an action before. 
-We model this data as coming from a Beta distribution: $d_{1} \sim \text{Beta}(\gamma_{1}, \xi_{1})$. 
-Question 2 elicits the rate, or relative frequency, with which a person does the action.
-This was modeled by a log-normal distribution: $\ln d_{2} \sim \text{Gaussian}(\mu_{2}, \sigma_{2})$. 
-Each item was modeled independently for each gender.
-We implemented this model using the probabilistic programming language WebPPL \cite{dippl}, and found the credible values of the parameters by running MCMC for 100,000 iterations, discarding the first 50,000 for burnin.
+We analyze the data using a Bayesian approach to allow for a consistent integration into the computational model.
+The data we would like to explain are: the bins $n_i \in \{-3, -2.5, ..., 8.5, 9\}$ that participants gave in response to items $i \in \{1, ..., 27\}$.
+The data is explained as a function of subjective beliefs $P_i$, with $P_{ij}$ being participants' (as a collective) belief about the relative likelihood for bin $j$ for item $i$. 
+Each $P_i$ defines a likelihood for our data, assuming an appropriate linking function.
 
-The priors elicited cover a range of possible parameter values as intended (Figure \ref{fig:priorScatter}, scatter), resulting in parametrized distributions of dramatically different shapes (insets).  
-We observe a correlation in our items between the mean \% of Americans who have \textsc{done action} before (Question 1) and the mean log-frequency  of action (Question 2) ($r_{1,2} = 0.74$).
-Items that tend to be more popular actions also tend to be more frequent actions (e.g. \emph{wears socks}) and visa-versa (e.g. \emph{steals cars}), though there are notable exceptions (e.g. \emph{plays the banjo} is not popular but done frequently when done at all, as is \emph{smokes cigarettes}; \emph{goes to the movies} is a popular activity though not done very often). 
-This diversity is relevant because the speaker model (Eq.~\ref{eq:S2}) will produce habitual sentences (e.g. \emph{Sam goes to the movies vs. the ballet.}) contingent on the shape of the prior distribution. 
+Following @Franke2016, the linking function for this data treats each bin $n_{i}$ as a draw from a categorical distribution where the probability of bin $j$ is proportional to $\exp{(a\cdot P_i)}$, i.e., a soft-max choice from $P_{i}$. 
+The higher parameter $a$, the more likely $n_{i}$ is the mode of $P_{i}$. 
+For $a \rightarrow 0$, all bins become equiprobable.
 
-From the inferred parameters and assumed functional forms, we get an inferred $P(p)$ modeled as a mixture of individuals with the possibility of carrying out the action and those without the possibility of doing it. 
-That is, $P(p)$ was constructed by sampling $p$ as follows:
+\begin{eqnarray}
+P_{i} &\sim& \text{Dirichlet}(1, ..., 1) \\ 
+a & \sim & \text{Gamma}(2,1) \\
+n_{i} &\sim & \text{Categorical}(\exp(a \cdot P_i))
+\end{eqnarray}
 
-\begin{align}
-\theta & \sim \text{Beta}(\gamma_{1}, \xi_{1}) \nonumber \\ 
-\ln \lambda & \sim \begin{cases}
-		\text{Gaussian}(\mu_{2}, \sigma_{2}) &\mbox{if } \text{Bernoulli}(\theta) = \textsc{t} \label{eq:priorModel}  \\
-				\delta_{\lambda=-\infty} &\mbox{if } \text{Bernoulli}(\theta) = \textsc{f} \\
-		\end{cases}
-\end{align}
+VIZ (as before)?
 
-In addition to specifying the correct way to combine our two prior-elicitation questions, using this inferred prior in our language model resolves two technical difficulties: (1) It smooths effects that are clearly results of the response format^[
-For example, a very common rating is *1 time per year*. Presumably participants would be just as happy reporting *approximately* 1 time per year; the raw data does not reflect this due to demands of the dependent measure.
-]
-and (2) it better captures the tails of the prior distribution which have relatively little data and need to be regularized by the analysis.
-Figure \ref{fig:priorScatter} (right) shows example inferred priors.
+<!-- We assume each "binned" response is a sample from a multinomial distribution with unknown probability vector. -->
+<!-- We put a Dirichlet-prior over this probability vector. -->
 
-Some items show substantial differences between the genders (e.g., *wears a bra*) and some show subtle differences (e.g., *watches professional football*). 
-We will explore the possibility of different truth conditions for habituals of different gendered characters in Experiment 2, for select items with priors that differ substantially by gender.
+<!-- We built a Bayesian data analysis model for this prior elicitation task. -->
+<!-- Question 1 elicits the proportion of people who have done an action before.  -->
+<!-- We model this data as coming from a Beta distribution: $d_{1} \sim \text{Beta}(\gamma_{1}, \xi_{1})$.  -->
+<!-- Question 2 elicits the rate, or relative frequency, with which a person does the action. -->
+<!-- This was modeled by a log-normal distribution: $\ln d_{2} \sim \text{Gaussian}(\mu_{2}, \sigma_{2})$.  -->
+<!-- Each item was modeled independently for each gender. -->
+<!-- We implemented this model using the probabilistic programming language WebPPL \cite{dippl}, and found the credible values of the parameters by running MCMC for 100,000 iterations, discarding the first 50,000 for burnin. -->
+
+<!-- The priors elicited cover a range of possible parameter values as intended (Figure \ref{fig:priorScatter}, scatter), resulting in parametrized distributions of dramatically different shapes (insets).   -->
+<!-- We observe a correlation in our items between the mean \% of Americans who have \textsc{done action} before (Question 1) and the mean log-frequency  of action (Question 2) ($r_{1,2} = 0.74$). -->
+<!-- Items that tend to be more popular actions also tend to be more frequent actions (e.g. \emph{wears socks}) and visa-versa (e.g. \emph{steals cars}), though there are notable exceptions (e.g. \emph{plays the banjo} is not popular but done frequently when done at all, as is \emph{smokes cigarettes}; \emph{goes to the movies} is a popular activity though not done very often).  -->
+<!-- This diversity is relevant because the speaker model (Eq.~\ref{eq:S2}) will produce habitual sentences (e.g. \emph{Sam goes to the movies vs. the ballet.}) contingent on the shape of the prior distribution.  -->
+
+<!-- From the inferred parameters and assumed functional forms, we get an inferred $P(p)$ modeled as a mixture of individuals with the possibility of carrying out the action and those without the possibility of doing it.  -->
+<!-- That is, $P(p)$ was constructed by sampling $p$ as follows: -->
+
+<!-- \begin{align} -->
+<!-- \theta & \sim \text{Beta}(\gamma_{1}, \xi_{1}) \nonumber \\  -->
+<!-- \ln \lambda & \sim \begin{cases} -->
+<!-- 		\text{Gaussian}(\mu_{2}, \sigma_{2}) &\mbox{if } \text{Bernoulli}(\theta) = \textsc{t} \label{eq:priorModel}  \\ -->
+<!-- 				\delta_{\lambda=-\infty} &\mbox{if } \text{Bernoulli}(\theta) = \textsc{f} \\ -->
+<!-- 		\end{cases} -->
+<!-- \end{align} -->
+
+<!-- In addition to specifying the correct way to combine our two prior-elicitation questions, using this inferred prior in our language model resolves two technical difficulties: (1) It smooths effects that are clearly results of the response format^[ -->
+<!-- For example, a very common rating is *1 time per year*. Presumably participants would be just as happy reporting *approximately* 1 time per year; the raw data does not reflect this due to demands of the dependent measure. -->
+<!-- ] -->
+<!-- and (2) it better captures the tails of the prior distribution which have relatively little data and need to be regularized by the analysis. -->
+<!-- Figure \ref{fig:priorScatter} (right) shows example inferred priors. -->
+
+<!-- Some items show substantial differences between the genders (e.g., *wears a bra*) and some show subtle differences (e.g., *watches professional football*).  -->
+<!-- We will explore the possibility of different truth conditions for habituals of different gendered characters in Experiment 2, for select items with priors that differ substantially by gender. -->
 
 ## Experiment 1: Endorsing generalizations about events
 
-A present-tense habitual sentence is of the form \textsc{singular noun phrase} $+$ \textsc{present tense simple verb phrase} (e.g. \emph{Bill smokes cigarettes.}).  
-We next explore the endorsements of habituals of this form made from the items whose propensity priors were measured in Experiment 1. 
+A present-tense habitual sentence is of the form \textsc{singular noun phrase} $+$ \textsc{present tense simple verb phrase} (e.g. \emph{Bill smokes cigarettes.}). 
+We next explore the endorsements of habituals of this form made from the items whose propensity priors were measured the prior elicitation task. 
 
 ### Method
 
 #### Participants
 
 We recruited 150 participants from MTurk.
-To arrive at this number, we performed a Bayesian precision analysis to determine the minimum sample size necessary to reliably ensure 95\% posterior credible intervals no larger than 0.3 for a parameter whose true value is 0.5 and for which the data is a 2 alternative forced choice.
+To arrive at this number, we performed a Bayesian precision analysis to determine the minimum sample size necessary to reliably ensure 95\% posterior credible intervals no larger than 0.3 for a parameter whose true value is 0.5 and for which the data is a 2-alternative forced choice.
 This analysis revealed a minimum sample size of 50 per item; since participants only completed about one third of the items, we recruited 150 participants.
 The experiment took 4 minutes on average and participants were compensated \$0.55 for their work.
 
@@ -772,11 +778,12 @@ The experiment took 4 minutes on average and participants were compensated \$0.5
 
 On each trial, participants were presented with a \emph{past frequency statement} for a given event of the form: "In the past M \{weeks, months, years\}, \textsc{person} \textsc{did x} 3 times".
 For example, \emph{In the past month, Bill smoked cigarettes 3 times}.
-The particular intervals used (number M and window \{weeks, months, years\}) were selected after examining the predictions of the speaker model (Eq.~\ref{eq:S2}), for each item independently, to yield a variety of predicted endorsement rates.
-The items were the same as in Expt. ~1.
+The particular intervals used (\{weeks, months, years\}) were selected after examining the predictions of the speaker model (Eq.~\ref{eq:S1}), for each item independently, to yield a range of predicted endorsement rates.
+The items were the same as in the prior elicitation task.
 
-Participants were asked whether they agreed or disagreed with the corresponding habitual sentence: "\textsc{person does x}" (e.g. \emph{Bill smokes cigarettes}).
-Participants saw 25 out of the 31 items paired randomly with a male or female character name; the other 6 trials were presented with both male and female names (on separate trials; 37 trials total) to explore the nature of the contrast class (see Model section). 
+Participants were asked whether they agreed or disagreed with the corresponding habitual sentence: "\textsc{person does x}" (e.g., \emph{Bill smokes cigarettes}).
+Participants completed 37 trials, which were composed of the 27 items from the prior elicitation task and 4 additional filler items not in the prior elicitation task randomly paired with either a male or female character name. 6 of these items were then also paired with a name of the opposite gender (e.g., participants saw both a female character and a male character who watched professional football). These were used for an exploratory analysis on gender differences.
+The 4 filler items were not used in the prior elicitation because they described illegal activities (e.g., "doing cocaine").
 The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/experiments/truth-judgments/tj-2.html}.
 
 ### Results
@@ -784,14 +791,13 @@ The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/exp
 #### Behavioral results
 
 On each trial of the experiment, the participant was told a person did a particular action 3 times during some time window. 
-Figure \ref{fig:tjScatters} (left) shows the correspondence between the frequency of the event (normalizing to a 5-year time scale and taking the logarithm) and the felicity of the corresponding habitual sentence. 
-It is clear that a habitual sentence can receive strong agreement even when the actions are very infrequent (log frequency $\sim$ 1; 3 times in a 5-year interval; e.g. \emph{writes novels}, \emph{steals cars}).
+Figure \ref{fig:tjScatters} (left) shows the correspondence between the frequency of the event (transformed a log times-per-year scale) and the felicity of the corresponding habitual sentence. 
+It is clear that a habitual sentence can receive strong agreement even when the actions are very infrequent (log frequency $\sim$ -1; 3 times in a 5-year interval; e.g. \emph{writes novels}, \emph{climbs mountains}).
 We also see even when actions are done relatively frequently (e.g. 3 times in a one month interval; log frequency $\sim$ 5), there are habitual sentences participants are reluctant to endorse completely (e.g. \emph{wears socks}, \emph{drinks coffee}). 
 In our data, actions completed with a high frequency (3 times in a one week interval; log frequency $\sim$ 6.5) receive at least 75\% endorsement, though there is still variability among them (e.g. between 10-25\% of people disagree with \emph{wears a watch} and \emph{wears a bra}). %, suggesting that even actions that are completed almost everyday can insufficient to generalize.
-Overall, frequency of action predicts only a fraction of the variability in responses ($r^2(93) = 0.33$).
+Overall, log frequency of action predicts only a fraction of the variability in responses ($r^2(93) = 0.33$).
 For actions that are done on the time scale of years or longer (lower median of frequency), frequency itself no longer explains the endorsements ($r^2(50) = 0.07$)
 
-We further examined the six items for which we observed gender differences in the prior elicitation task (Expt.~1).
 We find no differences between endorsements of the habitual of characters with male and female names, and overall, the mean endorsements by gender are strongly correlated $r(93) = 0.91$. 
 This may be because the felicity of habitual sentences depends on a comparison to individuals of both genders (i.e, the \emph{contrast class} is other people; not just other men or women). 
 Less interestingly, the lack of a difference may be the result of gender being not very salient in our paradigm, perhaps because the names used were not sufficiently gendered.
