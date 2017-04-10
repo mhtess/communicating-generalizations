@@ -26,23 +26,38 @@ var data = {
 		}, d2.slice(0, d2.length - 1)),
 		prior: _.fromPairs(map(function(d){
 				return [d.action, map(function(b){
-					d[b] + 1;
+					d[b] + 0;
 				},["-2","-1.5","-1","-0.5","0","0.5","1","1.5","2","2.5","3","3.5","4","4.5","5","5.5","6","6.5","7","7.5","8","8.5","9"])]
 			}, d0.slice(0, d0.length -1)))
 };
 
 var items = _.keys(data.prior);
 var utterancePrior = Infer({model: function(){
+	// return uniformDraw(["habitual","opposite habitual"])
+	// return uniformDraw(["habitual","habitual is false"])
 	return uniformDraw([targetUtterance,"silence"])
 }});
 
 var meaning = function(utt,state, theta) {
-  return utt=="habitual"? state > theta :
-         utt=="habitual is false"? state<=theta :
+  // return utt=="habitual"? state > theta[utt] :
+  //        utt=="habitual is false"? state <= theta[utt] :
+	// 			 utt=="opposite habitual"? state < theta[utt] :
+ return utt=="habitual"? state > theta :
+        utt=="habitual is false"? state <= theta :
+				 utt=="opposite habitual"? state < theta :
          utt=='silence'? true :
          utt=='some'? state > 0 :
          true
 }
+
+// data["prior"]["wears socks"]
+
+
+// display(priorUnnormed)
+// display(sum(priorUnnormed))
+// display(sum(prior))
+// prior
+
 
 var model = function(){
 
@@ -50,17 +65,45 @@ var model = function(){
 		s1: uniformDrift({a: 0, b: 20, width:2})
 	}
 
+	// var c = 0.5;//uniformDrift({a: 0 , b: 1, width: 0.1});
+	//
+	// var utterancePrior = Infer({model: function(){
+	// 	return flip(c) ? "habitual" : "silence"//"habitual is false"
+	// }});
+
+	var alpha = uniformDrift({a: 0, b: 5, width:0.5})
+
 	foreach(items, function(i){
+
+		var prior = normalize(map(function(b){
+			return uniformDrift({a: 0, b: 1, width:0.1})
+		}, midBins))
+
+		var scaledPrior = normalize(map(function(pi){
+			return Math.pow(pi, alpha)
+		}, prior))
+
+		var observedCounts = data["prior"][i];
+
+		// display(Multinomial({n: sum(observedCounts), ps: prior}).score(
+			// observedCounts
+		// ))
+		observe(Multinomial({n: sum(observedCounts), ps: scaledPrior}),
+				observedCounts)
 
 		var itemData = _.filter(data.speaker, {habitual: i});
 
-		var statePrior = Categorical({vs: midBins, ps: data["prior"][i]})
+		var statePrior = Categorical({ vs: midBins, ps: prior })
 
 		/// RSA model
 		var listener0 = cache(function(utterance) {
 		  Infer({model: function(){
 		    var state = sample(statePrior)
-				var theta = sample(thetaPrior);
+				var theta =  sample(thetaPrior)
+				// {
+				// 	habitual: sample(thetaPrior)//,
+				// 	"opposite habitual": sample(thetaPrior)
+				// };
 		    var m = meaning(utterance, state, theta)
 		    condition(m)
 		    return state
@@ -97,10 +140,16 @@ var model = function(){
 
 		})
 
+		foreach(_.range(0, prior.length), function(pi){
+			query.add(["prior",i, midBins[i], pi, "NA"], prior[pi])
+		})
+
 	})
 
 	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+	// query.add(["param","habUttPrior","NA","NA", "NA"], c)
+	query.add(["param","alpha","NA","NA", "NA"], alpha)
 
 	// query.add(["param", "speakerOptimality", "s1"], [
 	// 	 speakerOptimality.s1, "NA", "NA",
@@ -109,25 +158,34 @@ var model = function(){
 
 	return query
 }
-
-var totalIterations = 50, lag = 10;
+// // data.speaker
+// // Infer({model: function() { sample(Categorical({vs: midBins, ps: data["prior"]["wears socks"]}))}})
+// // Infer({model: function() { sample(Categorical({
+// // 	vs: midBins,
+// // 	ps: map(function(p){ Math.pow(p, 0.3) }, data["prior"]["wears socks"])
+// // }))}})
+//
+//
+var totalIterations = 500000, lag = 100;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
-var outfile = 'results-habituals-S1-ffPrior-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+// var lag = 0;
+var outfile = 'results-habituals-S1-ffPriorDirScaling-oppositeAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
-  method: "MCMC",
+  method: "incrementalMH",
 	// kernel: {HMC: {steps:5, stepSize: 0.01}},
-  samples: mhiter, burn: burn, lag: lag, verbose: T
-	// stream: {
-	// 	path: "results/" + outfile,
-	// 	header: [
-	// 		"type", "item", "cat", "param", "gender", "val"
-	// 	]
-	// }
+  samples: mhiter, burn: burn, lag: lag, verbose: T,
+	verboseLag: totalIterations/100,
+	stream: {
+		path: "results/" + outfile,
+		header: [
+			"type", "item", "cat", "param", "gender", "val"
+		]
+	}
 })
 
-utils.writeQueryERP(posterior, "results/" + outfile,
-	["type", "item", "cat", "param", 'freq', "val"])
-
+// utils.writeQueryERP(posterior, "results/" + outfile,
+	// ["type", "item", "cat", "param", 'freq', "val"])
+//
 display("written to " + outfile)
