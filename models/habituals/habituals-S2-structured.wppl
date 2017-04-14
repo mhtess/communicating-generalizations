@@ -1,4 +1,4 @@
-// time ~/webppl-fork/webppl habituals-S1-structured.wppl --require utils 1
+// time ~/webppl-fork/webppl habituals-S2-unstructured.wppl --require utils 1
 
 var chain = last(process.argv) // load index as last command line index
 
@@ -60,14 +60,21 @@ var meaning = function(utt,state, theta) {
          true
 }
 
-// display(items)
+// data["prior"]["wears socks"]
+
+
+// display(priorUnnormed)
+// display(sum(priorUnnormed))
+// display(sum(prior))
+// prior
+
 
 var model = function(){
 
 	var speakerOptimality = {
-		s1: uniformDrift({a: 0, b: 10, width:2})
+		s1: uniformDrift({a: 0, b: 20, width: 2}),
+		s2: uniformDrift({a: 0, b: 5, width: 0.5})
 	}
-	
 	var nullDist = Delta({v: -99})
 
 	// var c = 0.5;//uniformDrift({a: 0 , b: 1, width: 0.1});
@@ -75,6 +82,8 @@ var model = function(){
 	// var utterancePrior = Infer({model: function(){
 	// 	return flip(c) ? "habitual" : "silence"//"habitual is false"
 	// }});
+
+	// var alpha = uniformDrift({a: 0, b: 5, width:0.5})
 
 	foreach(items, function(i){
 
@@ -112,60 +121,75 @@ var model = function(){
 				)
 			}
 		})
+
 		/// RSA model
-		var listener0 = cache(function(utterance) {
+		var listener0 = cache(function(utterance, theta) {
 		  Infer({model: function(){
 		    var state = sample(statePrior)
-				var theta =  sample(thetaPrior)
-				// {
-				// 	habitual: sample(thetaPrior)//,
-				// 	"opposite habitual": sample(thetaPrior)
-				// };
 		    var m = meaning(utterance, state, theta)
 		    condition(m)
 		    return state
 		 }})}, 10000)
 
-		var speaker1 = cache(function(freq) {
+		var speaker1 = cache(function(state, theta) {
 			Infer({model: function(){
 		    var utterance = sample(utterancePrior);
-		    var L0 = listener0(utterance);
-		    factor(speakerOptimality.s1 * L0.score(freq))
-		    return utterance === targetUtterance ? 1 : 0
+		    var L0 = listener0(utterance, theta);
+		    factor(speakerOptimality.s1 * L0.score(state))
+		    return utterance
 			}})}, 10000)
+
+		var listener1 = cache(function(utterance) {
+			Infer({model: function(){
+		    var state = sample(statePrior);
+		    var theta = targetUtterance === "habitual" ? sample(thetaPrior) : -99;
+		    var S1 = speaker1(state, theta)
+		    observe(S1, utterance)
+		    return state
+			}})}, 10000)
+
+		var speaker2 = function(freq){
+			Infer({model: function(){
+				var utterance = sample(utterancePrior);
+		    var L1 = listener1(utterance)
+		    factor(speakerOptimality.s2 * L1.score(freq))
+				// var _kl = KL(speakerBeliefs, L1, speakerBeliefs.support());
+				// factor(speakerOptimality.s2  * -1 * _kl)
+		    return utterance === targetUtterance ? 1 : 0
+		 }})}
 
 		var observedFrequencies = levels(itemData, "roundedRate");
 
 		foreach(observedFrequencies, function(freq){
 			// display(freq)
 			var freqData = _.filter(itemData, {roundedRate: freq});
-			var s1prediction = speaker1(freq);
+			var s2prediction = speaker2(freq);
 			// display(map(function(s){return [s, s1prediction.score(s)]},
 			//  s1prediction.support()))
 
 			mapData({data:freqData}, function(d){
-				// s1prediction.score(d.alignedResponse) == -Infinity ?
-				// display(d) : null
-				// s1prediction.score(d.alignedResponse) == -Infinity ?
-				// display(theta) : null
-				// s1prediction.score(d.alignedResponse) == -Infinity ?
-				// 	display(JSON.stringify(priorParams)) : null
+				// display(d)
 				// display("speaker score = " + s1prediction.score(d.alignedResponse))
-				observe(s1prediction, d.alignedResponse)
+				observe(s2prediction, d.alignedResponse)
 			})
 
 			// query.add(["predictive", i, freqData[0]["time_period"]], [
 			// 	freq, "s2", expectation(s2prediction),
 			// 	"NA",  "NA",  "NA",  "NA" ])
 
-			query.add(["predictive", i, "s1", freqData[0]["time_period"], freq], expectation(s1prediction));
+			query.add(["predictive", i, "s2", freqData[0]["time_period"], freq], expectation(s2prediction));
 
 		})
+
+		// foreach(_.range(0, prior.length), function(pi){
+		// 	query.add(["prior",i, midBins[pi], pi, "NA"], prior[pi])
+		// })
 
 	})
 
 	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+	query.add(["param","speakerOptimality","s2","NA", "NA"], speakerOptimality.s2)
 	// query.add(["param","habUttPrior","NA","NA", "NA"], c)
 	// query.add(["param","alpha","NA","NA", "NA"], alpha)
 
@@ -184,10 +208,10 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 1000, lag = 10;
+var totalIterations = 100000, lag = 20;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'results-habituals-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S2-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
