@@ -1,0 +1,203 @@
+---
+title: "Habituals: unstructured prior"
+output: html_notebook
+---
+```{r}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+```{r}
+library(langcog)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(coda)
+library(knitr)
+library(ggthemes)
+library(rwebppl)
+theme_set(theme_few())
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+betaMean = function(a, b){
+  return ( a / (a + b ))
+}
+
+betaSDev = function(a, b){
+  return( sqrt ( ( a * b) / ( ( a + b ) ^ 2 * (a + b + 1) ) ) ) 
+}
+project.path <- "~/Documents/research/generics-paper/"
+data.path <- "models/habituals/data/"
+model.path <- "models/habituals/"
+```
+
+
+```{r}
+n_chains <- 3
+n_samples <- 1000000
+burn <- n_samples / 2
+lag <- 100
+#model_prefix <- "results-habituals-s1-smtncshabitual-"
+#model_prefix <- "results-habituals-smtncshabitual-"
+model_prefix <- "results-habituals-S1-cdfPrior-"
+#model_prefix <- "results-fullModel-s1-smtncsgeneric-"
+#model_prefix <- "results-fullModel-bernprior-smtncsgeneric-"
+#model_prefix <- "results-fullModel-smtncsmost-"
+m.samp <- data.frame()
+for (i in seq(1, n_chains)){
+  mi <- fread(paste(project.path, model.path,
+                    "results/",
+                    model_prefix, n_samples, "_burn", burn, "_lag", lag,
+                    "_chain", i, ".csv", sep = ""))
+
+  m.samp.i <- mi %>% mutate(chain = i)
+  m.samp <- bind_rows(m.samp, m.samp.i)
+  print(i)
+}
+
+n_samples <- 10000
+
+m.samp <- fread(paste(project.path, model.path,
+"results/results-habituals-prior-ffPriorDir-100000_burn50000_lag100_chain1.csv", sep  = ""))
+# 
+```
+
+
+## Priors
+
+```{r fig.width = 12, fig.height = 12}
+m.samp %>%
+  filter(type == "prior") %>%
+  group_by(item, param) %>%
+  summarise(MAP = estimate_mode(val),
+            credUpper = hdi_upper(val),
+            credLower = hdi_lower(val)) %>%
+  ggplot(., aes(x = to.n(param), y = MAP, ymin = credLower, ymax = credUpper))+
+  geom_bar(stat = 'identity', position = position_dodge())+
+  geom_errorbar(position = position_dodge())+
+  facet_wrap(~item)
+```
+
+```{r}
+m.samp.summary <- m.samp %>%
+  filter(type == "prior") %>%
+  group_by(item, param) %>%
+  summarise(MAP = estimate_mode(val),
+            credUpper = hdi_upper(val),
+            credLower = hdi_lower(val))
+
+m.prior.wide <- m.samp.summary %>% select(item, param, MAP) %>%
+  mutate(param = as.numeric(param)) %>%
+  spread(param, MAP)
+
+```
+
+
+```{r fig.width = 12, fig.height = 12}
+df <- read.csv(paste(project.path, "data/habituals/priors/friends-and-family-1-trials.csv", sep= ""))
+
+annualRates = list("5 years" = 1/5, "year" = 1, "month" = 12, "week" = 52)
+
+df.tidy <- df %>%
+  rowwise() %>%
+  mutate(annualRate = annualRates[[as.character(interval)]]*n_times)
+
+
+df.out <- df.tidy %>%
+  mutate(annualRate = ifelse(annualRate == 0, 0.15, annualRate),
+         lograte = log(annualRate),
+         binned_lograte = round(lograte*2)/2) %>%
+  group_by(action, binned_lograte) %>%
+  summarize(counts = n())
+
+
+# make sure 0s are represented
+df.out2 <- left_join(
+  expand.grid(action = levels(df.out$action), binned_lograte = levels(factor(df.out$binned_lograte))),
+  df.out %>% mutate(binned_lograte = factor(binned_lograte))) 
+
+df.out2[is.na(df.out2)] <- 0
+df.out2 <- df.out2 %>%
+  mutate(binned_lograte = as.numeric(binned_lograte))
+  
+ggplot(df.out2, aes( x = binned_lograte, y = counts))+
+  #geom_histogram()+
+  geom_bar(stat = 'identity', position = position_dodge())+
+  #geom_density()+
+  facet_wrap(~action, scales = 'free')+
+  xlim(-3.5, 8.5)
+```
+
+
+# Structured prior BDA model
+
+```{r}
+n_chains <- 3
+n_samples <- 1000000
+burn <- n_samples / 2
+lag <- 100
+#model_prefix <- "results-habituals-s1-smtncshabitual-"
+#model_prefix <- "results-habituals-smtncshabitual-"
+model_prefix <- "results-habituals-S1-cdfPrior-"
+#model_prefix <- "results-fullModel-s1-smtncsgeneric-"
+#model_prefix <- "results-fullModel-bernprior-smtncsgeneric-"
+#model_prefix <- "results-fullModel-smtncsmost-"
+m.samp <- data.frame()
+for (i in seq(1, n_chains)){
+  mi <- fread(paste(project.path, model.path,
+                    "results/",
+                    model_prefix, n_samples, "_burn", burn, "_lag", lag,
+                    "_chain", i, ".csv", sep = ""))
+
+  m.samp.i <- mi %>% mutate(chain = i)
+  m.samp <- bind_rows(m.samp, m.samp.i)
+  print(i)
+}
+
+#n_samples <- 10000
+
+m.samp <- fread(paste(project.path, model.path,
+"results/results-habituals-prior-ffPriorStructuredDelta-50000_burn25000_lag100_chain2.csv", sep  = ""))
+# 
+```
+
+```{r fig.width = 8, fig.height = 12}
+bind_rows(
+    m.samp %>% 
+    filter(param == "postPred") %>%
+    mutate(src = 'model') %>%
+    select(item, val, src) %>%
+    rename(action = item,
+           annualRate = val),
+  df.tidy %>%
+    select(action, annualRate) %>%
+    mutate(src = 'data')
+) %>% ggplot(., aes( x = log(annualRate), color = src))+
+  stat_ecdf()+
+  facet_wrap(~action)+
+  scale_color_solarized()+
+  # scale_x_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))  
+
+```
+
+```{r fig.width = 8, fig.height = 12}
+m.samp %>% 
+    filter(param != "postPred") %>%
+  ggplot(., aes( x = val, fill = param))+
+  geom_histogram()+
+  facet_grid(item ~ param, scales = 'free') +
+  theme(strip.text.y = element_text(angle = 0))  
+```
+

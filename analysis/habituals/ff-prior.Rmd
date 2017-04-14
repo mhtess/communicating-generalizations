@@ -132,8 +132,8 @@ df.tidy %>%
   geom_density()+
   facet_wrap(~action, scales = 'free')+
   xlim(-2, 8.5)
-
-ggsave("~/Desktop/habpriors_ff.pdf", width = 12, height = 8)
+# 
+# ggsave("~/Desktop/habpriors_ff.pdf", width = 12, height = 8)
 ```
 
 
@@ -149,6 +149,52 @@ df.tidy %>%
 
 #ggsave("~/Desktop/habpriors_ff_wZeros_Hist.pdf", width = 12, height = 8)
 ```
+
+Output for model
+
+```{r fig.height = 14, fig.width = 12}
+df.out <- df.tidy %>%
+  mutate(annualRate = ifelse(annualRate == 0, 0.15, annualRate),
+         lograte = log(annualRate),
+         binned_lograte = round(lograte*2)/2) %>%
+  group_by(action, binned_lograte) %>%
+  summarize(counts = n())
+
+
+# make sure 0s are represented
+df.out2 <- left_join(
+  expand.grid(action = levels(df.out$action), binned_lograte = levels(factor(df.out$binned_lograte))),
+  df.out %>% mutate(binned_lograte = factor(binned_lograte))) 
+
+df.out2[is.na(df.out2)] <- 0
+df.out2 <- df.out2 %>%
+  mutate(binned_lograte = as.numeric(binned_lograte))
+  
+ggplot(df.out2, aes( x = binned_lograte, y = counts))+
+  #geom_histogram()+
+  geom_bar(stat = 'identity', position = position_dodge())+
+  #geom_density()+
+  facet_wrap(~action, scales = 'free')+
+  xlim(-3.5, 8.5)
+
+write.csv(df.out2 %>%
+  spread(binned_lograte, counts) %>%
+  mutate(action = as.character(action),
+         action = ifelse(action == "sell things on eBay",
+                                          "sells things on eBay",
+                                          action)), "~/Documents/research/generics-paper/models/habituals/data/ff-prior-n50.csv", row.names = F)
+
+```
+```{r}
+df.tidy %>%
+  mutate(annualRate = ifelse(annualRate == 0, 0.15, annualRate),
+         lograte = log(annualRate),
+         binned_lograte = round(lograte*2)/2) %>%
+  group_by(binned_lograte) %>%
+  summarize(counts = n()) %>% View()
+
+```
+
 
 # Comparison with structured elicitation
 
@@ -253,4 +299,122 @@ ggsave("~/Desktop/habpriors_comparison_cdfs_DoesIt.pdf", width = 10,
        height = 8)
 
 ```
+
+
+## Baseline models from prior
+
+```{r}
+df.baseline <- left_join(df.tidy %>%
+  rowwise() %>%
+  mutate(isZero = ifelse(n_times == 0 , 1, 0)) %>%
+  group_by(action) %>%
+  summarise(nZeros = sum(isZero),
+            n = n()),
+  df.tidy %>%
+    filter(n_times > 0) %>%
+    group_by(action) %>%
+    summarise(aveFreq = mean(annualRate))
+) %>%
+  mutate(rarity = nZeros / n,
+         logFreq = log(aveFreq))
+```
+
+```{r}
+df.baseline <- df.tidy %>%
+    group_by(action) %>%
+    summarise(aveFreq = mean(annualRate)) %>%
+  mutate(logAveFreq = log(aveFreq))
+```
+
+```{r}
+d.hab <- read.csv(paste(project.path, data.path, "tj-2-logtimes.csv", sep = ""))
+
+
+annualRates = list("5 years" = 1/5, 
+                   "2 years" = 1/2,
+                   "year" = 1, 
+                   "6 months" = 2,
+                   "2 months" = 6,
+                   "month" = 12, 
+                   "2 weeks" = 26,
+                   "week" = 52)
+
+df.hab.tidy <- d.hab %>%
+  rowwise() %>%
+  mutate(annualRate = annualRates[[as.character(time_period)]]*n_instances,
+         logTargetRate =log(annualRate), 
+         response = ifelse(response == "agree-key", 1, 0)) %>%
+  select(workerid, habitual, logTargetRate, response, time_period)
+
+df.hab.baseline <- left_join(
+  df.baseline %>% rename(habitual = action) %>%
+    mutate(habitual = as.character(habitual),
+           habitual = ifelse(habitual == "sell things on eBay",
+                                          "sells things on eBay",
+                                          habitual)), 
+  df.hab.tidy)
+
+
+%>%
+  mutate(propFreq = log(exp(logTargetRate)/exp(logFreq)) )
+ 
+
+glm.res <- glm(response ~ logAveFreq + logTargetRate, data = df.hab.baseline, family = 'binomial')
+
+glm.model.predictions <- unique(
+  select(df.hab.baseline, -aveFreq, -workerid, -response)
+#  select(df.hab.baseline,-nZeros, -n, -aveFreq, -workerid, -response)
+  )
+
+glm.model.predictions <- glm.model.predictions %>%
+  mutate(prediction = predict(glm.res, ., type = "response"))
+
+
+d.hab.summary <- df.hab.tidy %>% 
+  mutate(response = ifelse(response == "agree-key", 1, 0)) %>%
+  group_by(habitual, time_period, annualRate) %>%
+  multi_boot_standard(column = "response")
+
+df.hab.summary.baseline <- left_join(
+  df.baseline %>% rename(habitual = action) %>%
+    mutate(habitual = as.character(habitual),
+           habitual = ifelse(habitual == "sell things on eBay",
+                                          "sells things on eBay",
+                                          habitual)), 
+  d.hab.summary) %>%
+  mutate(targetLogRate = log(annualRate))
+
+df.hab.summary.baseline.lmPreds <- left_join(df.hab.summary.baseline, glm.model.predictions %>% rename(targetLogRate = logTargetRate))
+
+```
+
+
+```{r fig.width = 7}
+ggplot(df.hab.summary.baseline.lmPreds, aes (x = prediction, y = mean, ymin = ci_lower, ymax = ci_upper))+
+  geom_errorbar(alpha = 0.3)+
+  geom_abline(intercept = 0, slope = 1, lty = 3)+
+  # geom_text_repel(data = d.tj.w.glm %>% rename(cuevalidity = prop) %>% 
+  #                   filter(prediction > 0.14, prediction < 0.9), 
+  #                 aes(label = item, color = cuevalidity), force = 1, size = 3)+
+  geom_point()+
+  xlim(0,1)+
+  ylim(0,1)+
+  coord_fixed()+
+  xlab("Logistic model prediction")+
+  ylab("Human habitual endorsement")
+```
+
+
+$$r^2_{pearson}(`r length(df.hab.summary.baseline.lmPreds$habitual)`) = `r with(df.hab.summary.baseline.lmPreds, cor(mean, prediction, use = "pairwise.complete.obs"))^2`$$
+
+$$r_{spearman}(`r length(df.hab.summary.baseline.lmPreds$habitual)`) = `r with(df.hab.summary.baseline.lmPreds, cor(mean, prediction, use = "pairwise.complete.obs", method = "spearman"))`$$
+
+```{r}
+df.hab.summary.baseline.lmPreds <- df.hab.summary.baseline.lmPreds %>% mutate(sqErr = (mean - prediction) ^ 2)
+
+df.hab.summary.baseline.lmPreds[with(df.hab.summary.baseline.lmPreds, order(-sqErr)), ] %>% ungroup() %>%
+  select(habitual, time_period, mean, prediction, logAveFreq, targetLogRate, sqErr) %>%
+  rename(humanEndorse = mean) %>% kable()
+```
+
 

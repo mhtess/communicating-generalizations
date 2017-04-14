@@ -1,0 +1,179 @@
+---
+title: "Habituals priors"
+output: html_notebook
+---
+
+
+```{r}
+library(langcog)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(coda)
+library(knitr)
+library(ggthemes)
+library(rwebppl)
+theme_set(theme_few())
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+betaMean = function(a, b){
+  return ( a / (a + b ))
+}
+
+betaSDev = function(a, b){
+  return( sqrt ( ( a * b) / ( ( a + b ) ^ 2 * (a + b + 1) ) ) ) 
+}
+project.path <- "~/Documents/research/generics-paper/"
+data.path <- "models/habituals/data/"
+model.path <- "models/habituals/"
+```
+
+
+
+## Propensity priors
+
+Load prior data
+
+```{r fig.height = 8, fig.width = 6}
+d.hab.prior.e <- read.csv(paste(project.path, data.path, 
+                      "prior2-existence.csv", sep = ""))
+
+d.hab.prior.e <- d.hab.prior.e %>% 
+  mutate(avoided_endval = ifelse(val==1, 0.999,
+                                 ifelse(val==0, 0.001, val)))
+
+ggplot(d.hab.prior.e, aes( x= avoided_endval, fill = gender))+
+  facet_wrap(~item, scales = 'free')+
+  geom_histogram(position = position_dodge())
+
+d.hab.prior.f <- read.csv(paste(project.path, data.path, 
+                      "prior2-timesper5yr.csv", sep = "")) %>%
+  mutate(log_dayRate = log(val / (365*5)))
+
+
+
+# 
+# ggplot(d.hab.prior.f, aes( x= log(val / (365*5)), fill = gender ))+
+#   geom_histogram(position = position_dodge())+
+#   facet_wrap(~item)
+```
+
+
+Raw prior data
+
+```{r  fig.height = 8, fig.width = 6}
+dh.prior <- read.csv("/Users/mht/Documents/research/habituals/data/priors/priors-2.csv")
+
+dh.prior <- dh.prior %>%
+  mutate(comparisonTime_men = as.character(comparisonTime_men),
+         comparisonTime_women = as.character(comparisonTime_women)) %>%
+  rowwise() %>%
+  mutate(
+    mixture_male = nPersons_men / comparisonNum_men,
+    mixture_female = nPersons_women / comparisonNum_women,
+    dayRate_male = ifelse(comparisonTime_men == "week", nInstances_men / 7,
+                   ifelse(comparisonTime_men == "month", nInstances_men / 30,
+                   ifelse(comparisonTime_men == "year", nInstances_men / 365,
+                   ifelse(comparisonTime_men == "5 years", 
+                          nInstances_men / (5*365), -99)))),
+    dayRate_female = ifelse(comparisonTime_women == "week", nInstances_women / 7,
+                   ifelse(comparisonTime_women == "month", nInstances_women / 30,
+                   ifelse(comparisonTime_women == "year", nInstances_women / 365,
+                   ifelse(comparisonTime_women == "5 years", 
+                          nInstances_women / (5*365), -99)))),
+    annualRate_male = dayRate_male * 365,
+    annualRate_female = dayRate_female * 365
+  )
+
+
+dh.prior.filtered <- filter(dh.prior, 
+       !(
+         (mixture_male == 0) ||   (mixture_female == 0) ||   
+           (dayRate_male == 0) ||   (dayRate_female == 0)  )
+       )
+
+# ggplot(dh.prior.filtered %>% 
+#          select(item, starts_with("dayRate")) %>%
+#          gather(key, val, -item), aes( x= log(val )))+
+#   geom_histogram(position = position_dodge())+
+#   facet_wrap(~item, scales = 'free')
+
+#write.csv(dh.prior, file = paste(project.path, data.path, "prior2.csv", sep = ""))
+```
+
+
+
+
+
+
+#### Model posteriors on prior parameter
+
+
+```{r}
+m.samp <- fread(paste(project.path, model.path,
+                    "results/results-habituals-priorParams-cdfPrior-10000_burn5000_chain0.csv"
+, sep  = ""))
+
+m.param.summary <- m.samp %>%
+  group_by(item, cat, param, gender) %>%
+  summarize(MAP = estimate_mode(val),
+            cred_upper = hdi_upper(val),
+            cred_lower = hdi_lower(val))
+  
+```
+
+
+```{r fig.width = 12, fig.height = 5}
+m.samp <- fread(paste(project.path, model.path,
+                    "results/results-habituals-S2-cdfPrior-10000_burn5000_chain0.csv", sep  = ""))
+  
+  
+
+m.samp %>%
+  filter(type == "prior", param == "mixture") %>% 
+  ggplot(., aes( x = val, fill = gender))+
+  geom_histogram(position = position_dodge())+
+  scale_fill_solarized()+
+  facet_wrap(~ item, scales = 'free')+
+  theme(strip.text.y = element_text(angle = 0))
+
+
+m.samp %>%
+  filter(type == "prior", param == "frequency") %>% 
+  ggplot(., aes( x = val, fill = gender))+
+  geom_histogram(position = position_dodge())+
+  scale_fill_solarized()+
+  facet_wrap(~ item, scales = 'free')+
+  theme(strip.text.y = element_text(angle = 0))
+
+
+#ggsave("~/Desktop/s2_habituals_priors_170326.pdf", height = 14, width = 8)
+```
+
+```{r}
+rs <- webppl(
+  program_file = paste(project.path, model.path, "hab.wppl", sep = "" ),
+  packages = c(paste(project.path, model.path, "node_modules/utils", sep = "")))
+
+ps <- c()
+for (i in 2:length(rs)){
+  ps[i-1] = punif(rs[i], min = 0, max = last(rs)) - punif(rs[i - 1], min = 0, max = last(rs)) 
+}
+ggplot(rs, aes ( x = support, y = prob))+
+  geom_bar(stat='identity', position = position_dodge())+
+  scale_x_continuous(trans = "log2")
+
++
+  scale_y_continuous(trans = "log2")
+```
+
