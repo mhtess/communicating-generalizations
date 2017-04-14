@@ -67,8 +67,13 @@ var model = function(){
 	var speakerOptimality = {
 		s1: uniformDrift({a: 0, b: 10, width:2})
 	}
-	
+
 	var nullDist = Delta({v: -99})
+
+	var alpha = sample(Gamma({shape: 2, scale: 1}), {
+		driftKernel: function(prevVal){
+			  return Gamma({shape: prevVal, scale: 1});
+	}});
 
 	// var c = 0.5;//uniformDrift({a: 0 , b: 1, width: 0.1});
 	//
@@ -88,18 +93,24 @@ var model = function(){
 		}
 
 		mapData({data: itemPriorData}, function(d){
+			// var scr = util.logsumexp([
+			// 					 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
+			// 					 Math.log(1-theta) + nullDist.score(d.logAnnualRate)
+			// 				])
 			var scr = util.logsumexp([
 								 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
 								 Math.log(1-theta) + nullDist.score(d.logAnnualRate)
 							])
 			// display(scr)
-			factor(scr)
+			factor((1 / alpha) * scr)
 		})
 
 		query.add(["prior", i, "theta","NA", "NA"], theta)
 		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
 		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
 
+		var postpred = flip(Math.pow(theta, alpha)) ? Math.exp(sample(Gaussian(priorParams))) : 0
+		query.add(["prior", i, "postPred", "NA", "NA"], postpred)
 
 		var itemData = _.filter(data.speaker, {habitual: i});
 		// display(i + " speaker data " + itemData.length)
@@ -167,7 +178,7 @@ var model = function(){
 	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
 	// query.add(["param","habUttPrior","NA","NA", "NA"], c)
-	// query.add(["param","alpha","NA","NA", "NA"], alpha)
+	query.add(["param","alpha","NA","NA", "NA"], alpha)
 
 	// query.add(["param", "speakerOptimality", "s1"], [
 	// 	 speakerOptimality.s1, "NA", "NA",
@@ -184,10 +195,10 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 1000, lag = 10;
+var totalIterations = 100000, lag = 10;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'results-habituals-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S1-ffPriorStructured-SoftmaxMix-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,

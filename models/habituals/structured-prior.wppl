@@ -29,6 +29,10 @@ var items = levels(data.prior, "action");
 var model = function(){
 
 	var nullDist = Delta({v: -99})
+	var alpha = sample(Gamma({shape: 2, scale: 1}), {
+		driftKernel: function(prevVal){
+			  return Gamma({shape: prevVal, scale: 1});
+	}});
 
 	foreach(items, function(i){
 
@@ -42,11 +46,15 @@ var model = function(){
 		}
 
 		mapData({data: itemData}, function(d){
+			// var scr = util.logsumexp([
+			// 					 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
+			// 					 Math.log(1-theta) + nullDist.score(d.logAnnualRate)
+			// 				])
 			var scr = util.logsumexp([
 								 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
 								 Math.log(1-theta) + nullDist.score(d.logAnnualRate)
 							])
-			factor(scr)
+			factor((1 / alpha) * scr)
 		})
 
 		query.add(["prior", i, "theta"], theta)
@@ -58,12 +66,14 @@ var model = function(){
 
 	})
 
+	query.add(["prior", "global", "alpha"], alpha)
+
 	return query
 }
 
-var totalIterations = 50000, lag = 100;
+var totalIterations = 50000, lag = 10;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
-var outfile = 'results-habituals-prior-ffPriorStructuredDelta-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-prior-ffPriorStructuredDelta-SoftmaxMix-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
