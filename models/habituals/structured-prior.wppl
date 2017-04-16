@@ -16,10 +16,11 @@ var d0 = dataFrame(utils.readCSV(priorFile).data, ["n_times"]);
 
 var data = {
 		prior: map(function(d){
-			var annualRate = intervals[d.interval] * d.n_times
-				return extend(d, {
+			var annualRate = intervals[d.interval] * d.n_times;
+			return extend(d, {
 					annualRate: annualRate,
-					logAnnualRate: annualRate == 0 ? -99 : Math.log(annualRate)
+					logAnnualRate: annualRate == 0 ? -99 : Math.log(annualRate),
+					roundedRate: utils.closest(midBins, annualRate)
 				})
 			}, d0.slice(0, d0.length -1))
 };
@@ -45,6 +46,22 @@ var model = function(){
 			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
 		}
 
+		var statePrior = Infer({model: function(){
+			sample(
+				flip(theta) ?
+					DiscretizedLognormal(priorParams) :
+					Delta({v: _.min(midBins)})
+				)
+			}
+		})
+
+		var scaledPrior = Categorical({
+			vs: statePrior.support(),
+			ps: normalize(map(function(s){
+				return Math.pow(exp(statePrior.score(s)), alpha)
+			}, statePrior.support()))
+		})
+		
 		mapData({data: itemData}, function(d){
 			// var scr = util.logsumexp([
 			// 					 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
