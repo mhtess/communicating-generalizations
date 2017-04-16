@@ -35,7 +35,8 @@ var data = {
 			var annualRate = intervals[d.interval] * d.n_times
 				return extend(d, {
 					annualRate: annualRate,
-					logAnnualRate: annualRate == 0 ? -99 : Math.log(annualRate)
+					logAnnualRate: annualRate == 0 ? -99 : Math.log(annualRate),
+					roundedRate: utils.closest(midBins, annualRate)
 				})
 			}, d0.slice(0, d0.length -1))
 };
@@ -92,17 +93,25 @@ var model = function(){
 			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
 		}
 
+		var statePrior = Infer({model: function(){
+			sample(
+				flip(theta) ?
+					DiscretizedLognormal(priorParams) :
+					Delta({v: _.min(midBins)})
+				)
+			}
+		})
+
+		var scaledPrior = Categorical({
+			vs: statePrior.support(),
+			ps: normalize(map(function(s){
+				return Math.pow(exp(statePrior.score(s)), alpha)
+			}, statePrior.support()))
+		})
+
 		mapData({data: itemPriorData}, function(d){
-			// var scr = util.logsumexp([
-			// 					 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
-			// 					 Math.log(1-theta) + nullDist.score(d.logAnnualRate)
-			// 				])
-			var scr = util.logsumexp([
-								 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
-								 Math.log(1-theta) + nullDist.score(d.logAnnualRate)
-							])
-			// display(scr)
-			factor((1 / alpha) * scr)
+			// display(scaledPrior.score(d.roundedRate))
+			observe(scaledPrior, d.roundedRate)
 		})
 
 		query.add(["prior", i, "theta","NA", "NA"], theta)
@@ -115,14 +124,6 @@ var model = function(){
 		var itemData = _.filter(data.speaker, {habitual: i});
 		// display(i + " speaker data " + itemData.length)
 
-		var statePrior = Infer({model: function(){
-			sample(
-				flip(theta) ?
-					DiscretizedLognormal(priorParams) :
-					Delta({v: _.min(midBins)})
-				)
-			}
-		})
 		/// RSA model
 		var listener0 = cache(function(utterance) {
 		  Infer({model: function(){
@@ -195,10 +196,10 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 100000, lag = 10;
+var totalIterations = 100, lag = 1;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'results-habituals-S1-ffPriorStructured-SoftmaxMix-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S1-ffPriorStructured-SoftmaxDiscretized-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
@@ -206,12 +207,12 @@ var posterior = Infer({
 	// kernel: {HMC: {steps:5, stepSize: 0.01}},
   samples: mhiter, burn: burn, lag: lag, verbose: T,
 	verboseLag: totalIterations/100,
-	stream: {
-		path: "results/" + outfile,
-		header: [
-			"type", "item", "cat", "param", "gender", "val"
-		]
-	}
+	// stream: {
+	// 	path: "results/" + outfile,
+	// 	header: [
+	// 		"type", "item", "cat", "param", "gender", "val"
+	// 	]
+	// }
 })
 
 // utils.writeQueryERP(posterior, "results/" + outfile,

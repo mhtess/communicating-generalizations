@@ -61,25 +61,15 @@ var model = function(){
 				return Math.pow(exp(statePrior.score(s)), alpha)
 			}, statePrior.support()))
 		})
-		
+
 		mapData({data: itemData}, function(d){
-			// var scr = util.logsumexp([
-			// 					 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
-			// 					 Math.log(1-theta) + nullDist.score(d.logAnnualRate)
-			// 				])
-			var scr = util.logsumexp([
-								 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
-								 Math.log(1-theta) + nullDist.score(d.logAnnualRate)
-							])
-			factor((1 / alpha) * scr)
+			// display(scaledPrior.score(d.roundedRate))
+			observe(scaledPrior, d.roundedRate)
 		})
 
 		query.add(["prior", i, "theta"], theta)
 		query.add(["prior", i, "mu"], priorParams.mu)
 		query.add(["prior", i, "sigma"], priorParams.sigma)
-
-		var postpred = flip(theta) ? Math.exp(sample(Gaussian(priorParams))) : 0
-		query.add(["prior", i, "postPred"], postpred)
 
 	})
 
@@ -88,9 +78,9 @@ var model = function(){
 	return query
 }
 
-var totalIterations = 50000, lag = 10;
+var totalIterations = 50000, lag = 5;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
-var outfile = 'results-habituals-prior-ffPriorStructuredDelta-SoftmaxMix-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-prior-ffPriorStructuredDelta-SoftmaxDiscretized-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
