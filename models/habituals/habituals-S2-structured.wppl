@@ -1,4 +1,4 @@
-// time ~/webppl-fork/webppl habituals-S2-unstructured.wppl --require utils 1
+// time ~/webppl-fork/webppl habituals-S2-structured.wppl --require utils 1
 
 var chain = last(process.argv) // load index as last command line index
 
@@ -35,7 +35,8 @@ var data = {
 			var annualRate = intervals[d.interval] * d.n_times
 				return extend(d, {
 					annualRate: annualRate,
-					logAnnualRate: annualRate == 0 ? -99 : Math.log(annualRate)
+					logAnnualRate: annualRate == 0 ? -99 : Math.log(annualRate),
+					roundedRate: utils.closest(midBins, annualRate)
 				})
 			}, d0.slice(0, d0.length -1))
 };
@@ -77,13 +78,18 @@ var model = function(){
 	}
 	var nullDist = Delta({v: -99})
 
+	// var alpha = sample(Gamma({shape: 2, scale: 1}), {
+	// 	driftKernel: function(prevVal){
+	// 		  return Gamma({shape: prevVal, scale: 1});
+	// }});
+
 	// var c = 0.5;//uniformDrift({a: 0 , b: 1, width: 0.1});
 	//
 	// var utterancePrior = Infer({model: function(){
 	// 	return flip(c) ? "habitual" : "silence"//"habitual is false"
 	// }});
 
-	// var alpha = uniformDrift({a: 0, b: 5, width:0.5})
+	var alpha = uniformDrift({a: 0, b: 50, width: 5})
 
 	foreach(items, function(i){
 
@@ -96,14 +102,27 @@ var model = function(){
 			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
 		}
 
-		mapData({data: itemPriorData}, function(d){
-			var scr = util.logsumexp([
-								 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
-								 Math.log(1-theta) + nullDist.score(d.logAnnualRate)
-							])
-			// display(scr)
-			factor(scr)
+		var statePrior = Infer({model: function(){
+			sample(
+				flip(theta) ?
+					DiscretizedLognormal(priorParams) :
+					Delta({v: _.min(midBins)})
+				)
+			}
 		})
+
+		var scaledPrior = Categorical({
+			vs: statePrior.support(),
+			ps: normalize(map(function(s){
+				return Math.pow(exp(statePrior.score(s)), alpha)
+			}, statePrior.support()))
+		})
+
+		mapData({data: itemPriorData}, function(d){
+			// display(scaledPrior.score(d.roundedRate))
+			observe(scaledPrior, d.roundedRate)
+		})
+
 
 		query.add(["prior", i, "theta","NA", "NA"], theta)
 		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
@@ -113,14 +132,14 @@ var model = function(){
 		var itemData = _.filter(data.speaker, {habitual: i});
 		// display(i + " speaker data " + itemData.length)
 
-		var statePrior = Infer({model: function(){
-			sample(
-				flip(theta) ?
-					DiscretizedLognormal(priorParams) :
-					Delta({v: _.min(midBins)})
-				)
-			}
-		})
+		// var statePrior = Infer({model: function(){
+		// 	sample(
+		// 		flip(theta) ?
+		// 			DiscretizedLognormal(priorParams) :
+		// 			Delta({v: _.min(midBins)})
+		// 		)
+		// 	}
+		// })
 
 		/// RSA model
 		var listener0 = cache(function(utterance, theta) {
@@ -170,6 +189,15 @@ var model = function(){
 			mapData({data:freqData}, function(d){
 				// display(d)
 				// display("speaker score = " + s1prediction.score(d.alignedResponse))
+
+				// s2prediction.score(d.alignedResponse) == -Infinity ?
+				// display(d) : null
+				// s2prediction.score(d.alignedResponse) == -Infinity ?
+				// display(theta) : null
+				// s2prediction.score(d.alignedResponse) == -Infinity ?
+					// display(JSON.stringify(priorParams)) : null
+				// display("speaker score = " + s2prediction.score(d.alignedResponse))
+
 				observe(s2prediction, d.alignedResponse)
 			})
 
@@ -191,7 +219,7 @@ var model = function(){
 	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s2","NA", "NA"], speakerOptimality.s2)
 	// query.add(["param","habUttPrior","NA","NA", "NA"], c)
-	// query.add(["param","alpha","NA","NA", "NA"], alpha)
+	query.add(["param","alpha","NA","NA", "NA"], alpha)
 
 	// query.add(["param", "speakerOptimality", "s1"], [
 	// 	 speakerOptimality.s1, "NA", "NA",
@@ -208,17 +236,17 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 100000, lag = 20;
+var totalIterations = 50000, lag = 5;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'results-habituals-S2-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S2-ffPriorStructured-SoftmaxDiscretized-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
   method: "incrementalMH",
 	// kernel: {HMC: {steps:5, stepSize: 0.01}},
   samples: mhiter, burn: burn, lag: lag, verbose: T,
-	verboseLag: totalIterations/100,
+	verboseLag: totalIterations/20,
 	stream: {
 		path: "results/" + outfile,
 		header: [
