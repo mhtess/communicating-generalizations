@@ -1370,6 +1370,76 @@ The semantics of generics can be understood as a threshold on property prevalenc
 
 # General Discussion
 
+It is a remarkable fact that so much is learned from ideas expressed vaguely in words.
+Generalizations in language (e.g., *John runs.*, *Dogs are friendly.*, *The block makes the machine play music*) are a premier example of how simple statements --- statements understood by even the youngest language users --- can appear to have complex meanings.
+We have argued that the meaning of such linguistic expressions is, in fact, simple but underspecified. 
+To our knowledge, this is the first formal theory of genericity in language that makes accurate and precise quantitative predictions about human behavioral data. 
+It is also the first attempt in psychology to try to unify significant swaths of language that are seemingly quite different from one another: generalizations about events, causes, and categories.
+What these expressions have in common is *genericity*, the fact that these statements convey generalizations. 
+Indeed we have been able to capture the context-sensivity of these statements by positing a single underlying scale defined by the *propensity* or probability.
+We have shown that listeners' prior knowledge about this scale is causally related to their endorsement of statements of genericity.
+Finally, our framework naturally accounts for a number of well-documented phenomena from cognitive and developmental psychology concerning *generic language*, or generalizations about categories.
+This paper provides a theoretical framework for asking further questions about generalizations in language, which we outline below. 
+
+## The Comparison Class, Question Under Discussion, and Focus
+
+In this paper, we proposed a model for understanding generic language that relies upon interlocutors' shared beliefs over the statistics of the property to accurately arrive at generic interpretation identical to that of human participants. 
+We constructed the prior belief distribution for the propensity of an action, cause, or property by considering other possible people of doing the action, other possible causes of producing the effect, or other possible categories of having the property.
+In this way, the statement of genericity is addressing the implicit Question Under Discussion: *who does F?*, *what makes F?*, or *what has F*?
+
+
+taking is a distribution over kinds (and their associated prevalence of the property).
+These other kinds form a \emph{comparison class} against which the target kind is evaluated. 
+$P(x)$ is always relative to a category of categories, a comparison class $K$: $P_K(x)$.
+
+Throughout our experiments in this work, we have focused on sentences about animals. 
+In addition to being the main focus of past theoretical and empirical work, focusing on animals is methodologically convenient as the comparison class for generics about animals is quite naturally \emph{animals}.
+When we look beyond generics about animals, deciding what goes into a comparison class becomes less clear.
+There are some hints that the comparison class can be derived with respect to the property [@Keil1979], but may involve pragmatic reasoning as well. 
+For example, the statement "iPhones are useful" could be in comparison to other forms of technology (like a desktop computer), while "iPhones are heavy" could really only be informative relative to other handheld devices.
+
+The incorporation of a comparison class into the study of generic language might help elucidate other puzzles concerning generics.
+Recent work in philosophy and linguistics, for instance, suggest generic language is context-sensitive [@Nickel2008; Sterken2015].
+@Nickel2008 points out that \emph{Dobermans have floppy ears} may be true in the context of a discussion of evolutionary biology but that \emph{Dobermans have pointy ears} is true in a discussion of dog breeding.
+Our theory provides a hint from where to begin to understand this context sensitivity: the comparison class.
+Different conversational contexts could bring to mind different comparison classes, in a way analogous to the context-sensitivity of  gradable adjectives (e.g., \emph{tall}). 
+Hearing that "Abigail is tall" means different things is Abigail is 20 years old or if she is 4. 
+Future work will be needed to explore whether a pragmatic inference approach is also relevant to establishing the comparison class, and what background knowledge about properties, categories, and context is relevant.
+
+
+
+
+
+## Communicating Probabilities
+
+KT saw that people don't do well reasoning about explicit probabilities, and concluded that people are bad with probabilities.
+
+But what if people are good, and just the way of conveying them is more vague?
+
+We can communicate 75% (assuming the priors are consistent with that), and we can communicate 30% (when the priors are consistent).
+
+So people do show sensitivity to these probabilities, suggesting that people are good with probabilities (CITE developmental work).
+
+## Acquisition
+
+
+## Relationship to Other Theories
+
+-- Sterken (2015): Quantificational force is like the uncertain threshold
+-- Cohen (1999): Similar machinery (e.g., Alt(K)); don't rely on domain restriction necessarily because it opens up a number of theoretical doors that require more theorizing .  THat being said, there may be a formulation of the uncertain threhsold model that uses a fixed threshold with domain restriction uncertainty. 
+-- Leslie (2008): Default inferences, could be similar to the cognitive model described, but we don't make strong metaphysical commitments (e.g., to "negative" properties)
+
+
+## Other Philosophical Puzzles
+
+-- Books are paperbacks (contrast class)
+-- Birds lay eggs and are female vs. Elephants live in Africa and Asia
+-- Mary handles the mail from antarctica (predictive propensity; also highlights domain restriction on events)
+-- Women are submissive. (Haslanger, 2011)
+
+
+
+
 Generic language is the simple and ubiquitous way by which generalizations are conveyed between people.
 Yet the dramatic flexibility of generic language has confounded psychologists, linguists and philosophers who have tried to articulate what exactly generic statements mean. 
 We evaluated a theory of generic language derived from general principles of language understanding using a simple, but uncertain, basic meaning---a threshold on property prevalence.
@@ -1387,26 +1457,6 @@ Our formal model of pragmatics, by contrast, considers not only within-kind prev
 By establishing the validity of a semantics based on prevalence alone, we provide a formalism to learn about categories from generic statements. 
 Further, since prevalence is a probability, our model can take information conveyed with a generic and be naturally extended to make predictions about entities in the world or support explanations of events or behavior.
 
-## The Comparison Class
-
-In this paper, we proposed a model for understanding generic language that relies upon interlocutors' belief distribution over the statistics of the property to accurately arrive at generic interpretation identical to that of human participants. 
-The prior belief distribution for a property (e.g., lays eggs), is a distribution over kinds (and their associated prevalence of the property).
-These other kinds form a \emph{comparison class} against which the target kind is evaluated. 
-$P(x)$ is always relative to a category of categories, a comparison class $K$: $P_K(x)$.
-
-Throughout our experiments in this work, we have focused on sentences about animals. 
-In addition to being the main focus of past theoretical and empirical work, focusing on animals is methodologically convenient as the comparison class for generics about animals is quite naturally \emph{animals}.
-When we look beyond generics about animals, deciding what goes into a comparison class becomes less clear.
-There are some hints that the comparison class can be derived with respect to the property [@Keil1979], but may involve pragmatic reasoning as well. 
-For example, the statement "iPhones are useful" could be in comparison to other forms of technology (like a desktop computer), while "iPhones are heavy" could really only be informative relative to other handheld devices.
-
-The incorporation of a comparison class into the study of generic language might help elucidate other puzzles concerning generics.
-Recent work in philosophy and linguistics, for instance, suggest generic language is context-sensitive [@Nickel2008; Sterken2015].
-@Nickel2008 points out that \emph{Dobermans have floppy ears} may be true in the context of a discussion of evolutionary biology but that \emph{Dobermans have pointy ears} is true in a discussion of dog breeding.
-Our theory provides a hint from where to begin to understand this context sensitivity: the comparison class.
-Different conversational contexts could bring to mind different comparison classes, in a way analogous to the context-sensitivity of  gradable adjectives (e.g., \emph{tall}). 
-Hearing that "Abigail is tall" means different things is Abigail is 20 years old or if she is 4. 
-Future work will be needed to explore whether a pragmatic inference approach is also relevant to establishing the comparison class, and what background knowledge about properties, categories, and context is relevant.
 
 
 ## Generic Identification
