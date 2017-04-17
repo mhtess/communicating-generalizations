@@ -1381,33 +1381,42 @@ We have shown that listeners' prior knowledge about this scale is causally relat
 Finally, our framework naturally accounts for a number of well-documented phenomena from cognitive and developmental psychology concerning *generic language*, or generalizations about categories.
 This paper provides a theoretical framework for asking further questions about generalizations in language, which we outline below. 
 
-## The Comparison Class, Question Under Discussion, and Focus
+## The Comparison Class and the Question Under Discussion
 
-In this paper, we proposed a model for understanding generic language that relies upon interlocutors' shared beliefs over the statistics of the property to accurately arrive at generic interpretation identical to that of human participants. 
+In this paper, we proposed a model for understanding generalizations in language that relies upon interlocutors' shared beliefs over the statistics of the event or property.
 We constructed the prior belief distribution for the propensity of an action, cause, or property by considering other possible people of doing the action, other possible causes of producing the effect, or other possible categories of having the property.
-In this way, the statement of genericity is addressing the implicit Question Under Discussion: *who does F?*, *what makes F?*, or *what has F*?
+These other people, causes, and kinds form *comparison classes* against which the target is evaluated. 
+$P(x)$ is always relative to a class of other entities or events, a comparison class $K$: $P_K(x)$.
+
+The existence of comparison classes is uncontroversial in the study of *vague language* [e.g., gradable adjectives like *tall* and vague quantifiers like *many*; @Bale2011; @Solt2009].
+Adult judgments of the felicity of gradable adjectives like *tall* or *dark* depend upon fine-grained details of the statistics of the comparison class [@Qing2014; @Schmidt2009; @Solt2012].
+We have shown similar sensitivity to the statistics of comparison class in the language of generalizations, thus incorporating generic, habitual, and causal language into the study of *vague language*. 
+
+We made the design decision in this work to construct the comparison class with respect to other people, causes, or kinds.
+In this way, the statement of genericity is addressing the implicit Question Under Discussions (QUDs): *who \textsc{does action}?*, *what \textsc{causes effect}?*, or *what \textsc{has feature}?*, respectively.
+There is another clear way to construct the comparison class: With respect to other features. 
+This would correspond to addressing the implicit QUDs: *what does \textsc{person} do?*, *what \textsc{effects} does \textsc{cause} bring about?*, and *what features does \textsc{kind} have?*
+
+It's clear that statements can be used to address either QUD, and this difference can even be observed the same sentence.
+"Lawyers care about the law." could be interpreted with a category-wise comparison class (i.e., *Lawyers (as opposed to doctors, firefighters, ...) care about the law.*; say, in a pedagogical context) or a feature-wise comparison class (i.e., *Lawyers care about the law (as opposed to justice, ethics, ...)* e.g., when said sardonically).
+We chose to focus in this work on the category-wise comparison class for methodological convenience. 
+In our three case studies, the category-wise comparison classes are fixed to *other people*, *other causes*, or *other kinds*.
+Future work should address the property-wise reading of generalizations, and explore the cues that lead listeners to one or the other interpretation.
 
 
-taking is a distribution over kinds (and their associated prevalence of the property).
-These other kinds form a \emph{comparison class} against which the target kind is evaluated. 
-$P(x)$ is always relative to a category of categories, a comparison class $K$: $P_K(x)$.
+<!-- Throughout our experiments in this work, we have focused on sentences about animals.  -->
+<!-- In addition to being the main focus of past theoretical and empirical work, focusing on animals is methodologically convenient as the comparison class for generics about animals is quite naturally \emph{animals}. -->
+<!-- When we look beyond generics about animals, deciding what goes into a comparison class becomes less clear. -->
+<!-- There are some hints that the comparison class can be derived with respect to the property [@Keil1979], but may involve pragmatic reasoning as well.  -->
+<!-- For example, the statement "iPhones are useful" could be in comparison to other forms of technology (like a desktop computer), while "iPhones are heavy" could really only be informative relative to other handheld devices. -->
 
-Throughout our experiments in this work, we have focused on sentences about animals. 
-In addition to being the main focus of past theoretical and empirical work, focusing on animals is methodologically convenient as the comparison class for generics about animals is quite naturally \emph{animals}.
-When we look beyond generics about animals, deciding what goes into a comparison class becomes less clear.
-There are some hints that the comparison class can be derived with respect to the property [@Keil1979], but may involve pragmatic reasoning as well. 
-For example, the statement "iPhones are useful" could be in comparison to other forms of technology (like a desktop computer), while "iPhones are heavy" could really only be informative relative to other handheld devices.
-
-The incorporation of a comparison class into the study of generic language might help elucidate other puzzles concerning generics.
-Recent work in philosophy and linguistics, for instance, suggest generic language is context-sensitive [@Nickel2008; Sterken2015].
-@Nickel2008 points out that \emph{Dobermans have floppy ears} may be true in the context of a discussion of evolutionary biology but that \emph{Dobermans have pointy ears} is true in a discussion of dog breeding.
-Our theory provides a hint from where to begin to understand this context sensitivity: the comparison class.
-Different conversational contexts could bring to mind different comparison classes, in a way analogous to the context-sensitivity of  gradable adjectives (e.g., \emph{tall}). 
-Hearing that "Abigail is tall" means different things is Abigail is 20 years old or if she is 4. 
-Future work will be needed to explore whether a pragmatic inference approach is also relevant to establishing the comparison class, and what background knowledge about properties, categories, and context is relevant.
-
-
-
+<!-- The incorporation of a comparison class into the study of generic language might help elucidate other puzzles concerning generics. -->
+<!-- Recent work in philosophy and linguistics, for instance, suggest generic language is context-sensitive [@Nickel2008; Sterken2015]. -->
+<!-- @Nickel2008 points out that \emph{Dobermans have floppy ears} may be true in the context of a discussion of evolutionary biology but that \emph{Dobermans have pointy ears} is true in a discussion of dog breeding. -->
+<!-- Our theory provides a hint from where to begin to understand this context sensitivity: the comparison class. -->
+<!-- Different conversational contexts could bring to mind different comparison classes, in a way analogous to the context-sensitivity of  gradable adjectives (e.g., \emph{tall}).  -->
+<!-- Hearing that "Abigail is tall" means different things is Abigail is 20 years old or if she is 4.  -->
+<!-- Future work will be needed to explore whether a pragmatic inference approach is also relevant to establishing the comparison class, and what background knowledge about properties, categories, and context is relevant. -->
 
 
 ## Communicating Probabilities
