@@ -28,15 +28,17 @@ author_note: >
 abstract: >
     Acquiring abstract knowledge requires making generalizations.
     Everyday generalizations typically rest not upon observational data, but upon testimony: Generalizations conveyed with language.
-    The language of generalizations---so called, generic or habitual language (e.g., *Dogs bark.*)---appears early in development and is ubiqutious in everyday conversation.
-    However, generic sentences are extremely flexible in their usage, while simultaneously conveying a strong inference: That the generalization should hold in the future. 
-    These phenonena have confounded previous attempts to formalize the meaning of generalizations in language.
-    We present a computational model that treats the core meaning of a generic sentence as simple but underspecified, and uses general principles of language understanding to establish a precise meaning in context. 
-    Our model shows the central phenomena of generic language emerge from the interaction of diverse prior beliefs with communicative principles.
-    We elicit these priors experimentally and show that the resulting model predictions explain almost all of the variance in human judgments for both common and novel generics and outperform alternative models.
-    This theory provides the computational bridge between the words we use and the generalizations they describe.
+    The language of generalizations---expressions of *genericity* (e.g., *Dogs bark.*)---appears early in development and is ubiqutious in everyday conversation.
+    However, sentences that convey generalizations are extremely flexible in their usage, while often conveying a strong inference: That the generalization should hold in the future. 
+    These phenonena have confounded previous attempts to formalize the meaning of linguistic expressions of genericity.
+    We formalize the idea that the meaning of such linguistic expressions is simple, but underspecified, and that general cognitive principles can be used to establish a more precise meaning in context.
+    We test our computational model on endorsements of generalizations about events and show that our model explains the extreme flexibility in usage that no simpler model could account for. 
+    We then manipulate participants' background knowledge about the domains and show that our the priors are causally related to their endorsements of generalizations.
+    Finally, we show how our computational framework naturally accounts for a number of well-documented psychological phenomena concerning generalizations about categories, a special kind of genericity --- so called, *generic language*.
+    Our model shows the central phenomena of genericity emerge from the interaction of diverse prior beliefs with communicative principles.
+    This theory provides the formal bridge between the words we use and the generalizations they describe.
   
-keywords          : "generics, pragmatics, semantics, bayesian modeling"
+keywords          : "genericity, generalizations, generics, pragmatics, semantics, bayesian modeling"
 wordcount         : "X"
 
 bibliography      : ["generics.bib"]
@@ -99,15 +101,15 @@ If we are starting with habituals and/or doing all 3 kinds of generalizations, w
 Figuring out that a category tends to have a property, an entity tends to exhibit a behavior, or a cause tends to produce an effect is crucial knowledge in an uncertain world.
 The productivity of human thought rests upon generalizations.
 From a very young age, children make strong inductive inferences from their experience, generalizing to new situations or novel instances of a category [@Dewar2010; @Gelman1986; @Markman1989].
-Understanding inductive inferences from observations is a limited enterprise, however.
-Many properties are difficult to observe (e.g., *cows have four stomachs*) and many events are statistically unlikely (e.g., *lightning strikes tall objects*).
-For abstract, generalizable knowledge to remain in a culture, there must be a way for it to be faithfully transmitted across individuals and generations [@Tomasello1999].
+Inferences drawn inductively from observational data is but one component of the human capacity for learning generalizable knowledge.
+When properties are difficult to observe (e.g., *cows have four stomachs*) or events statistically unlikely (e.g., *lightning strikes tall objects*), it is important to be able to learn this information through means other than direct observation.
+For abstract, generalizable knowledge to remain in a culture, it must be able to be faithfully transmitted between individuals and across generations [@Tomasello1999].
 
 Indeed, language provides simple ways to communicate generalizations: *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*. 
 Generalizations are among the easiest forms of compositional linguistic expression and appear early in development. 
 The language is so simple that it appears everywhere in human conversation (*Movie theaters are cold.*), pedagogy (*Blickets make the machine go.*), political and scientific discourse (*The President peddles falsehoods.*, *Psychology experiments don’t replicate.*), stereotypes (*Boys are good at math*), motivation (*Big girls eat their broccoli!*), emotion-regulation  (*Accidents happen.*), child-directed (*Mommy works late*) and child-produced speech (*Slides aren't for grown-ups!*), and many other facets of experience [@GelmanEtAl2004; @Gelman2008; @Cimpian2010motivation; @Rhodes2012].
 
-The human capacity to generalize from observations has been studied extensively in cognitive and developmental psychology [@Nisbett1983; @Heit2000].
+Despite the ubiquity of generalizations in language, the human capacity to generalize from observations has been studied far more extensively in cognitive and developmental psychology [@Nisbett1983; @Heit2000].
 Inductive inferences show complex sensitivites to the kind of observations, and even how those observations came to be observed in the first place. 
 For instance, observing that an indigenous person living on a remote island *is obese* provides considerably less information about the weights of other islanders in comparison to learning that the islander's skin color *is brown* [@Nisbett1983]. 
 Confounded causal evidence can be suddenly become unconfounded when you know the evidence was generated by an intentional agent [@Goodman2009].
@@ -122,10 +124,10 @@ Quantitative modeling has been crucial in explaining how the subtleties of exper
 Computational modeling has also made tremendous progress in formalizing how information is transmitted among interlocutors through language [@Goodman2016; @Franke2015].
 As an example, the Rational Speech Act theory of language understanding has had considerable success in providing a formal account of *pragmatic* language phenomena (i.e., interactions between language and context).
 This framework has been used to explain, in precise mathematical terms, how it is that utterances like "some of the kids failed the test" are interpreted to mean "some (but not all) of the kids failed the test" [@Goodman2013], how "I waited a million years to get a table" is interpreted as "I waited a long time and I was annoyed" [@Kao2014], and how "John is tall" can mean John is 5'4" is John if a 12-year-old but will mean John is 6'2" if he is 24-years-old [@Lassiter2015].
-Computational modeling has pushed our understanding of these commplex phenomena, but so far, rational models of language use have focused on *specific* statements: utterances that convey information about a particular entity or situation. 
+Computational modeling has pushed our understanding of these complex linguistic phenomena, but so far, rational models of language use have focused on *specific* statements: utterances that convey information about a particular entity or situation. 
 A formal theory of statements that convey generalizations about entities or situations ---  statements that extend beyond the here-and-now --- has remained elusive.
 
-A computational understanding of communicating generalizations is a formidible challenge.
+There is considerable linguistic evidence that a computational understanding of communicating generalizations is nontrivial.
 Though the language of generalizations is found everywhere and in every language [@Behrens2005; @Carlson1995], the meaning of such linguistic expressions is philosophically puzzling and has resisted precise formalization.
 Intuitively, generalizations should convey something about the propensity or probability of an instance, of a property, or of an event to occur, but exactly what is conveyed is unclear.
 The generalization *Mary smokes cigarettes* seems to suggest a daily-habit, while *Bill writes poems* implies something much weaker, perhaps a poem every few weeks.
@@ -146,7 +148,7 @@ For a variety of features, both children and adults infer that a property is *mo
 <!-- The case of *Mosquitos carry malaria* suggests the utterance must in some way be analogous to the quantifier "some" (e.g., *Some mosquitos carry malaria*).  -->
 <!-- Generic language, however, is often interpreted as implying the property is widespread: *Swans have hollow bones* means something different than *Some swans have hollow bones* [@Gelman2002]. -->
 
-In this paper, we introduce a formal modelfor understanding the language of generalizations.
+In this paper, we introduce a formal model for understanding the language of generalizations.
 <!-- The fact that generalizations in language seem to convey something about the propensity but that there seem to be as many interpretations of generalized statements as there are generalizations have confounded formal models aimed to capture their meaning. -->
 We take as a starting point the idea that the core meaning of a linguistic generalization is simple (i.e., it conveys something about the propensity), but underspecified (i.e., there is uncertainty in the meaning).
 We extend a rational model of communication --- the Rational Speech Act theory --- to be able to understand general statements that extend beyond the here-and-now.
