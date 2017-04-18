@@ -110,6 +110,20 @@ Participants rate the frequency with which the person does the action.
 --> 50 subjects?
 - 50 * 1.25 + 20% = $75
 
+### Friends and family 2
+
+Same as previous version.
+Relax instructions about name generation (now, "friends, family, or people you know").
+
+Add debrief question ("Did you actually list people you knew?")
+
+Added more options to drop-down menu to match all intervals used in truth judgments experiment (added: "2 weeks", "2 months", "6 months", "2 years").
+
+4/18/2017
+- Each subject does 15 out of 27 items
+- Should be about 25 responses for items
+- 50 * 1.25 + 20% = $75
+
 
 ## Truth judgments (S2 task)
 
