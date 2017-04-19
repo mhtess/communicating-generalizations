@@ -82,10 +82,10 @@ var model = function(){
 	}
 	var nullDist = Delta({v: -99})
 
-	// var alpha = sample(Gamma({shape: 2, scale: 1}), {
-	// 	driftKernel: function(prevVal){
-	// 		  return Gamma({shape: prevVal, scale: 1});
-	// }});
+	var alpha = sample(Gamma({shape: 2, scale: 1}), {
+		driftKernel: function(prevVal){
+			  return Gamma({shape: prevVal, scale: 1});
+	}});
 
 	// var c = 0.5;//uniformDrift({a: 0 , b: 1, width: 0.1});
 	//
@@ -93,13 +93,16 @@ var model = function(){
 	// 	return flip(c) ? "habitual" : "silence"//"habitual is false"
 	// }});
 
-	var alpha = uniformDrift({a: 0, b: 50, width: 5})
+	// var alpha = uniformDrift({a: 0, b: 50, width: 5})
 
 	foreach(items, function(i){
 
 		var itemPriorData = _.filter(data.prior, {action: i})
 		// display(i + " prior data " + itemPriorData.length)
 		var theta = uniformDrift({a: 0, b: 1, width: 0.1});
+
+		// var softMaxThetas = [Math.pow(theta, alpha), Math.pow(1-theta, alpha)]
+		// var softMaxTheta = normalize(softMaxThetas)[0]
 
 		var priorParams = {
 			mu: uniformDrift({a: -2, b: 8, width: 0.5}),
@@ -123,8 +126,8 @@ var model = function(){
 		})
 
 		mapData({data: itemPriorData}, function(d){
-			display(scaledPrior.score(d.roundedRate))
-			// observe(scaledPrior, d.roundedRate)
+			// display(scaledPrior.score(d.roundedRate))
+			observe(scaledPrior, d.roundedRate)
 		})
 
 
@@ -243,7 +246,7 @@ var model = function(){
 var totalIterations = 200, lag = 5;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'results-habituals-S2-ffPrior2Structured-SoftmaxDiscretized-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S2-ffPrior2Structured-AdjustDiscretization-SoftmaxDiscretized-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
