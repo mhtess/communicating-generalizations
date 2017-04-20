@@ -793,20 +793,25 @@ The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/exp
 #### Behavioral results
 
 On each trial of the experiment, the participant was told a person did a particular action 3 times during some time window. 
-Figure \ref{fig:tjScatters} (left) shows the correspondence between the frequency of the event (transformed a log times-per-year scale) and the felicity of the corresponding habitual sentence. 
-It is clear that a habitual sentence can receive strong agreement even when the actions are very infrequent (log frequency $\sim$ -1; 3 times in a 5-year interval; e.g. \emph{writes novels}, \emph{climbs mountains}).
+A simple null hypothesis is that habitual statements convey that the a person *has done this thing before*. 
+Under this hypothesis, all of the items used in our experiment would qualify as good habitual statements.
+A more sophisticated alternative hypothesis is that the degree to which the habitual statement is good is the frequency itself. 
+Our computational model predicts that the the degree to which the habitual statement is good is the frequency of event, normalized by the alternative possible frequencies under the prior.
+
+Both alternative hypotheses can immediately be ruled by out by visual inspection of Figure \ref{fig:tjScatters} (left), which shows the correspondence between the frequency of the event (transformed a log times-per-year scale) and the human-judged felicity of the corresponding habitual sentence. 
+First, it is clear that not all habitual statements are strongly assented to, even though it is true that all the stimuli involved an agent doing the action with some non-zero frequency.
+It is also clear that a habitual sentence can receive strong agreement even when the actions are very infrequent (log frequency $\sim$ -1; 3 times in a 5-year interval; e.g. \emph{writes novels}, \emph{climbs mountains}), arguing against the second alternative.
 We also see even when actions are done relatively frequently (e.g. 3 times in a one month interval; log frequency $\sim$ 5), there are habitual sentences participants are reluctant to endorse completely (e.g. \emph{wears socks}, \emph{drinks coffee}). 
-In our data, actions completed with a high frequency (3 times in a one week interval; log frequency $\sim$ 6.5) receive at least 75\% endorsement, though there is still variability among them (e.g. between 10-25\% of people disagree with \emph{wears a watch} and \emph{wears a bra}). %, suggesting that even actions that are completed almost everyday can insufficient to generalize.
+In our data, actions completed with a high frequency (3 times in a one week interval; log frequency $\sim$ 6.5) receive at a minimum 75\% endorsement, though there is still variability among them (e.g. between 10-25\% of people disagree with \emph{wears a watch} and \emph{wears a bra}). %, suggesting that even actions that are completed almost everyday can insufficient to generalize.
 Overall, log frequency of action predicts only a fraction of the variability in responses ($r^2(93) = 0.33$).
 For actions that are done on the time scale of years or longer (lower median of frequency), frequency itself no longer explains the endorsements ($r^2(50) = 0.07$)
+
+We observe that none of our items receive less than 25\% endorsement (i.e., a maximum of about 75\% of participants disagree with the felicity of the utterance).
+This reflects the fact that these statements are not altogether *false* even though the action is done very rarely.
 
 We find no differences between endorsements of the habitual of characters with male and female names, and overall, the mean endorsements by gender are strongly correlated $r(93) = 0.91$. 
 This may be because the felicity of habitual sentences depends on a comparison to individuals of both genders (i.e, the \emph{contrast class} is other people; not just other men or women). 
 Less interestingly, the lack of a difference may be the result of gender being not very salient in our paradigm, perhaps because the names used were not sufficiently gendered.
-
-We observe that none of our items receive less than 25\% endorsement (i.e. only 75\% of participants disagree with the felicity of the utterance).
-This may be due to the fact that actor has done the action in the past a plurality of times; we would expect to get strong disagreement with the habitual when the person has never done the action, or perhaps done it only once.
-
 
 \begin{figure*}[t]
 \centering
@@ -828,9 +833,100 @@ To construct the posterior predictive distribution over responses, we collected 
 The Maximum A-Posteriori value and 95\% highest probability density interval for $\alpha_1$ is 19.3 [14.9,19.9] and $\alpha_2$ is 1.5 [1.4,1.6].
 %The MAP and HPD interval for the data-analytic guessing parameter is 0.004 [0.0003, 0.03], suggesting that there is not a substantial amount of the data that is better explained by a model of random guessing than by our pragmatic speaker model.
 
-As shown in Figure \ref{fig:tjScatters}, right, the probabilistic pragmatics model does a good job of accounting for the variability in responses ($r^2(93) = 0.94$), including actions done on the time scale of years or more  ($r^2(50) = 0.92$).
-The model decides when the habitual is a useful way to describe the person's behavior, assuming that what the person did in the past is representative. 
-This raises an interesting question: Does the propensity communicated by the habitual indicate an objective, past frequency or a subjective, future expectation?
+As shown in Figure \ref{fig:tjScatters}, right, the pragmatic speaker model does a good job of accounting for the variability in responses ($r^2(93) = 0.94$), including actions done on the time scale of years or more  ($r^2(50) = 0.92$).
+The speaker model endorses the statement when the observed frequency is relatively high, compared to the prior distribution over people doing the action. 
+
+As another potential alternative hypothesis, we formulate a model of a speaker who judges the felicity of the habitual utterance based on simple summary statistics of the prior, such as the mean and variance.
+
+```{r alternativeRegressionSpeaker, eval = F}
+Regression alternative
+-- Degree of target
+-- Mean and variance of distribution over that scale
+```
+
+Only our pragmatic speaker model who reasons about a listener is able to capture the quantitative variability in our data.
+
+In this experiment, we supplied participants with a statement about how often a person has done the action in the past and asked them to judge the correspoding habitual statement.
+This raises an interesting question: Does the propensity communicated by a generalization indicate an objective, past frequency or a subjective, future expectation?
+
+## Experiment 2: Communicating predictive propensities
+
+People change: They might remember how much they enjoyed hiking and plan to do it more in the future; They might finally decide to quit smoking.
+Yet, there is an ambiguity in the propensity degree semantics we are positing.
+On one hand, speakers can only *know* about what has happened in the past.
+On the other hand, language has a communicative function, and it would seem useful for speakers to convey what they believe will be the case in the future.
+
+While past frequency is often a good indicator of future tendency, people can change abruptly due to a variety of decisions and outside events.
+Does habitual language communicate propensity in terms of past frequency or future expectations?
+In this set of experiments, we address this by introducing causal events that enable or prevent future actions (e.g., buying a pack of cigarettes; developing an allergy).
+In Expt. 2a, we measure *predictive frequency* both when past frequency alone is observed and when these causal factors are introduced.
+In Expt. 2b, we examine felicity judgments of the habitual sentence (e.g., \emph{John smokes cigarettes.}; \emph{Susan eats peanut butter.}) in the presence of these causal modifiers.
+This allows us to test whether habituals are best explained by a speaker $S_1$ who communicates the objective past frequency or the subjective future frequency.
+
+\subsection{Experiment 3a: Prediction elicitation}
+
+
+\noindent {\bf Methods}
+We recruited 120 participants from MTurk, using the same criterion as Expt.~2.
+The experiment took 4 minutes on average and participants were compensated \$0.40.
+
+The procedure was identical to Expt.~2 except for the inclusion of a second sentence on a subset of trials and the use of a different dependent measure. 
+On all trials, participants were presented with a \emph{past frequency sentence} (see Expt.~2).
+Additionally, on one third of the trials, participants were presented with a \textbf{preventative sentence} (e.g. \emph{Yesterday, Bill quit smoking.}). %that aimed to decrease the 
+On one third of the trials, participants were presented with an \textbf{enabling sentence} (\emph{Yesterday, Bill bought a pack of cigarettes.}) %that sought to reinforce the past frequency that aimed to increase the acceptability of the habitual sentence when the past frequency evidence was not strong. 
+The final third of trials had no additional evidence and were identical to Expt.~2. 
+
+Only twenty-one of the original thirty-one items were used in order to shorten the experiment.
+To increase expected variability, participants saw only the frequencies that led to most intermediate endorsement of the habitual in Expt.~2. 
+In addition, we did not include separate trials for both male and female names for the select items we did in Expt.~2, since we saw no differences in their endorsements of the habitual.
+
+Participants were asked ``In the next \textsc{time window}, how many times do you think \textsc{person} does \textsc{event}?'', where the \textsc{time window} was the same as given in the \emph{past frequency statement}.
+The experiment in full can be viewed at \url{http://stanford.edu/~mtessler/habituals/experiments/priors/predictive-1.html}.
+
+
+\subsection{Behavioral results}
+
+Figure \ref{fig:tj3} (left) shows the predicted future frequency as a function of the past frequency given to the participant and the type of causal information given. 
+We observe in the baseline condition that future frequency perfectly tracks past frequency (e.g. participants believe if a person smoked cigarettes 3 times last month, they will smoke cigarettes 3 times next month). 
+This means that our model makes identical predictions for Expt.~2 whether the target is past frequency or expected future frequency (indicating, as expected, that we must look to the new data to distinguish these models).
+Critically, we observe the preventative information appreciably decreasing and the enabling information slightly increasing predicted frequency (Figure \ref{fig:tj3} left; blue and green dots).
+
+
+
+\subsection{Experiment 3b: Felicity judgments}
+
+
+%\subsubsection{Method}
+%\subsubsection{Participants} 
+
+\noindent {\bf Methods}
+We recruited 150 participants from MTurk, using the same criterion as Expt.~2.
+The experiment took 4 minutes on average on participants were compensated \$0.40 for their work.
+None of the participants had completed Expt.~3a.
+%\subsubsection{Procedure and materials}
+The only difference from Expt.~3a is the dependent measure. 
+On each trial, participants were asked if they agreed or disagreed with the corresponding habitual sentence (as in Expt.~2).
+The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/experiments/truth-judgments/tj-3-preventative.html}.
+
+
+\subsection{Results}
+
+There is a clear and consistent negative effect of preventative information on endorsements for the habitual sentence (Figure \ref{fig:tj3}, middle; blue points).
+When collapsing across items and subjecting the data to a generalized mixed-effects model with random by-participant effects of intercept and random by-item effects of intercept and conditions, we find evidence for a small effect of \emph{enabling} conditions on endorsements (M =  0.89; 95\% Bootstrapped CI [0.88, 0.91]) as compared to baseline (M = 0.85 [0.83, 0.87]) [$\beta = 0.42; SE = 0.15; z = 2.8$]%; p = 0.005$]
+, and a large effect of \emph{preventative} conditions on endorsements (M = 0.29 [0.26, 0.31]) [$ \beta = -3.22; SE = 0.21; z = -15.2$].%; p < 0.001$]. 
+<!-- %\mht{should I add points from Expt. 2 to left-most scatter, or maybe there is a better plot?} -->
+
+We use the mean predicted log frequency from Expt.~3a as the input to the speaker $S_2$ model to predict the felicity judgments measured in Expt.~3b.
+We infer the two model parameters using the same analysis approach in Expt.~2. 
+The model matches the data well ($r^2(63) = 0.91$; Figure \ref{fig:tj3}, right).
+The same model using the past frequency as the object of communication does not match the data at all ($r^2(63) = 0.02$).
+These results suggest that the felicity of habituals is based on an underlying scale of predicted future propensity, not merely the observed frequency in the past.
+
+Interestingly, we observe endorsements in this experiment that are appreciably higher than in Expt.~2 for the same items (Figure \ref{fig:tj3}, middle; red vs. purple points). 
+This may be due, in part, to an effect of the experimental context on participants: 
+in this experiment the overall population of frequencies is much lower (both because we selected moderate frequencies from Expt.~2 and because of the preventative information) and participants may infer that the experimenter believes this to be a representative range and adjust judgments accordingly. Future investigation into this issue is warranted.
+
+
 
 
 # Communicating generalizations about causes
@@ -1508,18 +1604,18 @@ Further, since prevalence is a probability, our model can take information conve
 
 
 
-## Generic Identification
+<!-- ## Generic Identification -->
 
-Throughout this paper we treated the bare plural construction as a generic utterance with a threshold semantics: $\denote{\text{K F}}(x, \theta)=x>\theta$.
-The bare plural construction can also indicate a specific plural predication.
-For example, "Dogs are on my lawn" picks out a specific group of dogs, while "Dogs have fur"  does not [@Carlson1977].
-The problem of \emph{identifying} a generic meaning from a bare plural construction is itself a challenging problem because generic meaning can be signaled using a diverse array of morphosyntactic cues.
+<!-- Throughout this paper we treated the bare plural construction as a generic utterance with a threshold semantics: $\denote{\text{K F}}(x, \theta)=x>\theta$. -->
+<!-- The bare plural construction can also indicate a specific plural predication. -->
+<!-- For example, "Dogs are on my lawn" picks out a specific group of dogs, while "Dogs have fur"  does not [@Carlson1977]. -->
+<!-- The problem of \emph{identifying} a generic meaning from a bare plural construction is itself a challenging problem because generic meaning can be signaled using a diverse array of morphosyntactic cues. -->
 
-@Declerck1991 suggests that generic and non-generic bare plurals can be treated in the same way, and that pragmatic considerations alone may resolve interpretative differences. 
-Indeed it does appear that knowledge of the properties under discussion (e.g., the state of being on a front lawn; the state of having fur) could facilitate the generic identification process.
-Other pragmatic factors, like knowledge of the identity of the speaker (e.g., a teacher vs. a veterinarian), can also disambiguate generic and non-generic meaning [@Cimpian2008].
-Recent work suggests that utterances that fail to refer to specific entities or events could pragmatically imply generic meaning [@Crone2016cogsci].
-Incorporating these insights about generic identification into an information-theoretic, communicative perspective is a natural extension of this work.
+<!-- @Declerck1991 suggests that generic and non-generic bare plurals can be treated in the same way, and that pragmatic considerations alone may resolve interpretative differences.  -->
+<!-- Indeed it does appear that knowledge of the properties under discussion (e.g., the state of being on a front lawn; the state of having fur) could facilitate the generic identification process. -->
+<!-- Other pragmatic factors, like knowledge of the identity of the speaker (e.g., a teacher vs. a veterinarian), can also disambiguate generic and non-generic meaning [@Cimpian2008]. -->
+<!-- Recent work suggests that utterances that fail to refer to specific entities or events could pragmatically imply generic meaning [@Crone2016cogsci]. -->
+<!-- Incorporating these insights about generic identification into an information-theoretic, communicative perspective is a natural extension of this work. -->
 
 ## Implications for Conceptual Structure
 
