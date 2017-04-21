@@ -1,0 +1,300 @@
+// time ~/webppl-fork/webppl habituals-S2-structured.wppl --require utils 1
+
+var start_index = last(process.argv) // load index as last command line index
+
+var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
+var intervals = {
+	"week": 52,
+	"2 weeks": 26,
+	"month": 12,
+	"2 months": 6,
+	"6 months": 2,
+	"year": 1,
+	"2 years": 1/2,
+	"5 years": 1/5
+};
+
+var dataPath = "data/"
+var targetUtterance = "habitual"
+
+var priorFile = dataPath + "friends-and-family-2-trials.csv";
+var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
+
+var d0 = dataFrame(utils.readCSV(priorFile).data, ["n_times"]);
+
+var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data,
+				["n_times", "log_times"]);
+
+var data = {
+	speaker: map(function(d){
+			extend(d, {
+				rate: d.n_times / 5,
+				roundedRate: utils.closest(midBins, d.n_times / 5),
+				// rate: Math.log(d.n_times / 5),
+				// roundedRate: utils.closest(midBins, Math.log(d.n_times / 5)),
+				alignedResponse : responseDictionary[d.response]
+			})
+		}, d2.slice(0, d2.length - 1)),
+		prior: map(function(d){
+			var annualRate = intervals[d.interval] * d.n_times
+				return extend(d, {
+					annualRate: annualRate,
+					logAnnualRate: annualRate == 0 ? -99 : Math.log(annualRate),
+					roundedRate: utils.closest(midBins, annualRate)
+				})
+			}, d0.slice(0, d0.length -1))
+};
+
+var items = levels(data.prior, "action");
+
+var utterancePrior = Infer({model: function(){
+	// return uniformDraw(["habitual","opposite habitual"])
+	// return uniformDraw(["habitual","habitual is false"])
+	return uniformDraw([targetUtterance,"silence"])
+}});
+
+var meaning = function(utt,state, theta) {
+  // return utt=="habitual"? state > theta[utt] :
+  //        utt=="habitual is false"? state <= theta[utt] :
+	// 			 utt=="opposite habitual"? state < theta[utt] :
+ return utt=="habitual"? state > theta :
+        utt=="habitual is false"? state <= theta :
+				 utt=="opposite habitual"? state < theta :
+         utt=='silence'? true :
+         utt=='some'? state > 0 :
+         true
+}
+
+// data["prior"]["wears socks"]
+
+
+// display(priorUnnormed)
+// display(sum(priorUnnormed))
+// display(sum(prior))
+// prior
+
+
+var makeModel = function(heldOut){
+
+	var speakerOptimality = {
+		s1: uniformDrift({a: 0, b: 20, width: 2}),
+		s2: uniformDrift({a: 0, b: 5, width: 0.5})
+	}
+	var nullDist = Delta({v: -99})
+
+	var alpha = sample(Gamma({shape: 2, scale: 1}), {
+		driftKernel: function(prevVal){
+			  return Gamma({shape: prevVal, scale: 1});
+	}});
+
+	// var c = 0.5;//uniformDrift({a: 0 , b: 1, width: 0.1});
+	//
+	// var utterancePrior = Infer({model: function(){
+	// 	return flip(c) ? "habitual" : "silence"//"habitual is false"
+	// }});
+
+	// var alpha = uniformDrift({a: 0, b: 50, width: 5})
+
+	foreach(items, function(i){
+
+		var itemPriorData = _.filter(data.prior, {action: i})
+		// display(i + " prior data " + itemPriorData.length)
+		var theta = uniformDrift({a: 0, b: 1, width: 0.1});
+
+		// var softMaxThetas = [Math.pow(theta, alpha), Math.pow(1-theta, alpha)]
+		// var softMaxTheta = normalize(softMaxThetas)[0]
+
+		var priorParams = {
+			mu: uniformDrift({a: -2, b: 8, width: 0.5}),
+			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
+		}
+
+		var statePrior = Infer({model: function(){
+			sample(
+				flip(theta) ?
+					DiscretizedLognormal(priorParams) :
+					Delta({v: _.min(midBins)})
+				)
+			}
+		})
+
+		var scaledPrior = Categorical({
+			vs: statePrior.support(),
+			ps: normalize(map(function(s){
+				return Math.pow(exp(statePrior.score(s)), alpha)
+			}, statePrior.support()))
+		})
+
+		mapData({data: itemPriorData}, function(d){
+			// display(scaledPrior.score(d.roundedRate))
+			observe(scaledPrior, d.roundedRate)
+		})
+
+
+		query.add(["prior", i, "theta","NA", "NA"], theta)
+		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
+		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
+
+
+		var itemData = _.filter(data.speaker, {habitual: i});
+		// display(i + " speaker data " + itemData.length)
+
+		// var statePrior = Infer({model: function(){
+		// 	sample(
+		// 		flip(theta) ?
+		// 			DiscretizedLognormal(priorParams) :
+		// 			Delta({v: _.min(midBins)})
+		// 		)
+		// 	}
+		// })
+
+		/// RSA model
+		var listener0 = cache(function(utterance, theta) {
+		  Infer({model: function(){
+		    var state = sample(statePrior)
+		    var m = meaning(utterance, state, theta)
+		    condition(m)
+		    return state
+		 }})}, 10000)
+
+		var speaker1 = cache(function(state, theta) {
+			Infer({model: function(){
+		    var utterance = sample(utterancePrior);
+		    var L0 = listener0(utterance, theta);
+		    factor(speakerOptimality.s1 * L0.score(state))
+		    return utterance
+			}})}, 10000)
+
+		var listener1 = cache(function(utterance) {
+			Infer({model: function(){
+		    var state = sample(statePrior);
+		    var theta = targetUtterance === "habitual" ? sample(thetaPrior) : -99;
+		    var S1 = speaker1(state, theta)
+		    observe(S1, utterance)
+		    return state
+			}})}, 10000)
+
+		var speaker2 = function(freq){
+			Infer({model: function(){
+				var utterance = sample(utterancePrior);
+		    var L1 = listener1(utterance)
+		    factor(speakerOptimality.s2 * L1.score(freq))
+				// var _kl = KL(speakerBeliefs, L1, speakerBeliefs.support());
+				// factor(speakerOptimality.s2  * -1 * _kl)
+		    return utterance === targetUtterance ? 1 : 0
+		 }})}
+
+		var observedFrequencies = levels(itemData, "roundedRate");
+
+		foreach(observedFrequencies, function(freq){
+			// display(freq)
+			var freqData = _.filter(itemData, {roundedRate: freq});
+			var s2prediction = speaker2(freq);
+
+			var timeInterval = freqData[0]["time_period"]
+			var isHeldOut = (heldOut[i] == timeInterval)
+
+			if (isHeldOut) {
+				// display(i + " " + timeInterval)
+				null
+			} else {
+				mapData({data:freqData}, function(d){
+					// display(d)
+					// display("speaker score = " + s1prediction.score(d.alignedResponse))
+
+					// s2prediction.score(d.alignedResponse) == -Infinity ?
+					// display(d) : null
+					// s2prediction.score(d.alignedResponse) == -Infinity ?
+					// display(theta) : null
+					// s2prediction.score(d.alignedResponse) == -Infinity ?
+						// display(JSON.stringify(priorParams)) : null
+					// display("speaker score = " + s2prediction.score(d.alignedResponse))
+
+					observe(s2prediction, d.alignedResponse)
+				})
+
+			}
+
+
+			// query.add(["predictive", i, freqData[0]["time_period"]], [
+			// 	freq, "s2", expectation(s2prediction),
+			// 	"NA",  "NA",  "NA",  "NA" ])
+
+			query.add(["predictive", i, isHeldOut, freqData[0]["time_period"], freq], expectation(s2prediction));
+
+		})
+
+		// foreach(_.range(0, prior.length), function(pi){
+		// 	query.add(["prior",i, midBins[pi], pi, "NA"], prior[pi])
+		// })
+
+	})
+
+	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
+	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+	query.add(["param","speakerOptimality","s2","NA", "NA"], speakerOptimality.s2)
+	// query.add(["param","habUttPrior","NA","NA", "NA"], c)
+	query.add(["param","alpha","NA","NA", "NA"], alpha)
+
+	// query.add(["param", "speakerOptimality", "s1"], [
+	// 	 speakerOptimality.s1, "NA", "NA",
+	// 	"nullParams_mu",  nullParams.mu,
+	// 	"nullParams_sigma",  nullParams.sigma])
+
+	return query
+}
+// // data.speaker
+// // Infer({model: function() { sample(Categorical({vs: midBins, ps: data["prior"]["wears socks"]}))}})
+// // Infer({model: function() { sample(Categorical({
+// // 	vs: midBins,
+// // 	ps: map(function(p){ Math.pow(p, 0.3) }, data["prior"]["wears socks"])
+// // }))}})
+//
+//
+
+
+var totalIterations = 15000, lag = 2;
+var mhiter = totalIterations/lag, burn = totalIterations / 2;
+
+foreach(_.range(start_index, start_index + 1), function(cv_index){
+
+	var heldOut = _.fromPairs(
+		map(function(l){
+			return [l, uniformDraw(levels(_.filter(data.speaker, {habitual: l}), "time_period"))]
+		}, levels(data.speaker, "habitual"))
+	)
+
+	var outfile = 'results-habituals-S2-holdOut1perEvent-ffPrior2Structured-SoftmaxDiscretized-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_i'+cv_index+'.csv'
+
+	var model = {
+	  model: function(){ return makeModel(heldOut) },
+	  method: "incrementalMH",
+		// kernel: {HMC: {steps:5, stepSize: 0.01}},
+	  samples: mhiter, burn: burn, lag: lag, verbose: T,
+		verboseLag: totalIterations/20,
+		stream: {
+			path: "results/" + outfile,
+			header: [
+				"type", "item", "cat", "param", "gender", "val"
+			]
+		}
+	}
+
+	// displayObj(heldOut)
+	var tfbt = Infer(model)
+
+	console.log('wrote to... ' + outfile )
+})
+
+
+
+
+
+// var lag = 0;
+
+// var posterior = Infer()
+
+// utils.writeQueryERP(posterior, "results/" + outfile,
+	// ["type", "item", "cat", "param", 'freq', "val"])
+//
+// display("written to " + outfile)
