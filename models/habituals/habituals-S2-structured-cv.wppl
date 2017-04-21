@@ -1,6 +1,6 @@
 // time ~/webppl-fork/webppl habituals-S2-structured.wppl --require utils 1
 
-var start_index = last(process.argv) // load index as last command line index
+var start_index = utils.wpParseFloat(last(process.argv)) // load index as last command line index
 
 var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
 var intervals = {
