@@ -112,13 +112,14 @@ function make_slides(f) {
       $("#tableGenerator").html('<table id="tableGenerator"> </table>');
 
       $(".prompt").html(
-        "For each of the following people that you know, how often has he or she <strong>" + stim.past + "</strong>?<br><br>"
+        "For each of the following people that you know, how often has he or she <strong>" + stim.past + "</strong>?<br>(Please try to report more than 0 times when possible.)<br>"
       )
 
       // give option to change all intervals at once
       var globalInterval = $(document.createElement('div'))
            .attr("id", 'globalInterval');
-      globalInterval.after().html('Set time window for all responses: <select id="global_setting">'+
+
+      globalInterval.after().html('<br><br>Option: Set time window for all responses: <select id="global_setting">'+
       '<label><option value="" ></option></label>'+
         '<label><option value="week">week</option></label>'+
         '<label><option value="2 weeks">2 weeks</option></label>'+
@@ -130,8 +131,7 @@ function make_slides(f) {
           '<label><option value="5 years">5 years</option></label>'+
        '</select><br><br>')
 
-       globalInterval.appendTo("#tableGenerator")
-       $("#global_setting").val('')
+
 
       // create response table
       for(i=0; i<exp.names.length; i++){
@@ -162,7 +162,8 @@ function make_slides(f) {
         $("#interval"+i).val('')
       }
 
-
+      globalInterval.appendTo("#tableGenerator")
+      $("#global_setting").val('')
 
       // if participant touches global option, change all others
       $( "#global_setting" ).change(function() {
@@ -353,7 +354,7 @@ function init() {
 
   repeatWorker = false;
   (function(){
-      var ut_id = "mht-hab-priors-20170405";
+      var ut_id = "mht-hab-priors-20170422";
       if (UTWorkerLimitReached(ut_id)) {
         $('.slide').empty();
         repeatWorker = true;
@@ -361,9 +362,9 @@ function init() {
       }
   })();
 
-  exp.n_friends = 4;
+  exp.n_friends = 8;
   exp.names = [];
-  exp.names = ["John", "Mary", "Sally", "Jim"]
+  // exp.names = ["John", "Mary", "Sally", "Jim"]
   exp.trials = [];
   exp.catch_trials = [];
   // console.log(stimuli.length)
@@ -385,9 +386,9 @@ function init() {
     };
   //blocks of the experiment:
   exp.structure=[
-    // "i0",
-    // "instructions",
-    // "generateNames",
+    "i0",
+    "instructions",
+    "generateNames",
     "priors",
     "debrief",
     "subj_info",

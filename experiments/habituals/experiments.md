@@ -124,6 +124,16 @@ Added more options to drop-down menu to match all intervals used in truth judgme
 - Should be about 25 responses for items
 - 50 * 1.25 + 20% = $75
 
+### Friends and family 3
+
+Ask about past frequency.
+The hypothesis is that for really low frequencies for common activities (e.g., "eating peanut butter" once a year), this frequency gets rounded to 0 when thinking about future rates, but when thinking about number of times in the past, it won't be rounded to 0.
+
+4/22/2017
+- Each subject does 15 out of 27 items
+- Should be about 25 responses for items
+- 50 * 1.25 + 20% = $75
+
 
 ## Truth judgments (S2 task)
 
