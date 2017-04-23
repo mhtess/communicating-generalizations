@@ -17,7 +17,7 @@ var intervals = {
 var dataPath = "data/"
 var targetUtterance = "habitual"
 
-var priorFile = dataPath + "friends-and-family-2-trials.csv";
+var priorFile = dataPath + "friends-and-family-3-trials.csv";
 var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
 
 var d0 = dataFrame(utils.readCSV(priorFile).data, ["n_times"]);
@@ -203,7 +203,7 @@ var model = function(){
 				// display(theta) : null
 				// s2prediction.score(d.alignedResponse) == -Infinity ?
 					// display(JSON.stringify(priorParams)) : null
-				// display("speaker score = " + s2prediction.score(d.alignedResponse))
+				display("speaker score = " + s2prediction.score(d.alignedResponse))
 
 				observe(s2prediction, d.alignedResponse)
 			})
@@ -243,10 +243,10 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 200, lag = 5;
+var totalIterations = 100000, lag = 10;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'results-habituals-S2-ffPrior2Structured-AdjustDiscretization-SoftmaxDiscretized-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S2-ffPrior3Structured-SoftmaxDiscretized-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
@@ -254,12 +254,12 @@ var posterior = Infer({
 	// kernel: {HMC: {steps:5, stepSize: 0.01}},
   samples: mhiter, burn: burn, lag: lag, verbose: T,
 	verboseLag: totalIterations/20,
-	stream: {
-		path: "results/" + outfile,
-		header: [
-			"type", "item", "cat", "param", "gender", "val"
-		]
-	}
+	// stream: {
+	// 	path: "results/" + outfile,
+	// 	header: [
+	// 		"type", "item", "cat", "param", "gender", "val"
+	// 	]
+	// }
 })
 
 // utils.writeQueryERP(posterior, "results/" + outfile,

@@ -5,15 +5,20 @@ var chain = last(process.argv) // load index as last command line index
 var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
 var intervals = {
 	"week": 52,
+	"2 weeks": 26,
 	"month": 12,
+	"2 months": 6,
+	"6 months": 2,
 	"year": 1,
+	"2 years": 1/2,
 	"5 years": 1/5
 };
+
 
 var dataPath = "data/"
 var targetUtterance = "habitual"
 
-var priorFile = dataPath + "friends-and-family-1-trials.csv";
+var priorFile = dataPath + "friends-and-family-3-trials.csv";
 var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
 
 var d0 = dataFrame(utils.readCSV(priorFile).data, ["n_times"]);
@@ -66,11 +71,12 @@ var meaning = function(utt,state, theta) {
 var model = function(){
 
 	var speakerOptimality = {
-		s1: uniformDrift({a: 0, b: 10, width:2})
+		s1: uniformDrift({a: 0.5, b: 5, width:1})
 	}
 
 	var nullDist = Delta({v: -99})
 
+	// var alpha = 1
 	var alpha = sample(Gamma({shape: 2, scale: 1}), {
 		driftKernel: function(prevVal){
 			  return Gamma({shape: prevVal, scale: 1});
@@ -112,14 +118,15 @@ var model = function(){
 		mapData({data: itemPriorData}, function(d){
 			// display(scaledPrior.score(d.roundedRate))
 			observe(scaledPrior, d.roundedRate)
+			// observe(statePrior, d.roundedRate)
 		})
 
 		query.add(["prior", i, "theta","NA", "NA"], theta)
 		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
 		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
 
-		var postpred = flip(Math.pow(theta, alpha)) ? Math.exp(sample(Gaussian(priorParams))) : 0
-		query.add(["prior", i, "postPred", "NA", "NA"], postpred)
+		// var postpred = flip(Math.pow(theta, alpha)) ? Math.exp(sample(Gaussian(priorParams))) : 0
+		// query.add(["prior", i, "postPred", "NA", "NA"], postpred)
 
 		var itemData = _.filter(data.speaker, {habitual: i});
 		// display(i + " speaker data " + itemData.length)
@@ -196,10 +203,12 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 100, lag = 1;
+var totalIterations = 500000, lag = 50;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'results-habituals-S1-ffPriorStructured-SoftmaxDiscretized-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S1-ffPrior3Structured-SoftmaxDiscretized-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+
+//var outfile = 'results-habituals-inferPrior-factorHabitual-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
@@ -207,12 +216,12 @@ var posterior = Infer({
 	// kernel: {HMC: {steps:5, stepSize: 0.01}},
   samples: mhiter, burn: burn, lag: lag, verbose: T,
 	verboseLag: totalIterations/100,
-	// stream: {
-	// 	path: "results/" + outfile,
-	// 	header: [
-	// 		"type", "item", "cat", "param", "gender", "val"
-	// 	]
-	// }
+	stream: {
+		path: "results/" + outfile,
+		header: [
+			"type", "item", "cat", "param", "gender", "val"
+		]
+	}
 })
 
 // utils.writeQueryERP(posterior, "results/" + outfile,
