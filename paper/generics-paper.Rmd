@@ -863,17 +863,17 @@ In Expt. 2a, we measure *predictive frequency* both when past frequency alone is
 In Expt. 2b, we examine felicity judgments of the habitual sentence (e.g., \emph{John smokes cigarettes.}; \emph{Susan eats peanut butter.}) in the presence of these causal modifiers.
 This allows us to test whether habituals are best explained by a speaker $S_1$ who communicates the objective past frequency or the subjective future frequency.
 
-\subsection{Experiment 3a: Prediction elicitation}
+### Experiment 3a: Prediction elicitation
 
+#### Methods
 
-\noindent {\bf Methods}
-We recruited 120 participants from MTurk, using the same criterion as Expt.~2.
+We recruited 120 participants from MTurk, using the same criterion as Expt. 1.
 The experiment took 4 minutes on average and participants were compensated \$0.40.
 
-The procedure was identical to Expt.~2 except for the inclusion of a second sentence on a subset of trials and the use of a different dependent measure. 
-On all trials, participants were presented with a \emph{past frequency sentence} (see Expt.~2).
-Additionally, on one third of the trials, participants were presented with a \textbf{preventative sentence} (e.g. \emph{Yesterday, Bill quit smoking.}). %that aimed to decrease the 
-On one third of the trials, participants were presented with an \textbf{enabling sentence} (\emph{Yesterday, Bill bought a pack of cigarettes.}) %that sought to reinforce the past frequency that aimed to increase the acceptability of the habitual sentence when the past frequency evidence was not strong. 
+The procedure was identical to Expt. 1 except for the inclusion of a second sentence on a subset of trials and the use of a different dependent measure. 
+On all trials, participants were presented with a \emph{past frequency sentence} (same as Expt. 1).
+Additionally, on one third of the trials, participants were presented with a \textbf{preventative sentence} (e.g. \emph{Yesterday, Bill quit smoking.}).
+On one third of the trials, participants were presented with an \textbf{enabling sentence} (\emph{Yesterday, Bill bought a pack of cigarettes.}) 
 The final third of trials had no additional evidence and were identical to Expt.~2. 
 
 Only twenty-one of the original thirty-one items were used in order to shorten the experiment.
@@ -1547,8 +1547,8 @@ This special case involves learning the value of the threshold (aspect 2) and no
 
 ## Communicating Predictive Probabilities
 
-This paper puts forth the theory that the simplest language of abstractions (i.e., the languag eof generalizations) communicates predictive probabilities from speaker to hearer. 
-This might seem to contradict a basic tenet in cognitive psychology, that human cognition falters when reasoning about probabilities [@Tversky1974].
+This paper puts forth the theory that the simplest language of abstractions (i.e., the language of generalizations) communicates predictive probabilities from speaker to hearer. 
+This might seem contrary to a basic tenet in cognitive psychology, that human cognition falters when reasoning about probabilities [@Tversky1974].
 In a multitude of demonstrations, Kahneman and Tversky observed that human reasoners perform poorly when reasoning about explicit probabilities.
 This has been taken to imply that people are bad with probabilties.
 
@@ -1558,30 +1558,66 @@ In this work, we have shown that probabilities are central to even the most basi
 Indeed they are causally related to communicating generalizations, as evidenced by Expt. 3.
 We convey probabilities to each other using language, but the most basic ways we have of conveying them are *vague*. 
 
-## Other Philosophical Puzzles
-
--- Books are paperbacks (contrast class)
--- Birds lay eggs and are female vs. Elephants live in Africa and Asia
--- Mary handles the mail from antarctica (predictive propensity; also highlights domain restriction on events)
--- Women are submissive. (Haslanger, 2011)
-
-
 
 
 ## Relationship to Other Theories
 
--- Sterken (2015): Quantificational force is like the uncertain threshold
--- Cohen (1999): Similar machinery (e.g., Alt(K)); don't rely on domain restriction necessarily because it opens up a number of theoretical doors that require more theorizing .  THat being said, there may be a formulation of the uncertain threhsold model that uses a fixed threshold with domain restriction uncertainty. 
+To our knowledge, this is the first formal theory of genericity in language that makes accurate and precise quantitative predictions about human behavioral data. 
+A number of other theories of genericity have been proposed in the linguistics and psychological literature. By and large, these theories are concerned with explaining *generics* or generalizations about categories, so in keeping with the spirit of these authors, we will refer to the object of explanation, without loss of generality, as *generics*.
+
+Semantic theories fall into one of two broad camps: Those that appeal to the statistics of the world (e.g., how many Ks have F) and those that appeal to structured, conceptual representations (e.g., there is something about being K which causes it to F).
+Statistical and conceptual theories express the major contrasting views of the truth conditions of generic statements [@Carlson1995essay].^[We use the terms statistical and conceptual to refer to what @Carlson1995essay referred to as "inductive" and "rules and regulations" views, respectively.]
+
+
+### Statistical Accounts
+
+Statistical accounts take the \textbf{property prevalence} to be fundamental: \emph{Birds lay eggs} means \emph{Birds, in general, lay eggs}. 
+Our probabilistic account has antecedents in @Cohen1999 's theory of generics as a frequency adverb (e.g., "generally").
+As with our formulation, Cohen looks to *prevalence* as a metric against which generics get evaluated.
+For Cohen, there are two kinds of generic statements: "Absolute" and "Relative".
+"Absolute generics" have a meaning with a fixed threshold on prevalence and that threshold is 0.5: $P(F\mid K)>0.5$. 
+Roughly speaking, "Dogs have four legs" is true because a given dog is more likely than not to have four legs. 
+"Relative generics" on the other hand depend upon an alternative set of kinds (his notation: $Alt(K)$), similar to our comparison class.
+These statements (e.g., *Mosquitos carry malaria*) are true if an arbitrary member of the target kind is more likely than an arbitrary member of an alternative kind to have the feature.
+
+There are two main points of deviation of our theory from Cohen's.
+First, though his theory is framed in terms of probabilities, it still relies upon fixed threshold and deterministic truth conditions. 
+On the contrary, our theory posits that the meaning (i.e., threhsold) is underspecified in the semantics.
+Second, Cohen must draw the adhoc distinction between "Absolute" and "Relative" generics; our theory is able to handle both kinds of examples with the same basic machinery.
+
+It should be noted that another mechanism used in Cohen's theory is to contextually restrict the entities that go into the computation of prevalence (i.e., which robins do we look to compute the prevalence of *laying eggs* among *robins*?).
+These entities are restricted to those that could have *some* feature in a (contextually-specified) alternative set of features (so called, $Alt(F)$). 
+For example, the property \emph{lays eggs} could induce a set of alternatives that all have to do with procreation (e.g. \emph{gives birth to live young}, \emph{undergoes mitosis}, ...).
+That is, *Robins lay eggs* can be evaluated as an "absolute generic" as the only individuals under consideration are the female members of kinds because only the female members can plausibly satisfy one or another of the alternatives.
+<!-- Of course, the inferential machinery behind this sort of domain restriction (i.e., what is $Alt(F)$?) requires further theorizing to explain.  -->
+The inferential machinery behind this sort of domain restriction (i.e., what is $Alt(F)$?) relies upon conceptual information, but how exactly remains obscure [@Carlson1995essay].
+^[However, see @Cohen2004 for a discussion of how his semantic constraints relate to different kinds of generics and different kinds of conceptual representational frameworks found in cognitive science.]
+Our theory doesn't explicitly rely upon domain restriction for this reason.
+However, we think it's plausible that there exists a reformulation of the uncertain threshold model to a fixed threshold that where the listener has uncertainty about the relevant domain restriction. 
+
+Our theory bears some conceptual similarity to a recent proposal by @Sterken2015. 
+Sterken treats the generic as a kind of *indexical* (e.g., "this" or "I").
+She argues that kind of truth-conditional variability exhibited by generics is best accounted for by an account generics as an indexical where both domain restriction and "quantificational force" vary with context.
+We think our uncertain threshold model is a way of formalizing Sterken's "quantificational force".
+As noted above, we have not yet formalized uncertainty about domain restriction but think this is a promising avenue for future research.
+
+Other theorists under the quantificational or statistical banner draw on the intuition that generics seem to express something what is *normal* in the world [@Asher1995; @Pelletier1997; @Nickel2008].
+For example, it is a regrettable but true fact that due to unfortunate circumstances, not all dogs have four legs.
+However, we might want to hold onto the idea that were the world to work *normally*, then all dogs would have four legs. 
+This idea has intuitive appeal for rejecting accidentally true generalizations (e.g., the hypothetical situation where all Supreme Court justices had social security numbers that were even numbers and the intuitive ambivalence about the statement *Supreme Court justices have even social security numbers*).
+It also may underly what is problematic about stereotyped language (e.g., *Boys are good at math*).
+The idea that speaker's beliefs (e.g., about what is *normal*) plays a role in endorsing and interpreting generalizations is central to the formulation of our theory of generics in a Bayesian cognitive model.
+Indeed, we have elaborated this view showing in Expt. 3 that is in fact speaker's beliefs about what is likely to be the case in the near future that matters for endorsing generalizations.
+Prevalence or propensity in our theory is a posterior predictive probability, which incorporates background knowledge in order to make predictions about the future. 
+It is likely that what is "normal" is captured in much of our intuitive theories of other domains.
+
+### Conceptual Accounts
+
+It is also the first attempt in psychology to try to unify significant swaths of language that are seemingly quite different from one another: generalizations about events, causes, and categories.
+
 -- Leslie (2008): Default inferences, could be similar to the cognitive model described, but we don't make strong metaphysical commitments (e.g., to "negative" properties)
 
-
-
 -- "default generalization" -- very close, the listener is doing a generalization, but not generalization based on evidence, but by reasoning about the threshold
--- "normalcy" approaches -- prevalence in a cognitive model is a posterior predictive probability, which incorporates background knowledge in order to make predictions about the future. it's likely that what is "normal" is captured in much of our intuitive theories of other domains
--- generic as indexical (sterken) -- She has two free variables: quantificational force & lexical restriction. Quantificational force is like the uncertain threshold
--- majority-based approaches using domain restriction: Birds lay eggs means "Most female birds lay eggs" (Cohen, 1999). Our model didn't have to rely upon domain restriction at all, but it's possible there's a mathematically similar model that uses domain restriction and a fixed threshold. You would need a theory of how the domain gets retricted; this would likely rely upon the same principles (true + informative)
-
-
 
 
 
@@ -1661,11 +1697,6 @@ Bare plural statements (e.g., \emph{Robins lay eggs}) tend strongly to yield a g
 
 Given that generics express a property that can be applied to individuals, it would seem intuitive that the number of individuals with the property would be what makes the statement true or false.
 Counter-examples like \emph{Mosquitos carry malaria} and \emph{Birds lay eggs} v. \emph{Birds are female} stifle such intuition. 
-Semantic theories that appeal to the statistics of the world (i.e., how many Ks have F) try to rescue the notion that a generic expresses something like \emph{Ks, in general, have F}, where \emph{in general} is often either restricted to particular domains or is calculated with particular distortions.
-Alternative, \emph{conceptually}-based theories take a generic to mean \emph{Ks, in virtue of being the kind of things that Ks are, have F}.
-These accounts appeal to structured, conceptual representations in deciding what kinds of generic statements are true or false.
-Statistical and conceptual theories express the major contrasting views of the truth conditions of generic statements [@Carlson1995essay].^[We use the terms statistical and conceptual to refer to what @Carlson1995essay referred to as "inductive" and "rules and regulations" views, respectively.]
-
 
 ### Statistical Accounts of Generics
 
@@ -1675,18 +1706,7 @@ The primary way of dealing with such issues is to posit domain restrictions ("im
 The most fully-developed theory on this front is due to @Cohen1999. 
 Let's first introduce some notation:
 
-For a given kind $K$ (e.g.~\textsc{robins}) and property $F$ (e.g.~\textsc{lays eggs}), we refer to the probability that an instance of kind $K$ has property $F$, that is $P(F\mid K)$, as the \emph{prevalence} of $F$ within $K$.
-Logical quantifiers can be described as conditions on prevalence (i.e.~\emph{some} is $P(F\mid K)>0$, \emph{all} is $P(F\mid K)=1$). 
-Assuming the generic relates to the property prevalence, then the simplest meaning would similarly be a threshold on prevalence: $P(F\mid K)>\theta$. @Cohen1999 takes $\theta = 0.5$; that is, \emph{Robins lay eggs} is roughly taken to mean \emph{More than half of (relevant) robins lay eggs}. 
 
-Cohen introduces constraints into the computation of prevalence: $P(F\mid K)$. In particular, prevalence is computed with respect to a \emph{partition set}. 
-For example, the property \emph{lays eggs} induces a set of alternatives that all have to do with procreation (e.g. \emph{gives birth to live young}, \emph{undergoes mitosis}, ...).
-The individuals that enter into the prevalence computation are only those individuals that would satisfy one or another alternative. 
-That is, the only individuals under consideration are the female members of kinds because only the female members can plausibly satisfy one or another of the alternatives.
-The inference that this sort of domain restriction is applied, as well as other constraints posited in the theory, are thought to be a pragmatic inference, though specifying the details of the pragmatics is beyond the scope of Cohen's theory.
-Without a well specified theory of pragmatics, however, we have no general solution to map from property prevalence to truth judgment.
-Conceptual information seems to be behind the pragmatic inference, but how Cohen's and other prevalence-based accounts relate to such knowledge remains obscure [@Carlson1995essay].
-^[However, see @Cohen2004 for a discussion of how his semantic constraints relate to different kinds of generics and different kinds of conceptual representational frameworks found in cognitive science.]
 
 ### Conceptual Accounts of Generics
 
@@ -1717,10 +1737,9 @@ The fact that generics about different properties license different kinds of inf
 -- Books are paperbacks. (failure of the constrast class)
 -- Birds lay eggs and are female vs. Elephants live in Asia and Africa
 --> can use pragmatics to resolve if the property is conjunctive or not. 
--- Women are submissive. (generics + politeness mechanism, some states have lower value than others)
+-- Women are submissive. (Haslanger, 2011; generics + politeness mechanism, some states have lower value than others)
 -- Muslims are terrorists (vs. Mosquitos carry malaria)
-
-
+-- Mary handles the mail from antarctica (predictive propensity; also highlights domain restriction on events)
 
 # Conclusion
 
