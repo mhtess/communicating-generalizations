@@ -311,3 +311,13 @@ Paying $0.40.
 n  = 40 x 3 = 120.
 
 cost = 120* 0.4 = 48 + 9.6 = 57.6
+
+## Interpretation tasks (Listener)
+
+Same items as TJ2.
+
+"wears a bra", "wears a suit" appear with both men and women characters (though only one person subject)
+
+4/24/2017
+- Each subject does all 27 items.
+- 25 * 1.00 + 20% = $30
