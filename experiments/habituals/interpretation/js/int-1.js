@@ -70,7 +70,7 @@ function make_slides(f) {
     name : "subj_info",
     submit : function(e){
       //if (e.preventDefault) e.preventDefault(); // I don't know what this means.
-      exp.subj_data = _.extend(fingerprint.geo, {
+      exp.subj_data = _.extend({
         language : $("#language").val(),
         enjoyment : $("#enjoyment").val(),
         asses : $('input[name="assess"]:checked').val(),
@@ -80,7 +80,7 @@ function make_slides(f) {
         problems: $("#problems").val(),
         fairprice: $("#fairprice").val(),
         comments : $("#comments").val()
-      });
+      }, fingerprint.geo);
       exp.go(); //use exp.go() if and only if there is no "present" data.
     }
   });
