@@ -51,9 +51,9 @@ var logisticFunction = function(y) {
 var model = function(){
 
 	var bs = {
-    intercept: uniform({a: -10, b: 0}),
-    freq: uniform({a: -10, b: 10}),
-    priorMean: uniform({a: -10, b: 10})
+    intercept: uniform({a: -5, b: 0}),
+    freq: uniform({a: -5, b: 5}),
+    priorMean: uniform({a: -5, b: 5})
   }
 
 	var linearFunction = function(xs){
@@ -61,8 +61,6 @@ var model = function(){
      bs.freq * xs.freq +
      bs.priorMean * xs.priorMean;
   };
-
-	var sigma = uniform({a: 0, b: 10});
 
 	var nullDist = Delta({v: -99})
 
@@ -96,13 +94,13 @@ var model = function(){
 		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
 		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
 
-		var meanPriorFreq = expectation(statePrior);
+		var logMeanPriorFreq = Math.log(expectation(statePrior));
 		// displayObj(bs)
 		var regressionSpeaker = cache(function(freq){
 			return Infer({model: function(){
 		  var habitual = flip(Math.exp(bs.intercept));
 		  factor( habitual ?
-				(bs.priorMean*meanPriorFreq + bs.freq*freq) :
+				(bs.priorMean*logMeanPriorFreq + bs.freq*freq) :
 				0
 			)
 		  return habitual ? 1 : 0
@@ -114,7 +112,7 @@ var model = function(){
 
 			var freqData = _.filter(itemData, {roundedRate: freq});
       // display(freqData)
-			var regressionPrediction = regressionSpeaker(freq);
+			var regressionPrediction = regressionSpeaker(Math.log(freq));
       // displayObj(s1prediction)
 
       var logLike = sum(map(function(d){
@@ -132,11 +130,10 @@ var model = function(){
 
 	})
 
-
 	return query
 }
 
-var totalIterations = 10000, lag = 10;
+var totalIterations = 1000000, lag = 100;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 var outfile = 'logLikelihood-habituals-regression-intercept-freq-priorMean-ffPrior2Structured-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
@@ -144,7 +141,7 @@ var posterior = Infer({
   model: model,
   method: "incrementalMH",
   samples: mhiter, burn: burn, lag: lag, verbose: T,
-	verboseLag: totalIterations/20,
+	verboseLag: totalIterations/50,
 	stream: {
 		path: "results/" + outfile,
 		header: [

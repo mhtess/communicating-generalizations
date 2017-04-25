@@ -160,7 +160,7 @@ var model = function(){
 	return query
 }
 
-var totalIterations = 10000, lag = 5;
+var totalIterations = 100000, lag = 10;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 var outfile = 'logLikelihood-habituals-S2-ffPrior2Structured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
