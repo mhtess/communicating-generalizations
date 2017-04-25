@@ -1,4 +1,4 @@
-// time ~/webppl-fork/webppl regression-loglik.wppl --require ../node_modules/utils 1
+// time ~/webppl-fork/webppl regression-hab.wppl --require utils 1
 
 var chain = last(process.argv) // load index as last command line index
 
@@ -15,7 +15,7 @@ var intervals = {
 };
 
 
-var dataPath = "../data/"
+var dataPath = "data/"
 var targetUtterance = "habitual"
 
 var priorFile = dataPath + "friends-and-family-2-trials.csv";
@@ -62,8 +62,6 @@ var model = function(){
      bs.priorMean * xs.priorMean;
   };
 
-	var sigma = uniform({a: 0, b: 10});
-
 	var nullDist = Delta({v: -99})
 
 	foreach(items, function(i){
@@ -98,6 +96,8 @@ var model = function(){
 
 		var meanPriorFreq = expectation(statePrior);
 		// displayObj(bs)
+    query.add(["prior", i, "priorMean","NA", "NA"], meanPriorFreq)
+
 		var regressionSpeaker = cache(function(freq){
 			return Infer({model: function(){
 		  var habitual = flip(Math.exp(bs.intercept));
@@ -110,35 +110,35 @@ var model = function(){
 
 		var observedFrequencies = levels(itemData, "roundedRate");
 
-		var itemLogLike = sum(map(function(freq){
+		foreach(observedFrequencies, function(freq){
 
 			var freqData = _.filter(itemData, {roundedRate: freq});
       // display(freqData)
 			var regressionPrediction = regressionSpeaker(freq);
       // displayObj(s1prediction)
 
-      var logLike = sum(map(function(d){
-        // display(s1prediction.score(d.alignedResponse))
-        return regressionPrediction.score(d.alignedResponse)
-      }, freqData))
+      mapData({data: freqData}, function(d){
+        // display(regressionPrediction.score(d.alignedResponse))
+        observe(regressionPrediction, d.alignedResponse)
+      }, freqData)
 
-      return logLike
+      query.add(["predictive", i, "regression", freqData[0]["time_period"], freq], expectation(regressionPrediction))
 
-		}, observedFrequencies))
+		})
 
-    // display(i + " --> " + itemLogLike)
-
-    query.add(["logLikelihood", i, "regression","NA", "NA"], itemLogLike)
 
 	})
 
+  query.add(["param", "beta", "intercept", "NA", "NA"], bs.intercept)
+  query.add(["param", "beta", "freq", "NA", "NA"], bs.freq)
+  query.add(["param", "beta", "priorMean", "NA", "NA"], bs.priorMean)
 
 	return query
 }
 
-var totalIterations = 10000, lag = 10;
+var totalIterations = 100000, lag = 50;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
-var outfile = 'logLikelihood-habituals-regression-intercept-freq-priorMean-ffPrior2Structured-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'posterior-regression-intercept-freq-priorMean-ffPrior2Structured-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,

@@ -1,0 +1,136 @@
+---
+title: "Model comparison using Log-likelihoods / Bayes Factors"
+output: html_notebook
+---
+```{r}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+```{r}
+library(langcog)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(coda)
+library(knitr)
+library(ggthemes)
+library(rwebppl)
+theme_set(theme_few())
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+betaMean = function(a, b){
+  return ( a / (a + b ))
+}
+
+betaSDev = function(a, b){
+  return( sqrt ( ( a * b) / ( ( a + b ) ^ 2 * (a + b + 1) ) ) ) 
+}
+project.path <- "~/Documents/research/communicating-generalizations/"
+data.path <- "models/habituals/data/"
+model.path <- "models/habituals/model_comparison/"
+```
+
+
+
+```{r}
+# n_chains <- 3
+# n_samples <- 500000
+# burn <- n_samples / 2
+# lag <- 50
+
+
+#model1_prefix <- "logLikelihood-habituals-S2-ffPrior2Structured-silenceAlt-"
+model2_prefix <- "logLikelihood-habituals-S1-ffPrior2Structured-silenceAlt-"
+model1_prefix <- "logLikelihood-habituals-regression-intercept-freq-priorMean-ffPrior2Structured-"
+n_samples <- 10000
+burn <- n_samples / 2
+lag1 <- 10
+lag2 <- 5
+
+# m.samp <- data.frame()
+# for (i in seq(1, n_chains)){
+#   mi <- fread(paste(project.path, model.path,
+#                     "results/",
+#                     model_prefix, n_samples, "_burn", burn, "_lag", lag,
+#                     "_chain", i, ".csv", sep = ""))
+# 
+#   m.samp.i <- mi %>% mutate(chain = i)# %>% get_samples(., num_samples = n_samples - burn)
+#   m.samp <- bind_rows(m.samp, m.samp.i)
+#   print(i)
+# }
+
+i = 1
+
+m.samp.1 <- fread(paste(project.path, model.path,
+                  "results/",
+                  model1_prefix, n_samples, "_burn", burn, "_lag", lag1,
+                  "_chain", i, ".csv", sep = ""))
+
+m.samp.2 <- fread(paste(project.path, model.path,
+                  "results/",
+                  model2_prefix, n_samples, "_burn", burn, "_lag", lag2,
+                  "_chain", i, ".csv", sep = ""))
+
+m.samp.2[is.na(m.samp.2$cat), "cat"] <- "s1"
+
+
+```
+
+
+### Frequency prior parameters (posterior)
+
+```{r fig.width = 8, fig.height = 12}
+m.samp %>% 
+  filter(type == "prior", cat  != "postPred") %>%
+  ggplot(., aes( x = val, fill = cat))+
+  geom_histogram()+
+  facet_grid(item ~ cat, scales = 'free') +
+  theme(strip.text.y = element_text(angle = 0))  
+```
+
+
+### Average log-likelihood by item
+
+```{r}
+m.ll <- bind_rows(
+    m.samp.1 %>% filter(type == "logLikelihood"),
+    m.samp.2 %>% filter(type == "logLikelihood")
+  )
+
+m.ll.item.summary <- m.ll %>%
+  group_by(item, cat) %>%
+  summarize(MAP = estimate_mode(val),
+            cred_upper = hdi_upper(val), cred_lower = hdi_lower(val)) %>%
+  ungroup() %>% 
+  mutate(item = factor(item, levels = item[order(MAP)]))
+
+ggplot(m.ll.item.summary, 
+       aes(x = item, y = MAP, ymin = cred_lower, ymax = cred_upper, fill = cat))+
+  geom_bar(stat = 'identity', position = position_dodge(), alpha = 0.3)+
+  geom_errorbar(position = position_dodge())+
+  theme(axis.text.x = element_text(angle = 90))+
+  coord_flip()
+```
+
+
+```{r}
+m.ll.expectation <- m.ll %>%
+  filter(!(val == -Inf)) %>%
+  group_by(cat) %>%
+  summarize(expval = mean(val))
+```
+
+
+
+
