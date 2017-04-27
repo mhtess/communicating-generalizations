@@ -1,5 +1,5 @@
 ---
-title             : "Communicating generalizations about categories, events, and causes"
+title             : "Communicating generalizations about agents, objects, and events"
 shorttitle        : "Communicating generalizations"
 
 author: 
@@ -98,60 +98,52 @@ If we are starting with habituals and/or doing all 3 kinds of generalizations, w
 
 <!-- Quantitative model, different kinds of generalizations -->
 
-Figuring out that a category tends to have a property, an agent tends to do certain actions, or a cause tends to produce an effect is crucial knowledge in an uncertain world.
+Figuring out that a category tends to have a property, an agent tends to do an action, or a cause tends to produce an effect is crucial knowledge for a cognitive agent.
 The productivity of human thought rests upon generalizations.
-Human beings convey generalizations to each other, a capacity that seems to be lacking in non-human animals. 
-One key difference is that language provides simple and ubiquitous ways to communicate generlizations. 
+We communicate generalizations to each other, something which other animals struggle to accomplish.
+One important difference between human and non-human animals is the cognitive capacity for language.
 
-A generalization gives us a relation between an object and a property: It tells us to predict that property of that object [@HumeTHN].
+A generalization gives us a relation between a category and a property: It tells us to predict that property of that category [@HumeTHN].
 Generalization can then be described as a probability and inductive inference as a probabilistic model [@Tenenbaum2011].
-From a very young age, children make strong inductive inferences from their experience, generalizing to new situations or novel instances of a category [@Dewar2010; @Gelman1986; @Markman1989].
+From a very young age, children make strong inductive inferences from their experience in a way consistent with the Bayesian probability calculus [@Dewar2010; @Gelman1986; @Markman1989].
 
-To communicate generalizations, then, it seems the simplest thing would be to convey the probability.
+If one wished to communicate a generalization then, it seems the more direct way would be to convey the probability corresponding to that generalization. 
 Ironically, humans are very bad at interpreting probabilities directly [@Tversky1974].
-Rather than being a deficit, the difficult we have in understanding numerical descriptions of probability could reflect the flexible adaptivity of language to rely upon shared context to guide interpretation [@Piantadosi2012].
-If that's true, we would expect the language of generalizations to be simple.
+The difficulty we have in understanding numerical descriptions of probability, rather than being a deficit, could reflect the flexible adaptivity of language to rely upon shared context to guide interpretation [@Piantadosi2012].
+If language has evolved in a way to make efficient the kinds of inductive inferences that are central to human cognition, we would expect the language of generalizations to be simple [c.f., @Leslie2008].
 
-Indeed, generalizations in language are often the simplest form of compositional expressions e.g., *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*. 
+Indeed, generalizations in language are often the simplest kind of compositional expressions (e.g., *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*). 
 There are numerous syntactic forms all corresponding to generalizations: "*Dogs* are friendly", "*A library book* should be treated with respect", "*The contemporary foodie* seeks culinary experinces in menu-less restaurants and grandmothers' kitchens" [@Carlson1995; @NickelBlackwell; @sepGenerics].
 Each of these statements predicates a property of a category, but they are not properties that apply only to categories like *Dinosaurs are extinct*. 
-Rather, these statements support generalization to new, unobserved instances.
+Rather, these statements exhibit *genericity*; they support generalization to new, unobserved, concrete instances.
 
-In this paper, we explore how speakers convey generalizations and how listeners interpret them. 
+In this paper, we explore the language of generalizations: How speakers convey generalizations and how listeners interpret them. 
 We describe computational models based on a state-of-the-art language interpretation framework --- the Rational Speech Act theory [@Frank2012; @Goodman2013; @Goodman2016].
 Computational modeling has deepened scientific understanding of complex linguistic phenomena such as politeness [@Yoon2016], hyperbole [@Kao2014], and vagueness [@Lassiter2013]. 
-Until now, however, rational models of language use have focused on statements about *specific* situations: utterances that convey information about a particular entity or event. 
+Until now, however, rational models of communication have focused on statements about *specific* situations: utterances that convey information about a particular entity or event. 
 A formal theory of statements that convey generalizations about entities or events --- statements that extend beyond the here-and-now --- has been heretofore unexplored.
 
-In this paper, we explore three case studies of generalizations: Generalizations about agents, objects, and events. 
-In Section 1, we introduce an information-theoric communicative theory of how generalizations are conveyed in language and flesh out the model's predictions along with some alternative models.
-By doing so, we provide a unified mathematical framework for dealing with agents, objects, and events, casting each as an instance of a category.
+In this paper, we explore three case studies of generalizations in language: Generalizations about agents, objects, and events. 
+In Section 1, we introduce an information-theoric communicative theory of how generalizations are conveyed in language and flesh out the model's predictions alongside alternative models.
+By doing so, we provide a unified mathematical framework for dealing with agents, objects, and events, casting each as a category over which generalization can occur.
 Our model predicts the truth conditions of generalizations should vary with the (A) the probability of an instances having the property and (B) the prior distribution over the property probability (e.g., how likely instances of other categories are to have the property).
-In Section 2, we introduce our empirical paradigm through which we will measure endorsement and interpretation of linguisitic generalizations, examining generalizations about *agents*. 
-In Section 3, we extend our paradigm to generalizations about *events* and experimentally manipulate participants' background knowledge, showing that the theoretical constructs we posit are causally related to endorsement and interpretation of generalizations. 
+In Section 2, we introduce our empirical paradigm through which we will measure endorsement and interpretation of linguisitic generalizations, examining generalizations about *agents* in what is known as *habitual language* (e.g., "Mary smokes cigarettes."). 
+In Section 3, we extend our paradigm to generalizations about *events* (i.e., *causal language* e.g., "Yeast makes bread rise.") and experimentally manipulate participants' background knowledge, showing that prior beliefs about probabilities are causally related to endorsement and interpretation of generalizations.
 In Section 4, we use our paradigm to address long-standing theoretical and empirical puzzles regarding generalizations about *objects*, so-called *generic language*. 
 We show our how model explains three known psychological puzzles surrounding generic language. 
 In all case studies, we provide formal comparison to simpler models and in all cases, find that only our communicative theory explains the patterns of empirical data.
+We conclude with a general discussion about the relationship of our theory to extant theories in the psychology, linguistics, and philosophy of genericity, and highlight the implications for modeling language acquisition, conceptual development, and other avenues of research that this framework opens.
 
 
-the truth conditions of generalizations of events (so called *habitual language*) by manipulating the target propensity (A) while surveying a wide variety of events (which should induce variability in B).
-In Section 3, we manipulate both (A) and (B) while testing the model on generalizations about causes (*causal language*).
-If our theory is truly a theory about communicating generalizations, it should be able to explain the known psychological puzzles surrounding *generic language* (generalizations about categories). 
+<!-- the truth conditions of generalizations of events (so called *habitual language*) by manipulating the target propensity (A) while surveying a wide variety of events (which should induce variability in B). -->
+<!-- In Section 3, we manipulate both (A) and (B) while testing the model on generalizations about causes (*causal language*). -->
+<!-- If our theory is truly a theory about communicating generalizations, it should be able to explain the known psychological puzzles surrounding *generic language* (generalizations about categories).  -->
 
 
-The language of generalizations is so simple that it appears everywhere in human conversation (*Movie theaters are cold.*), pedagogy (*Blickets make the machine go.*), political and scientific discourse (*The President peddles falsehoods.*, *Psychology experiments don’t replicate.*), stereotypes (*Boys are good at math*), motivation (*Big girls eat their broccoli!*), emotion-regulation  (*Accidents happen.*), child-directed (*Mommy works late*) and child-produced speech (*Slides aren't for grown-ups!*), and many other facets of experience [@GelmanEtAl2004; @Gelman2008; @Cimpian2010motivation; @Rhodes2012].
 
 
-Inferences drawn inductively from observational data is but one component of the human capacity for learning generalizable knowledge.
-When properties are difficult to observe (e.g., *cows have four stomachs*) or events statistically unlikely (e.g., *lightning strikes tall objects*), it is important to be able to learn this information through means other than direct observation.
-For abstract, generalizable knowledge to remain in a culture, it must be able to be faithfully transmitted between individuals and across generations [@Tomasello1999].
 
 
-Despite the ubiquity of generalizations in language, the human capacity to generalize from observations has been studied far more extensively in cognitive and developmental psychology [@Nisbett1983; @Heit2000].
-Inductive inferences show complex sensitivites to the kind of observations, and even how those observations came to be observed in the first place. 
-For instance, observing that an indigenous person living on a remote island *is obese* provides considerably less information about the weights of other islanders in comparison to learning that the islander's skin color *is brown* [@Nisbett1983]. 
-Confounded causal evidence can be suddenly become unconfounded when you know the evidence was generated by an intentional agent [@Goodman2009].
-Quantitative modeling has been crucial in explaining how the subtleties of experience relate to subtleties in generalization [@Tenenbaum2006; @Kemp2008].
 <!-- In stark constrast, a computational understanding of communicating generalizations is not well understood at all.  -->
 
 <!-- Gathering data and observing evidence, however, is costly.  -->
@@ -159,20 +151,7 @@ Quantitative modeling has been crucial in explaining how the subtleties of exper
 <!-- A learner cannot form all of her abstract knowledge through direct experience, however. -->
 <!-- Life is only so long, and you can only be in one place at a time. -->
 
-Computational modeling has also made tremendous progress in formalizing how information is transmitted among interlocutors through language [@Goodman2016; @Franke2015].
-As an example, the Rational Speech Act theory of language understanding has had considerable success in providing a formal account of *pragmatic* language phenomena (i.e., interactions between language and context).
-This framework has been used to explain, in precise mathematical terms, how it is that utterances like "some of the kids failed the test" are interpreted to mean "some (but not all) of the kids failed the test" [@Goodman2013], how "I waited a million years to get a table" is interpreted as "I waited a long time and I was annoyed" [@Kao2014], and how "John is tall" can mean John is 5'4" is John if a 12-year-old but will mean John is 6'2" if he is 24-years-old [@Lassiter2015].
-Computational modeling has pushed our understanding of these complex linguistic phenomena, but so far, rational models of language use have focused on *specific* statements: utterances that convey information about a particular entity or situation. 
-A formal theory of statements that convey generalizations about entities or situations ---  statements that extend beyond the here-and-now --- has remained elusive.
 
-There is considerable linguistic evidence that a computational understanding of communicating generalizations is nontrivial.
-Though the language of generalizations is found everywhere and in every language [@Behrens2005; @Carlson1995], the meaning of such linguistic expressions is philosophically puzzling and has resisted precise formalization.
-Intuitively, generalizations should convey something about the propensity or probability of an instance, of a property, or of an event to occur, but exactly what is conveyed is unclear.
-The generalization *Mary smokes cigarettes* seems to suggest a daily-habit, while *Bill writes poems* implies something much weaker, perhaps a poem every few weeks.
-*Drinking moonshine makes you go blind* and so does *staring at the sun*, but neither causal statement tells you to precisely the increased relative risk.
-*Mosquitos carry malaria* is a true statement despite the prevalence of carrying malaria among mosquitos being a just a fraction of 1\%, while *Ducks are female* might seem like a weird thing to say, even though the rate is much higher than the malaria-carrying mosquitos.
-As well, *Ducks lay eggs* is a good generalization, though the rate is the same as *are female*.
-Generalizations, it seems, do not reduce to precise quantitative statements; this is the major stumbling block to providing a formal account of generalizations in language [@Carlson1977; @Leslie2008; @NickelBlackwell].
 
 Empirical work done on category generalizations --- so called *generic language* --- has elucidated another troubling phenomenon.
 <!-- One case study in the language of generalizations is about category generalizations. -->
@@ -260,11 +239,12 @@ In particular, we develop a mathematical model that describes pragmatic reasonin
 We find that this formalism resolves the philosophical and empirical puzzles.
 -->
 
-# Communicating Generalizations
+
+# Formalizing Generalizations
 
 Generalizations are used to make predictions about instances that an agent has yet to experience [@HumeTHN].
-To form a generalization about a class $k$ (e.g., a category, an event, or a causal force), an observer must be able to individuate an exemplar or instance $x$ as belonging to the class $k$.
-The linguistic expression of this manifests in utterances such as "$x$ is a $k$" or "this $k$ ..."
+To form a generalization about a category or kind $k$, an observer must be able to individuate an exemplar or instance $x$ as belonging to the category.
+The linguistic expression of such an individuation would manifest in utterances such as "$x$ is a $k$" or "this $k$ ..."
 To generalize a feature $f$ to that class, it is also necessary to be able to determine if the particular has the feature.
 That is, a speaker must be able to say "This $k$ (i.e., $x$) has $f$".
 We call this kind of statement a *particular*.
@@ -272,7 +252,9 @@ We call this kind of statement a *particular*.
 ```{r tabgenPart, results="asis"}
 df.tab <- data.frame(
   Generalization = c("Dogs are friendly", "John smokes", "Drinking moonshine makes you go blind"),
-  #x = c("an instance of K in space", "an instance of K in time", "an instance of a ")
+  #x = c("an instance of K in space", "an instance of K in time", "an instance of a "),
+  "Generalization over" = c("Object", "Agent", "Event"),
+  "Linguistic construct" = c("Generic", "Habitual", "Causal"),
   x = c("a dog", "an instance of John", "an instance of a person drinking moonshine"),
   k = c("DOGS", "JOHN", "DRINKING MOONSHINE"),
   f = c("is friendly", "is smoking / smoked at time t", "caused person to go blind")
@@ -290,50 +272,95 @@ apa_table(df.tab,
 ```
 
 
-Suppose we observe instances $\{x_1, x_2, ..., x_n\}$ of class $k$ and some number of them have feature $f$: What do we learn about possible future instances of $x_{n+1}$, particularly with respect to $k$?
-For features among entities of a category or an effect following a cause, the relevant propensity $h$ is a probability $h = P(x \in f \mid x \in k)$^[
-This can also be called the *prevalence* of $f$ among $k$.
+Suppose we observe instances $\{x_1, x_2, ..., x_n\}$ of category $k$ and some number of them have feature $f$: What do we learn about possible future instances of $x_{n+1}$, particularly with respect to $k$?
+For properties among instances of a category, we can describe an inductive inference by a probability $h$ $h = P(x \in f \mid x \in k)$^[
+With a frequentist interpretation, this can be thought of as the *prevalence* of $f$ among $k$.
 ].
 Here, $x$ is an object.
-For a behavior exhibited by a entity, the relevant propensity is a rate --- how frequently (in time) does $x \in f$ occur --- which can be described as a probability integral: $h = \int_{t} P(x \in f_t \mid x \in k_t) \diff t$
+For a behavior exhibited by an agent, the inference concerns a rate --- how frequently (in time) does $x \in f$ occur --- which can be described as a probability integral: $h = \int_{t} P(x \in f_t \mid x \in k_t) \diff t$
 Here, $x$ is a instance.
-We can treat propensity as an unknown latent cause of $f$ in $k$, and use Bayesian inference to learn from our observations.
+A Bayesian agent will have prior beliefs about the probability (potentially an uninformed prior) and uses Bayesian inference to learn about the probability from her observations.
 
 <!-- Suppose *a priori* we have no informative beliefs about the propensity (i.e., $P(x \in f \mid x \in k) \sim \text{Uniform}(0, 1)$). -->
-Observing some number of positive instances of $k$ with $f$ will update a prior belief distribution (perhaps in an uninformed prior) into a posterior belief distribution.
+Observing some number of positive instances of $k$ with $f$ will update a prior belief distribution into a posterior belief distribution.
 As a concrete example, consider the feature *is friendly* ($f$) for the category *dog* ($k$): $h = P(x \in \{\text{is friendly}\} \mid x \in \{\text{is a dog}\})$.
-We encounter some individual dogs, note how many of them were friendly ($d$), and form a posterior belief distribution about the friendliness of dogs.
+If an agent were to encounter some number of individual dogs, note how many of them were friendly ($d$), she could form a posterior belief distribution about the friendliness of dogs.
 
 $$
 P(h \mid d) = \frac{P(d \mid h) \cdot P(h)}{\int_{h'}P(d \mid h') \cdot P(h')}
 $$
 Our ability to use this updated belief $P(h \mid d)$ in order to make predictions about unobserved instances is a computational description of generalization [e.g., @Tenenbaum2006; @Tenenbaum2011].
-What if we wanted to communicate this belief distribution?
+
+The human capacity to generalize from observations has been studied extensively in cognitive and developmental psychology [@Nisbett1983; @Heit2000].
+Inductive inferences show complex sensitivites to the kind of observations, and even how those observations came to be observed in the first place.
+For instance, observing that an indigenous person living on a remote island *is obese* provides considerably less information about the weights of other islanders in comparison to learning that the islander's skin color *is brown* [@Nisbett1983].
+Confounded causal evidence can be suddenly become unconfounded when you know the evidence was generated by an intentional agent [@Goodman2009].
+Quantitative modeling has been crucial in explaining how the subtleties of experience relate to subtleties in generalization [@Tenenbaum2006; @Kemp2008].
+
+There are strong limitations to this line of research, however.
+Inferences drawn inductively from observational data is but one component of the human capacity for learning generalizable knowledge.
+When properties are difficult to observe (e.g., *cows have four stomachs*) or events statistically unlikely (e.g., *lightning strikes tall objects*), it is important to be able to learn this information through means other than direct observation.
+For abstract, generalizable knowledge to remain in a culture, it must be able to be faithfully transmitted between individuals and across generations [@Tomasello1999].
+
+
+# Communicating Generalizations
+
+Understanding language depends upon assumptions interlocutors make about each other and can exhibit a complex sensitivity to context [@Clark1996; @Grice1975; @Levinson2000].
+Though once viewed as a wastebasket in which to dump unexplained loose ends in service of more rigorous formal analysis, *pragmatics* --- or language understanding in context --- has seen a rise in suitable formal frameworks that connect closely with behavioral data [@Franke2015].
+One dominant framework --- the Rational Speech Act theory --- has had considerable success in providing a formal account of *pragmatic* language phenomena [i.e., interactions between language and context; @Goodman2016]
+This framework has been used to explain, in precise mathematical terms, how it is that utterances like "some of the kids failed the test" are interpreted to mean "some (but not all) of the kids failed the test" [@Goodman2013], how "I waited a million years to get a table" is interpreted as "I waited a long time and I was annoyed" [@Kao2014], how "John is tall" can mean John is 5'4" is John if a 12-year-old but will mean John is 6'2" if he is 24-years-old [@Lassiter2015], and how "Your talk was fine" can be a polite way of saying your talk wasn't fine [@Yoon2016]. 
+Computational modeling has pushed our understanding of these complex linguistic phenomena, but so far, rational models of language use have focused on *specific* statements: utterances that convey information about a particular entity or situation. 
+A formal theory of statements that convey generalizations about entities or situations ---  statements that extend beyond the here-and-now --- has remained elusive.
+
+Formalizing the meaning of linguistic expressions requires specifying *truth conditions*.
 Using the tools of formal semantics, we need to specify a truth function: A function from states of the world to truth-values. 
-A simple meaning then would be a threshold on this posterior probability: $\denote{u_{generalization}}(h, \theta): \{ h: h > \theta\}$.
+This kind of machinery is used to formalize the intuition that utterances can truthfully apply to some possible worlds and would be false of others.
+A simple meaning function would be a threshold on an agent's posterior probability: $\denote{u_{generalization}}(h, \theta): \{ h: h > \theta\}$.
 $\denote{u_{generalization}}$ represents the semantic meaning of a statement conveying a generalization.
 Following convention in formal semantics, we treat this as a function, applied to variables $h$ (a probability or rate) and $\theta$ (a threshold).
 This function returns the sets of worlds that are consistent with $h > \theta$.
 
-Unfortunately, no fixed values of $\theta$ would suffice: *Bills writes poems* might true if Bill does it a few times a year, while we might be hesitant to say *Mary smokes cigarettes* if she only does it once every few months.
-*Ducks lay eggs* is true despite only the female ducks laying eggs, while *Ducks are female* is strange to say (even though only the females are female).
-What if we leave the $\theta$ underspecified in the semantics?
-That is, what would a listener believe if she drew $\theta$ from an uninformed prior belief distribution: $P(\theta)$?^[
-Previous attempts have been made to salvage this threshold semantics, using a semantic a technique called "domain restriction", wherein the scope of generalization is restricted to a smaller subset of entities or instances [e.g., "only female ducks"; @Cohen1999]. 
-Though effective at dealing with at least some of these semantic puzzles, this approach leaves unresolved why the domain should be restricted in some cases and not others.
-We return to this more fully in the General Discussion.
-]
+Unfortunately, a fixed value of $\theta$ seems unlikely.
+The generalization *Mary smokes cigarettes* suggests a daily-habit, while *Bill writes poems* implies something much weaker, perhaps a poem every few weeks.
+*Drinking moonshine makes you go blind* and so does *staring at the sun*, but neither causal statement tells you to precisely the increased relative risk.
+*Mosquitos carry malaria* is a true statement despite the prevalence of carrying malaria among mosquitos being a just a fraction of 1\%, while *Ducks are female* might seem like a weird thing to say, even though the rate is much higher than the malaria-carrying mosquitos.
+Finally, *Ducks lay eggs* is a good generalization, though the rate is the same as *are female*.
+Generalizations, it seems, do not reduce to precise quantitative statements; this is the major stumbling block to providing a formal account of generalizations in language [@Carlson1977; @Leslie2008; @NickelBlackwell].
 
+
+
+<!-- *Bills writes poems* might true if Bill does it a few times a year, while we might be hesitant to say *Mary smokes cigarettes* if she only does it once every few months. -->
+<!-- *Ducks lay eggs* is true despite only the female ducks laying eggs, while *Ducks are female* is strange to say (even though only the females are female). -->
+
+<!-- The language of generalizations is so simple that it appears everywhere in human conversation (*Movie theaters are cold.*), pedagogy (*The blicket makes the machine play music.*), political and scientific discourse (*The President peddles falsehoods.*, *Psychology experiments don’t replicate.*), stereotypes (*Boys are good at math*), motivation (*Big girls eat their broccoli!*), emotion-regulation  (*Accidents happen.*), child-directed (*Mommy works late*) and child-produced speech (*Slides aren't for grown-ups!*), and many other facets of experience [@GelmanEtAl2004; @Gelman2008; @Cimpian2010motivation; @Rhodes2012]. -->
+
+<!-- Though the language of generalizations is found everywhere and in every language [@Behrens2005; @Carlson1995], the meaning of such linguistic expressions is philosophically puzzling and has resisted precise formalization. -->
+<!-- Intuitively, generalizations should convey something about the probability of an instance of the category to have a property, but exactly what is conveyed is unclear. -->
+
+We propose that meaning of a lingusitic generalization is simple but underspecified.
+That is, we adopt a threshold semantics as described above, but imagine that $\theta$ is not a fixed property of language.
+In this line of thinking, listeners essentially infer thresholds (i.e., meanings) in context.
 We can formalize this hypothesis with a "literal listener" model from the Rational Speech Act framework [@Frank2012; @Goodman2013; @Goodman2016].
+
+<!-- What if we leave the $\theta$ underspecified in the semantics? -->
+<!-- That is, what would a listener believe if she drew $\theta$ from an uninformed prior belief distribution: $P(\theta)$?^[ -->
+<!-- Previous attempts have been made to salvage this threshold semantics, using a semantic a technique called "domain restriction", wherein the scope of generalization is restricted to a smaller subset of entities or instances [e.g., "only female ducks"; @Cohen1999].  -->
+<!-- Though effective at dealing with at least some of these semantic puzzles, this approach leaves unresolved why the domain should be restricted in some cases and not others. -->
+<!-- We return to this more fully in the General Discussion. -->
+<!-- ] -->
+
+[MHT: talk about soft semantics here?]
 
 \begin{eqnarray}
 L_{0}(h, \theta \mid u) &\propto& {\delta_{\denote{u}(h, \theta)} \cdot P(h) \cdot P(\theta)} \label{eq:L0}
 \end{eqnarray}
 
 The $\delta_{\denote{u}(h, \theta)}$ likelihood is the Kronecker delta function returning $1$ for states $h$ compatible with utterance $u$ and $0$ otherwise. 
-For the case of our semantics for generalizations, these are degrees of propensity $h$ that are greater than the semantic threshold $\theta$.
-The threshold $\theta$ is assumed to be drawn by an uninformative prior distribution, defined on the same scale as the propensity $h$: $\theta \sim \text{Uniform}(0, 1)$.
-Finally, the prior distribution $P(h)$ is a distribution over the degrees of propensity. 
+For the case of our semantics for generalizations, these are degrees of probability $h$ that are greater than the semantic threshold $\theta$.
+The threshold $\theta$ is assumed to be drawn by an uninformative prior distribution, defined on the same scale as the probability $h$: $\theta \sim \text{Uniform}(0, 1)$.^[
+Though it's plausible that different thresholds could be learned for different domains, we assume an uninformed prior distribution in our model to show how background knowledge about how the world works drives inferences.
+]
+Finally, the prior distribution $P(h)$ is a distribution over the degrees of probability.
 The particular form of the prior plausibly depends upon the kind of property or event in question and could be structured as a result of deeper conceptual knowledge about properties and events [cf., @Griffiths2005; @Tenenabum2006; @Kemp2008].
 This is a simple Bayesian model of interpreting a statement conveying a generalization.
 
@@ -361,14 +388,15 @@ $U(u; k) = {\mathbb E}_{h\sim P_{k}} \ln{ \int_{\theta} L_0(h, \theta \mid u)}  
 <!-- $S_1$ thus seeks to minimize the surprisal of $s$ given $u$ for the naive listener, while bearing in the mind the utterance cost $C(u)$. -->
 
 The proportionality in Eq. \ref{eq:S1} implies normalization over a set of alternative utterances.
-Because we intend $S_1$ to be a model of felicity judgments, we consider only the possibility of staying quiet in addition to saying the generalization as utterances [@Degen2014]. 
+In this paper, we aim to account for endorsements of generalizations using $S_1$.
+As such, we consider as an alternative only the possibility of staying quiet in addition to saying the generalization; the model can then be interpreted as a model of felicity judgments [@Degen2014]. 
 Again, the generalization is a threshold function: $\denote{u_{generalization}}(h, \theta)=\{h: h > \theta \}$.
 The silent or \emph{null} utterance alternative carries no information (i.e., $\denote{u_{silence}}(h, \theta) = \{h\}$) and produces a posterior distribution in the listener identical with the prior.^[
 This alternative can be realized in at least two other ways: the speaker could have said the negation of the utterance (i.e., *The generalization is not true.*) or the negative generalization (i.e., *The opposite is true.*, e.g., *Ks do not have F*).
 All results reported are similar for these two alternatives, and we use the alternative of the *null* utterance for simplicity.
 ]
-We assume no utterance cost between these two alternatives: $C(u_{generalization}) = C(u_{silence})$.
-We implemented this model in the probabilisitic programming language WebPPL [@dippl], and a complete, runable version of the modelcan be found at \url{http://forestdb.org/models/generics.html}
+For model simplicity, we assume no difference in utterance cost between these two alternatives: $C(u_{generalization}) = C(u_{silence})$.
+This model is implemented in the probabilisitic programming language WebPPL [@dippl], and a complete, runable version of the model can be found at \url{http://forestdb.org/models/generics.html}
 
 ## Model simulations
 
