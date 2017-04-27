@@ -98,16 +98,54 @@ If we are starting with habituals and/or doing all 3 kinds of generalizations, w
 
 <!-- Quantitative model, different kinds of generalizations -->
 
-Figuring out that a category tends to have a property, an entity tends to exhibit a behavior, or a cause tends to produce an effect is crucial knowledge in an uncertain world.
+Figuring out that a category tends to have a property, an agent tends to do certain actions, or a cause tends to produce an effect is crucial knowledge in an uncertain world.
 The productivity of human thought rests upon generalizations.
+Human beings convey generalizations to each other, a capacity that seems to be lacking in non-human animals. 
+One key difference is that language provides simple and ubiquitous ways to communicate generlizations. 
+
+A generalization gives us a relation between an object and a property: It tells us to predict that property of that object [@HumeTHN].
+Generalization can then be described as a probability and inductive inference as a probabilistic model [@Tenenbaum2011].
 From a very young age, children make strong inductive inferences from their experience, generalizing to new situations or novel instances of a category [@Dewar2010; @Gelman1986; @Markman1989].
+
+To communicate generalizations, then, it seems the simplest thing would be to convey the probability.
+Ironically, humans are very bad at interpreting probabilities directly [@Tversky1974].
+Rather than being a deficit, the difficult we have in understanding numerical descriptions of probability could reflect the flexible adaptivity of language to rely upon shared context to guide interpretation [@Piantadosi2012].
+If that's true, we would expect the language of generalizations to be simple.
+
+Indeed, generalizations in language are often the simplest form of compositional expressions e.g., *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*. 
+There are numerous syntactic forms all corresponding to generalizations: "*Dogs* are friendly", "*A library book* should be treated with respect", "*The contemporary foodie* seeks culinary experinces in menu-less restaurants and grandmothers' kitchens" [@Carlson1995; @NickelBlackwell; @sepGenerics].
+Each of these statements predicates a property of a category, but they are not properties that apply only to categories like *Dinosaurs are extinct*. 
+Rather, these statements support generalization to new, unobserved instances.
+
+In this paper, we explore how speakers convey generalizations and how listeners interpret them. 
+We describe computational models based on a state-of-the-art language interpretation framework --- the Rational Speech Act theory [@Frank2012; @Goodman2013; @Goodman2016].
+Computational modeling has deepened scientific understanding of complex linguistic phenomena such as politeness [@Yoon2016], hyperbole [@Kao2014], and vagueness [@Lassiter2013]. 
+Until now, however, rational models of language use have focused on statements about *specific* situations: utterances that convey information about a particular entity or event. 
+A formal theory of statements that convey generalizations about entities or events --- statements that extend beyond the here-and-now --- has been heretofore unexplored.
+
+In this paper, we explore three case studies of generalizations: Generalizations about agents, objects, and events. 
+In Section 1, we introduce an information-theoric communicative theory of how generalizations are conveyed in language and flesh out the model's predictions along with some alternative models.
+By doing so, we provide a unified mathematical framework for dealing with agents, objects, and events, casting each as an instance of a category.
+Our model predicts the truth conditions of generalizations should vary with the (A) the probability of an instances having the property and (B) the prior distribution over the property probability (e.g., how likely instances of other categories are to have the property).
+In Section 2, we introduce our empirical paradigm through which we will measure endorsement and interpretation of linguisitic generalizations, examining generalizations about *agents*. 
+In Section 3, we extend our paradigm to generalizations about *events* and experimentally manipulate participants' background knowledge, showing that the theoretical constructs we posit are causally related to endorsement and interpretation of generalizations. 
+In Section 4, we use our paradigm to address long-standing theoretical and empirical puzzles regarding generalizations about *objects*, so-called *generic language*. 
+We show our how model explains three known psychological puzzles surrounding generic language. 
+In all case studies, we provide formal comparison to simpler models and in all cases, find that only our communicative theory explains the patterns of empirical data.
+
+
+the truth conditions of generalizations of events (so called *habitual language*) by manipulating the target propensity (A) while surveying a wide variety of events (which should induce variability in B).
+In Section 3, we manipulate both (A) and (B) while testing the model on generalizations about causes (*causal language*).
+If our theory is truly a theory about communicating generalizations, it should be able to explain the known psychological puzzles surrounding *generic language* (generalizations about categories). 
+
+
+The language of generalizations is so simple that it appears everywhere in human conversation (*Movie theaters are cold.*), pedagogy (*Blickets make the machine go.*), political and scientific discourse (*The President peddles falsehoods.*, *Psychology experiments don’t replicate.*), stereotypes (*Boys are good at math*), motivation (*Big girls eat their broccoli!*), emotion-regulation  (*Accidents happen.*), child-directed (*Mommy works late*) and child-produced speech (*Slides aren't for grown-ups!*), and many other facets of experience [@GelmanEtAl2004; @Gelman2008; @Cimpian2010motivation; @Rhodes2012].
+
+
 Inferences drawn inductively from observational data is but one component of the human capacity for learning generalizable knowledge.
 When properties are difficult to observe (e.g., *cows have four stomachs*) or events statistically unlikely (e.g., *lightning strikes tall objects*), it is important to be able to learn this information through means other than direct observation.
 For abstract, generalizable knowledge to remain in a culture, it must be able to be faithfully transmitted between individuals and across generations [@Tomasello1999].
 
-Indeed, language provides simple ways to communicate generalizations: *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*. 
-Generalizations are among the easiest forms of compositional linguistic expression and appear early in development. 
-The language is so simple that it appears everywhere in human conversation (*Movie theaters are cold.*), pedagogy (*Blickets make the machine go.*), political and scientific discourse (*The President peddles falsehoods.*, *Psychology experiments don’t replicate.*), stereotypes (*Boys are good at math*), motivation (*Big girls eat their broccoli!*), emotion-regulation  (*Accidents happen.*), child-directed (*Mommy works late*) and child-produced speech (*Slides aren't for grown-ups!*), and many other facets of experience [@GelmanEtAl2004; @Gelman2008; @Cimpian2010motivation; @Rhodes2012].
 
 Despite the ubiquity of generalizations in language, the human capacity to generalize from observations has been studied far more extensively in cognitive and developmental psychology [@Nisbett1983; @Heit2000].
 Inductive inferences show complex sensitivites to the kind of observations, and even how those observations came to be observed in the first place. 
@@ -154,13 +192,6 @@ We take as a starting point the idea that the core meaning of a linguistic gener
 We extend a rational model of communication --- the Rational Speech Act theory --- to be able to understand general statements that extend beyond the here-and-now.
 We provide a number of stringest tests of this theory to explain generalizations about categories, events, and causal forces. 
 
-In Section 1, we introduce an information-theoric communicative theory of how generalizations are conveyed in language and flesh out the model's predictions.
-Our model predicts the truth conditions of generalizations should vary with the (A) the propensity of the target to exhibit the feature (e.g., how often Bill smokes) and (B) the prior distribution over the feature propensity (e.g., how often other people smoke).
-In Section 2, we interrogate the truth conditions of generalizations of events (so called *habitual language*) by manipulating the target propensity (A) while surveying a wide variety of events (which should induce variability in B).
-In Section 3, we manipulate both (A) and (B) while testing the model on generalizations about causes (*causal language*).
-If our theory is truly a theory about communicating generalizations, it should be able to explain the known psychological puzzles surrounding *generic language* (generalizations about categories). 
-In Section 4, we show our how model explains three known psychological puzzles surrounding generic language. 
-In all cases, we provide formal comparison to simpler models and in all cases, find that only our communicative theory with an underspecified meaning explains the patterns of empirical data.
 
 <!-- These three phenomena---flexible truth, strong interpretations, and evidence exaggeration---have confounded all formal models aimed to capture the meaning of generalizations in language. -->
 <!-- Informal theories have argued that the nature of concepts and their relations are inextricably tied to their linguistic expression [@Leslie2007; @Prasada2013]. -->
@@ -912,8 +943,8 @@ The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/exp
 \subsection{Results}
 
 There is a clear and consistent negative effect of preventative information on endorsements for the habitual sentence (Figure \ref{fig:tj3}, middle; blue points).
-When collapsing across items and subjecting the data to a generalized mixed-effects model with random by-participant effects of intercept and random by-item effects of intercept and conditions, we find evidence for a small effect of \emph{enabling} conditions on endorsements (M =  0.89; 95\% Bootstrapped CI [0.88, 0.91]) as compared to baseline (M = 0.85 [0.83, 0.87]) [$\beta = 0.42; SE = 0.15; z = 2.8$]%; p = 0.005$]
-, and a large effect of \emph{preventative} conditions on endorsements (M = 0.29 [0.26, 0.31]) [$ \beta = -3.22; SE = 0.21; z = -15.2$].%; p < 0.001$]. 
+When collapsing across items and subjecting the data to a generalized mixed-effects model with random by-participant effects of intercept and random by-item effects of intercept and conditions, we find evidence for a small effect of \emph{enabling} conditions on endorsements (M =  0.89; 95\% Bootstrapped CI [0.88, 0.91]) as compared to baseline (M = 0.85 [0.83, 0.87]) [$\beta = 0.42; SE = 0.15; z = 2.8$]
+, and a large effect of \emph{preventative} conditions on endorsements (M = 0.29 [0.26, 0.31]) [$\beta = -3.22; SE = 0.21; z = -15.2$]. 
 <!-- %\mht{should I add points from Expt. 2 to left-most scatter, or maybe there is a better plot?} -->
 
 We use the mean predicted log frequency from Expt.~3a as the input to the speaker $S_2$ model to predict the felicity judgments measured in Expt.~3b.
@@ -927,7 +958,11 @@ This may be due, in part, to an effect of the experimental context on participan
 in this experiment the overall population of frequencies is much lower (both because we selected moderate frequencies from Expt.~2 and because of the preventative information) and participants may infer that the experimenter believes this to be a representative range and adjust judgments accordingly. Future investigation into this issue is warranted.
 
 
+## Discussion
 
+So far, we have seen that our computational model endorses and interprets statements that communicate generalizations about events in a way compr
+
+The model decides if a habitual sentence is a pragmatically useful way to describe a person’s behavior, taking into account the listener’s prior beliefs about the action—how common it is and the likely frequency (mea- sured in Expt. 1). We validated this model by eliciting felicity judgments for habitual sentences covering diverse activities with a wide range of experimentally manipulated frequencies of action (Expt. 2). We further investigated the nature of the underlying “propensity” scale by introducing enabling and disabling evidence, measuring the predicted future frequency (Expt. 3a) and using that, with the model, to predict the felic- ity of habitual sentences (Expt. 3b). To our knowledge, the experiments presented here are first empirical investigations into the truth conditions of habitual sentences and the first test of a formal model of habitual language.
 
 # Communicating generalizations about causes
 
@@ -1536,8 +1571,6 @@ When we consider the acquisition problem, there are two aspects of meaning that 
 If there is no fixed value of the threshold, then a uniform prior over the threshold in the truth-functional threshold semantics is mathematically equivalent to a *soft semantics* wherein the degree to which the utterance is true is *the degree itself*, normalized by the prior distribution over the degree (i.e., the comparison class). 
 
 $$
-\text{what is the math to show here?} \\
-
 \int_{0}^{1} \delta_{p > \theta} \diff \theta =  p
 $$
 
