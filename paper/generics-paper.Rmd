@@ -1071,14 +1071,23 @@ in this experiment the overall population of frequencies is much lower (both bec
 
 So far, we have seen that our computational model endorses and interprets statements that communicate generalizations about events in a way compr
 
-The model decides if a habitual sentence is a pragmatically useful way to describe a person’s behavior, taking into account the listener’s prior beliefs about the action—how common it is and the likely frequency (mea- sured in Expt. 1). We validated this model by eliciting felicity judgments for habitual sentences covering diverse activities with a wide range of experimentally manipulated frequencies of action (Expt. 2). We further investigated the nature of the underlying “propensity” scale by introducing enabling and disabling evidence, measuring the predicted future frequency (Expt. 3a) and using that, with the model, to predict the felic- ity of habitual sentences (Expt. 3b). To our knowledge, the experiments presented here are first empirical investigations into the truth conditions of habitual sentences and the first test of a formal model of habitual language.
+The model decides if a habitual sentence is a pragmatically useful way to describe a person’s behavior, taking into account the listener’s prior beliefs about the action—how common it is and the likely frequency (measured in Expt. 1). We validated this model by eliciting felicity judgments for habitual sentences covering diverse activities with a wide range of experimentally manipulated frequencies of action (Expt. 2). We further investigated the nature of the underlying “propensity” scale by introducing enabling and disabling evidence, measuring the predicted future frequency (Expt. 3a) and using that, with the model, to predict the felic- ity of habitual sentences (Expt. 3b). To our knowledge, the experiments presented here are first empirical investigations into the truth conditions of habitual sentences and the first test of a formal model of habitual language.
 
 # Communicating Generalizations About Causes
 
+Leraning that one event consistently tends to result in another event serves the fondation building an intuitive theory of causailty.
+Communicating generalizations about causally related events is potentially highly useful because no one individual can run all the experiments that she wants to run in a life time. 
+It's useful to divide labor and have some members research which modifications to the food preparation procedure are good modifications while others look into different ways of cutting stone. 
 
 
+Our framework for communicating generalizations makes predictions about statements conveying genericty about a category of causal events. 
+In this domain, an instance of the category is a single causal event (e.g., adding a particular amount of a particular kind of yeast to an actual at a particular time of the day). 
+@Gerstenberg
+The study of *elemental causal induction* is itself very subtle, depending on an observer's background theory of causality. [@Griffiths2005; @Schulz].
 
-
+We design this set of experiments with the goal of showing that:
+(1) background knowledge that gives rise to the prevalence priors are causally related to the interpretation and endorsement of causals
+(2) abstract domain theories influence interpretation and endorsement of causals via the prevalence prior.
 
 
 
@@ -1818,6 +1827,8 @@ Further, since prevalence is a probability, our model can take information conve
 
 ## Implications for Conceptual Structure
 
+-- add tomasello about learning about how to take turns, as a generalization about an event type which is the event of how the game is supposed to be played
+
 Previous psychological and philosophical work on generics has looked beyond prevalence and focused on conceptual distinctions and relations [@Gelman2003; @Prasada2013; @Leslie2007; @Leslie2008]. 
 Prasada has argued for a distinction between \emph{characteristic} properties (e.g.~\emph{Diapers are absorbent.}) and \emph{statistical} properties (e.g.~\emph{Diapers are white.}).
 Leslie suggests information that is striking (e.g.~\emph{Tigers eat people.}) is useful and thus permitted to be a generic.
@@ -1903,6 +1914,7 @@ The fact that generics about different properties license different kinds of inf
 -- Women are submissive. (Haslanger, 2011; generics + politeness mechanism, some states have lower value than others)
 -- Muslims are terrorists (vs. Mosquitos carry malaria)
 -- Mary handles the mail from antarctica (predictive propensity; also highlights domain restriction on events)
+- Glass breaks when struck. (so-called "disposition", but here: a generalization about the event of a glass being struck [already we are domain restricted])
 
 # Conclusion
 
