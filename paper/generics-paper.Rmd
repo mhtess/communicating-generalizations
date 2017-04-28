@@ -479,6 +479,20 @@ But since we don't know *a priori* what the threshold is likely to be, each of t
 The posterior distribution on probabilities or states of the world will favor higher probabilities (because they pass more thresholds), but will still include probabilities that are quite low [though they are *a posteriori* unlikely; see Figure \ref{fig:simluations} ]. 
 Speakers, thus, will produce generalizations with some probability in each state of the world, though the speaker will say the generalization more often when the propensities associated with the states of the world are higher [see Figure \ref{fig:simluations}].
 
+- Figure
+  - Subfigure 1 [width = 0.2] (Uniform priors) [two rows, left subfigure]
+    -- Basic L0 posteriors on degrees for uncertain, fixed at 0 and fixed at 0.5
+    -- Basic S1 posteriors on utterances, for prevalence 0 - 1 (and for fixed thresholds)
+  - Subfigure 2 [width = 0.8] (L0 vs. L1 lifted vs. L1 unlifted x 4 priors x {speaker, listener} ) [model as color, lty; priors as columns x {speaker, listeners} as rows] 
+    -- priors = [uniform, n-shaped, u-shaped, mixture model / maybe put more in appendix: rare, accidental, female, eggs]
+    
+<!--
+mht: is it possible to construct priors in causals that would reflect the qualitative prediction shown here?
+-->
+
+
+
+
 ```{r simluations, eval = T, cache = T}
 
 l0.model <- '
@@ -1059,7 +1073,28 @@ So far, we have seen that our computational model endorses and interprets statem
 
 The model decides if a habitual sentence is a pragmatically useful way to describe a person’s behavior, taking into account the listener’s prior beliefs about the action—how common it is and the likely frequency (mea- sured in Expt. 1). We validated this model by eliciting felicity judgments for habitual sentences covering diverse activities with a wide range of experimentally manipulated frequencies of action (Expt. 2). We further investigated the nature of the underlying “propensity” scale by introducing enabling and disabling evidence, measuring the predicted future frequency (Expt. 3a) and using that, with the model, to predict the felic- ity of habitual sentences (Expt. 3b). To our knowledge, the experiments presented here are first empirical investigations into the truth conditions of habitual sentences and the first test of a formal model of habitual language.
 
-# Communicating generalizations about causes
+# Communicating Generalizations About Causes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Communicating generalizations about categories
 
