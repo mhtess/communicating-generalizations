@@ -1079,7 +1079,6 @@ Leraning that one event consistently tends to result in another event serves the
 Communicating generalizations about causally related events is potentially highly useful because no one individual can run all the experiments that she wants to run in a life time. 
 It's useful to divide labor and have some members research which modifications to the food preparation procedure are good modifications while others look into different ways of cutting stone. 
 
-
 Our framework for communicating generalizations makes predictions about statements conveying genericty about a category of causal events. 
 In this domain, an instance of the category is a single causal event (e.g., adding a particular amount of a particular kind of yeast to an actual at a particular time of the day). 
 @Gerstenberg
@@ -1088,9 +1087,56 @@ The study of *elemental causal induction* is itself very subtle, depending on an
 We design this set of experiments with the goal of showing that:
 (1) background knowledge that gives rise to the prevalence priors are causally related to the interpretation and endorsement of causals
 (2) abstract domain theories influence interpretation and endorsement of causals via the prevalence prior.
+Also, by designing the experiments in the domain of causal language, we also demonstrate the generality of our theory of communicating generalizations.
+
+## Method
+
+### Procedure
+
+Participants read told that they are an astronaut-scientist on a distant planet trying to figure out how some system works (e.g., how to make a certain kind of animal more alert). They are told:
+
+\begin{quotation}
+You are an astronaut-scientist exploring a distant planet. 
+On this planet, there are animals called  (e.g., daiths) and your team of scientists wants to figure out what makes daiths's hair turn brown. 
+Your team runs experiments trying to make daiths's hair turn brown with different chemical compounds. 
+The results are shown below:
+\end{quotation}
+
+Participants then must click a button to show the results of the experiments.
+Experiment results appear one at a time (upon a click), and are described verbally (e.g., The team tested Food A on 100 daiths. 30 of them were made more alert.) as well as put into a table showing the number of successes per number of attempts (always 100 per experiment). 
+Eleven "experiments" are shown, though one of the experiments had their results misplaced so they cannot report on the results at that point.
+
+Participants are assigned to one of three conditions: (a) prior / manipulation check; (b) endorsement; or (c) interpretation. 
+We will describe each of those, and then discuss the materials in more detail.
+
+### Conditions
+
+#### Prior / manipulation check
+
+We do not assume that the frequencies that are shown in the experiment are directly encoded as participants' prior.
 
 
+#### Endorsement
 
+#### Interpretation
+
+### Materials 
+
+
+The kind of causal events in question were selected to correspond roughly to different positions in a theoretically meaningful space defined by the model.
+Research in elemental causal induction suggests people use causal models that correspond to a mixture probability distributions, where one component of the distribution is a consequence to the intrinsic causal force while the other component is a result of some extrinsic background cause.
+So we designed materials that corresponded to domains where various parameters of that mixture model could be manipulated. 
+
+A second dimension of manipulation 
+
+
+Participants 
+
+<!-- The different kinds of system are described in more detail below. -->
+<!-- Participants are then told that the team of scientists is conducting experiments with different possible causes (e.g., different kinds of foods). -->
+
+
+The experiment is a single trial.
 
 
 
