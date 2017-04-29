@@ -425,7 +425,7 @@ L_{1}(h \mid u) &\propto& S_{1}(u \mid h) \cdot P(h) \label{eq:L1u}
 
 This $L_1$ model reasons about the conditions under which the speaker $S_1$ would produce one or another speech act (here, the generalization or staying silent), described above.
 Still, the threshold variable gets resolved by $L_0$ (and marginalized out by $S_1$): The posterior distribution over thresholds is arrived at by $L_0$ trying to make the generalization true.
-\mht{How does this posterior on states differ?}
+<!-- \mht{How does this posterior on states differ?} -->
 
 Truthfulness is not the only process that could help set $\theta$.
 If the listener were to reason about what threshold was likely to be *used by the speaker*, informativity would also help set $\theta$.
@@ -435,7 +435,7 @@ This can be modeled by a pragmatic listener who reasons about the threshold, but
 L_{1}(h, \theta \mid u) &\propto& S_{1}(u \mid h, \theta) \cdot P(h) \cdot P(\theta) \label{eq:L1l} \\
 S_{1}(u \mid h) \propto \exp{(\lambda \cdot U(u; h; \theta)  } \label{eq:S1l} \\
 U(u; h; \theta) = \ln{  L_0(h \mid u, \theta) } - C(u) \label{eq:utilS1nomarginalization} \\
-L_{0}(h \mid u, \theta) &\propto& {\delta_{\denote{u}(h, \theta)} \cdot P(h) \label{eq:L0l}
+L_{0}(h \mid u, \theta) &\propto& {\delta_{\denote{u}(h, \theta)}} \cdot P(h) \label{eq:L0l}
 \end{eqnarray}
 
 Eq. \ref{eq:L1} is mathematically equivalent to the gradable adjectives model of @Lassiter2013, with the modification that states of the world are defined with respect to the probability $h$ under discussion.
@@ -1075,7 +1075,7 @@ The model decides if a habitual sentence is a pragmatically useful way to descri
 
 # Communicating Generalizations About Causes
 
-Leraning that one event consistently tends to result in another event serves the fondation building an intuitive theory of causailty.
+Leraning that one event consistently tends to result in another event serves as the foundation for building an intuitive theory of causailty.
 Communicating generalizations about causally related events is potentially highly useful because no one individual can run all the experiments that she wants to run in a life time. 
 It's useful to divide labor and have some members research which modifications to the food preparation procedure are good modifications while others look into different ways of cutting stone. 
 
@@ -1091,9 +1091,14 @@ Also, by designing the experiments in the domain of causal language, we also dem
 
 ## Method
 
+The experiment is a single-trial experiment with 2 phases to the trial.
+In the first phase, participants are given a story about an experimental domain in question.
+This information is common to all 3 between-subjects conditions.
+In the second phase, participants are asked to make a judgment corresponding to the between-subjects condition they are assigned (prior, endorsement, interpretation). 
+
 ### Procedure
 
-Participants read told that they are an astronaut-scientist on a distant planet trying to figure out how some system works (e.g., how to make a certain kind of animal more alert). They are told:
+Participants re that they are an astronaut-scientist on a distant planet trying to figure out how some system works (e.g., how to make a certain kind of animal more alert). They are told:
 
 \begin{quotation}
 You are an astronaut-scientist exploring a distant planet. 
@@ -1105,53 +1110,61 @@ The results are shown below:
 Participants then must click a button to show the results of the experiments.
 Experiment results appear one at a time (upon a click), and are described verbally (e.g., The team tested Food A on 100 daiths. 30 of them were made more alert.) as well as put into a table showing the number of successes per number of attempts (always 100 per experiment). 
 Eleven "experiments" are shown, though one of the experiments had their results misplaced so they cannot report on the results at that point.
+After participants view the results of the 10 "experiments" (and 1 missing experiment), they are told to review the results of the experiments before continuing. 
 
-Participants are assigned to one of three conditions: (a) prior / manipulation check; (b) endorsement; or (c) interpretation. 
+Upon proceeding to phase 2, the results of the "experiments" are removed and participants are assigned to one of three conditions: (a) prior / manipulation check; (b) endorsement; or (c) interpretation. 
 We will describe each of those, and then discuss the materials in more detail.
 
 ### Conditions
 
 #### Prior / manipulation check
 
-We do not assume that the frequencies that are shown in the experiment are directly encoded as participants' prior.
+In the first part of the trial (described above), participants are shown a distribution of results of experiments.
+We do not assume that the distributions shown in the trial are directly encoded as participants' prior beliefs about causal power.
+People have higher-order beliefs about diferrent kinds of causal systems.
+To highlight just one dimension of variability, some systems are likely to have deterministic cause-effect relations (e.g., physical systems), while others be more permissible of probabilistic causes (e.g., behavioral, psychological, or social systems). 
+We harness this variability in the design of our materials (described below), and measure participants' nwe beliefs about the domain in question, after having seen the results of the experiment.
+Thus, we manipulate participants' prior beliefs and then measure their resulting predictions about future instances of domain. 
+We expect the manipulation by way of "experiments" to interact with participants' domain knowledge.
 
+When the participant clicks to advance to the next slide (phase 2), the results of the experiments are removed and participants are told they there were some more experiments conducted, and they were asked to predict the results of the next 4 experiments.
+Participants were given 4 slider bars ranging from 0 - 100, and asked to predict the next four treatments (e.g., foods M, N, P, and Q). 
 
 #### Endorsement
 
+In phase 2 of the endorsement task, the participant is told that the results of the "lost experiment" were found. 
+The results are reported to the participant in terms of how many out of 100 of the attempts were successful. 
+Participants were then asked to judge the causal sentence: "Treatment X makes the effect happen". 
+Partipants responded by either clicking "Yes" or "No". 
+
 #### Interpretation
 
-### Materials 
+In phase 2 of the endorsement task, the participant is told that the results of the "lost experiment" were found and that their colleague has reported to them about the results using the causal: "Treatment X makes the effect happen". 
+Participants were then asked to guess how many out of the 100 of the attempts were successful.
+Partipants responded using a slider bar that ranged from 0 - 100.
 
+
+### Materials 
 
 The kind of causal events in question were selected to correspond roughly to different positions in a theoretically meaningful space defined by the model.
 Research in elemental causal induction suggests people use causal models that correspond to a mixture probability distributions, where one component of the distribution is a consequence to the intrinsic causal force while the other component is a result of some extrinsic background cause.
 So we designed materials that corresponded to domains where various parameters of that mixture model could be manipulated. 
 
-A second dimension of manipulation 
+A second dimension of manipulation corresponds to the extent to which *determinism* is expected in the domain. 
+For example, people's theories of physical causation tends to be more deterministic (i.e., favoring probabilities 1 and 0) then causation in the social or psychological domain. 
 
 
-Participants 
+### Participants 
 
 <!-- The different kinds of system are described in more detail below. -->
 <!-- Participants are then told that the team of scientists is conducting experiments with different possible causes (e.g., different kinds of foods). -->
 
 
-The experiment is a single trial.
+## Results
 
+### Model predictions
 
-
-
-
-
-
-
-
-
-
-
-
-
-# Communicating generalizations about categories
+# Communicating Generalizations About Categories
 
 
 # Empirical Test 1: Flexible Truth Conditions
