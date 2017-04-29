@@ -1,0 +1,246 @@
+// these models use a literal listener with uncertain threshold model as the interpretation model
+// then, the endorsement is an S1 who who marginalizes out L0's posterior on threhsolds
+
+// time ~/webppl-fork/webppl habituals-L0.wppl --require utils 1
+
+var chain = last(process.argv) // load index as last command line index
+
+var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
+var intervals = {
+	"week": 52,
+	"2 weeks": 26,
+	"month": 12,
+	"2 months": 6,
+	"6 months": 2,
+	"year": 1,
+	"2 years": 1/2,
+	"5 years": 1/5
+};
+
+
+var dataPath = "data/"
+var targetUtterance = "habitual"
+
+var priorFile = dataPath + "friends-and-family-2-trials.csv";
+var endorsementDataFile = dataPath + "tj-2-logtimes.csv";
+var interpretationDataFile = dataPath + "habituals-interpretation-1-trials.csv";
+
+var d0 = dataFrame(utils.readCSV(priorFile).data, ["n_times"]);
+var d1 = dataFrame(utils.readCSV(interpretationDataFile).data, ["n_times"]);
+
+var d2 = dataFrame(utils.readCSV(endorsementDataFile).data,
+				["n_times", "log_times"]);
+
+var data = {
+		prior: map(function(d){
+			var annualRate = intervals[d.interval] * d.n_times
+				return extend(d, {
+					annualRate: annualRate,
+					logAnnualRate: annualRate == 0 ? -99 : Math.log(annualRate),
+					roundedRate: utils.closest(midBins, annualRate)
+				})
+			}, d0.slice(0, d0.length -1)),
+			interpretation: filter(function(d){
+				return d.rate != 0;
+			}, map(function(d){
+					extend(d, {
+						rate: d.n_times / 5,
+						roundedRate: utils.closest(midBins, d.n_times / 5),
+					})
+				}, d1.slice(0, d1.length - 1))),
+			endorsement: map(function(d){
+					extend(d, {
+						rate: d.n_times / 5,
+						roundedRate: utils.closest(midBins, d.n_times / 5),
+						// rate: Math.log(d.n_times / 5),
+						// roundedRate: utils.closest(midBins, Math.log(d.n_times / 5)),
+						alignedResponse : responseDictionary[d.response]
+					})
+				}, d2.slice(0, d2.length - 1))
+};
+
+var items = levels(data.prior, "action");
+
+var utterancePrior = Infer({model: function(){
+	// return uniformDraw(["habitual","opposite habitual"])
+	// return uniformDraw(["habitual","habitual is false"])
+	return uniformDraw([targetUtterance,"silence"])
+}});
+
+var meaning = function(utt,state, theta) {
+  // return utt=="habitual"? state > theta[utt] :
+  //        utt=="habitual is false"? state <= theta[utt] :
+	// 			 utt=="opposite habitual"? state < theta[utt] :
+ return utt=="habitual"? state > theta :
+        utt=="habitual is false"? state <= theta :
+				 utt=="opposite habitual"? state < theta :
+         utt=='silence'? true :
+         utt=='some'? state > 0 :
+         true
+}
+
+// display(items)
+
+var model = function(){
+
+	var speakerOptimality = {
+		s1: uniformDrift({a: 0.5, b: 5, width:1})
+	}
+
+	var nullDist = Delta({v: -99})
+
+	// var c = 0.5;//uniformDrift({a: 0 , b: 1, width: 0.1});
+	//
+	// var utterancePrior = Infer({model: function(){
+	// 	return flip(c) ? "habitual" : "silence"//"habitual is false"
+	// }});
+
+	foreach(items, function(i){
+
+		var itemPriorData = _.filter(data.prior, {action: i})
+		// display(i + " prior data " + itemPriorData.length)
+		var theta = uniformDrift({a: 0, b: 1, width: 0.1});
+
+		var priorParams = {
+			mu: uniformDrift({a: -2, b: 8, width: 0.5}),
+			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
+		}
+
+		var statePrior = Infer({model: function(){
+			sample(
+				flip(theta) ?
+					DiscretizedLognormal(priorParams) :
+					Delta({v: _.min(midBins)})
+				)
+			}
+		})
+
+		// var scaledPrior = Categorical({
+		// 	vs: statePrior.support(),
+		// 	ps: normalize(map(function(s){
+		// 		return Math.pow(exp(statePrior.score(s)), alpha)
+		// 	}, statePrior.support()))
+		// })
+
+		mapData({data: itemPriorData}, function(d){
+			// display(scaledPrior.score(d.roundedRate))
+			// observe(scaledPrior, d.roundedRate)
+			observe(statePrior, d.roundedRate)
+		})
+
+		query.add(["prior", i, "theta","NA", "NA"], theta)
+		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
+		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
+
+		// var postpred = flip(Math.pow(theta, alpha)) ? Math.exp(sample(Gaussian(priorParams))) : 0
+		// query.add(["prior", i, "postPred", "NA", "NA"], postpred)
+		var byItemData = {
+			endorsement: _.filter(data.endorsement, {habitual: i}),
+			interpretation: _.filter(data.interpretation, {habitual: i})
+		}
+		var endorsementDataByItem = _.filter(data.endorsement, {habitual: i});
+		// display(i + " speaker data " + itemData.length)
+
+		/// RSA model
+		var listener0 = cache(function(utterance) {
+		  Infer({model: function(){
+		    var state = sample(statePrior)
+				var theta =  sample(thetaPrior)
+		    var m = meaning(utterance, state, theta)
+		    condition(m)
+		    return state
+		 }})}, 10000)
+
+		var speaker1 = cache(function(freq) {
+			Infer({model: function(){
+		    var utterance = sample(utterancePrior);
+		    var L0 = listener0(utterance);
+		    factor(speakerOptimality.s1 * L0.score(freq))
+		    return utterance === targetUtterance ? 1 : 0
+			}})}, 10000)
+
+		var l0prediction = listener0("habitual");
+
+		mapData({data: byItemData.interpretation}, function(d){
+			l0prediction.score(d.roundedRate) == -Infinity ? displayObj(d): null
+			observe(l0prediction, d.roundedRate)
+		})
+
+		query.add(["predictive", i, "logL0", "NA", "NA"],
+			expectation(l0prediction, function(x){return Math.log(x)}));
+
+		var observedFrequencies = levels(byItemData.endorsement, "roundedRate");
+
+		foreach(observedFrequencies, function(freq){
+			// display(freq)
+			var freqData = _.filter(byItemData.endorsement, {roundedRate: freq});
+			var s1prediction = speaker1(freq);
+			// display(map(function(s){return [s, s1prediction.score(s)]},
+			//  s1prediction.support()))
+
+			mapData({data:freqData}, function(d){
+				// s1prediction.score(d.alignedResponse) == -Infinity ?
+				// display(d) : null
+				// s1prediction.score(d.alignedResponse) == -Infinity ?
+				// display(theta) : null
+				// s1prediction.score(d.alignedResponse) == -Infinity ?
+				// 	display(JSON.stringify(priorParams)) : null
+				// display("speaker score = " + s1prediction.score(d.alignedResponse))
+				observe(s1prediction, d.alignedResponse)
+			})
+
+			// query.add(["predictive", i, freqData[0]["time_period"]], [
+			// 	freq, "s2", expectation(s2prediction),
+			// 	"NA",  "NA",  "NA",  "NA" ])
+
+			query.add(["predictive", i, "s1", freqData[0]["time_period"], freq], expectation(s1prediction));
+
+		})
+
+	})
+
+	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
+	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+	// query.add(["param","habUttPrior","NA","NA", "NA"], c)
+	// query.add(["param","alpha","NA","NA", "NA"], alpha)
+
+	// query.add(["param", "speakerOptimality", "s1"], [
+	// 	 speakerOptimality.s1, "NA", "NA",
+	// 	"nullParams_mu",  nullParams.mu,
+	// 	"nullParams_sigma",  nullParams.sigma])
+
+	return query
+}
+// // data.speaker
+// // Infer({model: function() { sample(Categorical({vs: midBins, ps: data["prior"]["wears socks"]}))}})
+// // Infer({model: function() { sample(Categorical({
+// // 	vs: midBins,
+// // 	ps: map(function(p){ Math.pow(p, 0.3) }, data["prior"]["wears socks"])
+// // }))}})
+//
+//
+var totalIterations = 100000, lag = 10;
+var mhiter = totalIterations/lag, burn = totalIterations / 2;
+// var lag = 0;
+var outfile = 'posterior-habituals-L0-S1-ffPrior2-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+
+//var outfile = 'results-habituals-inferPrior-factorHabitual-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+
+var posterior = Infer({
+  model: model,
+  method: "incrementalMH",
+	// kernel: {HMC: {steps:5, stepSize: 0.01}},
+  samples: mhiter, burn: burn, lag: lag, verbose: T,
+	verboseLag: totalIterations/100,
+	stream: {
+		path: "results/" + outfile,
+		header: [
+			"type", "item", "cat", "param", "gender", "val"
+		]
+	}
+})
+
+// utils.writeQueryERP(posterior, "results/" + outfile,
+	// ["type", "item", "cat", "param", 'freq', "val"])
+//
+display("written to " + outfile)
