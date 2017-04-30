@@ -89,11 +89,18 @@ var model = function(){
 
 	var nullDist = Delta({v: -99})
 
-	// var c = 0.5;//uniformDrift({a: 0 , b: 1, width: 0.1});
-	//
-	// var utterancePrior = Infer({model: function(){
-	// 	return flip(c) ? "habitual" : "silence"//"habitual is false"
-	// }});
+	var uttCost = uniformDrift({a: 0, b: 10, width:0.25});
+	var utterancePrior = Categorical({
+		vs: [targetUtterance,"silence"],
+		ps: [exp(-uttCost), 1]
+	});
+
+	var alpha = sample(Gamma({shape: 2, scale: 1}), {
+		driftKernel: function(prevVal){
+			  return Gamma({shape: prevVal, scale: 1});
+	}});
+
+	// var c = 0.5;
 
 	foreach(items, function(i){
 
@@ -115,17 +122,17 @@ var model = function(){
 			}
 		})
 
-		// var scaledPrior = Categorical({
-		// 	vs: statePrior.support(),
-		// 	ps: normalize(map(function(s){
-		// 		return Math.pow(exp(statePrior.score(s)), alpha)
-		// 	}, statePrior.support()))
-		// })
+		var scaledPrior = Categorical({
+			vs: statePrior.support(),
+			ps: normalize(map(function(s){
+				return Math.pow(exp(statePrior.score(s)), alpha)
+			}, statePrior.support()))
+		})
 
 		mapData({data: itemPriorData}, function(d){
 			// display(scaledPrior.score(d.roundedRate))
-			// observe(scaledPrior, d.roundedRate)
-			observe(statePrior, d.roundedRate)
+			observe(scaledPrior, d.roundedRate)
+			// observe(statePrior, d.roundedRate)
 		})
 
 		query.add(["prior", i, "theta","NA", "NA"], theta)
@@ -201,6 +208,10 @@ var model = function(){
 
 	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+
+	query.add(["param","genCost","NA","NA", "NA"], uttCost)
+	query.add(["param","priorSoftmax","NA","NA", "NA"], alpha)
+
 	// query.add(["param","habUttPrior","NA","NA", "NA"], c)
 	// query.add(["param","alpha","NA","NA", "NA"], alpha)
 
@@ -219,7 +230,7 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 100000, lag = 10;
+var totalIterations = 500000, lag = 100;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
 var outfile = 'posterior-habituals-L0-S1-ffPrior2-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
