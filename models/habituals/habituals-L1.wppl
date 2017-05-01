@@ -112,61 +112,61 @@ var model = function(){
 		// display(i + " prior data " + itemPriorData.length)
 
 		// -- UNSTRUCTURED PRIOR -- //
-		var prior = normalize(map(function(b){
-			return uniformDrift({a: 0, b: 1, width:0.1})
-		}, midBins))
-
-		var scaledPrior = normalize(map(function(pi){
-			return Math.pow(pi, alpha)
-		}, prior))
-
-		mapData({data: itemPriorData}, function(d){
-			// display(Categorical({ vs: midBins, ps: scaledPrior }).score(d.roundedRate))
-			observe(Categorical({ vs: midBins, ps: scaledPrior }), d.roundedRate)
-		})
-
-		foreach(_.range(0, prior.length), function(pi){
-			query.add(["prior",i, midBins[pi], pi, "NA"], prior[pi])
-		})
-
-		var statePrior = Categorical({ vs: midBins, ps: prior })
+		// var prior = normalize(map(function(b){
+		// 	return uniformDrift({a: 0, b: 1, width:0.1})
+		// }, midBins))
+		//
+		// var scaledPrior = normalize(map(function(pi){
+		// 	return Math.pow(pi, alpha)
+		// }, prior))
+		//
+		// mapData({data: itemPriorData}, function(d){
+		// 	// display(Categorical({ vs: midBins, ps: scaledPrior }).score(d.roundedRate))
+		// 	observe(Categorical({ vs: midBins, ps: scaledPrior }), d.roundedRate)
+		// })
+		//
+		// foreach(_.range(0, prior.length), function(pi){
+		// 	query.add(["prior",i, midBins[pi], pi, "NA"], prior[pi])
+		// })
+		//
+		// var statePrior = Categorical({ vs: midBins, ps: prior })
 		// --  -- //
 
 		// ---------------------- //
 
 		// -- STRUCTURED PRIOR -- //
-		// var theta = uniformDrift({a: 0, b: 1, width: 0.1});
-		//
-		// var priorParams = {
-		// 	mu: uniformDrift({a: -3, b: 9, width: 0.5}),
-		// 	sigma: uniformDrift({a: 0, b: 10, width: 0.5})
-		// }
-		//
-		// var statePrior = Infer({model: function(){
-		// 	sample(
-		// 		flip(theta) ?
-		// 			DiscretizedLognormal(priorParams) :
-		// 			Delta({v: _.min(midBins)})
-		// 		)
-		// 	}
-		// })
-		//
-		// var scaledPrior = Categorical({
-		// 	vs: statePrior.support(),
-		// 	ps: normalize(map(function(s){
-		// 		return Math.pow(exp(statePrior.score(s)), alpha)
-		// 	}, statePrior.support()))
-		// })
-		//
-		// mapData({data: itemPriorData}, function(d){
-		// 	// display(scaledPrior.score(d.roundedRate))
-		// 	observe(scaledPrior, d.roundedRate)
-		// 	// observe(statePrior, d.roundedRate)
-		// })
-		//
-		// query.add(["prior", i, "theta","NA", "NA"], theta)
-		// query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
-		// query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
+		var theta = uniformDrift({a: 0, b: 1, width: 0.1});
+
+		var priorParams = {
+			mu: uniformDrift({a: -2, b: 9, width: 0.5}),
+			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
+		}
+
+		var statePrior = Infer({model: function(){
+			sample(
+				flip(theta) ?
+					DiscretizedLognormal(priorParams) :
+					Delta({v: _.min(midBins)})
+				)
+			}
+		})
+
+		var scaledPrior = Categorical({
+			vs: statePrior.support(),
+			ps: normalize(map(function(s){
+				return Math.pow(exp(statePrior.score(s)), alpha)
+			}, statePrior.support()))
+		})
+
+		mapData({data: itemPriorData}, function(d){
+			// display(scaledPrior.score(d.roundedRate))
+			observe(scaledPrior, d.roundedRate)
+			// observe(statePrior, d.roundedRate)
+		})
+
+		query.add(["prior", i, "theta","NA", "NA"], theta)
+		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
+		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
 		// --                   -- //
 		// ---------------------- //
 
