@@ -76,16 +76,16 @@ var meaning = function(utt,state, theta) {
 var model = function(){
 
 	var speakerOptimality = {
-		s1i: uniformDrift({a: 0, b: 50, width: 5}),
-		s1: uniformDrift({a: 0, b: 50, width: 5}),
-		s2: uniformDrift({a: 0, b: 5, width: 0.5})
+		s1i: uniformDrift({a: 0, b: 100, width: 5}),
+		s1: uniformDrift({a: 0, b: 100, width: 5}),
+		s2: 1//uniformDrift({a: 0, b: 5, width: 0.5})
 	}
 
 	var nullDist = Delta({v: -99})
 
 	var uttCost = {
-		interpretation: uniformDrift({a: 0, b: 10, width:0.25}),
-		endorsement: uniformDrift({a: 0, b: 10, width:0.25})
+		interpretation: uniformDrift({a: 0, b: 10, width:0.5}),
+		endorsement: 0//uniformDrift({a: 0, b: 10, width:0.25})
 	}
 
 	var utterancePrior = cache(function(cost){
@@ -110,38 +110,67 @@ var model = function(){
 
 		var itemPriorData = _.filter(data.prior, {action: i})
 		// display(i + " prior data " + itemPriorData.length)
-		var theta = uniformDrift({a: 0, b: 1, width: 0.1});
 
-		var priorParams = {
-			mu: uniformDrift({a: -2, b: 8, width: 0.5}),
-			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
-		}
+		// -- UNSTRUCTURED PRIOR -- //
+		var prior = normalize(map(function(b){
+			return uniformDrift({a: 0, b: 1, width:0.1})
+		}, midBins))
 
-		var statePrior = Infer({model: function(){
-			sample(
-				flip(theta) ?
-					DiscretizedLognormal(priorParams) :
-					Delta({v: _.min(midBins)})
-				)
-			}
-		})
-
-		var scaledPrior = Categorical({
-			vs: statePrior.support(),
-			ps: normalize(map(function(s){
-				return Math.pow(exp(statePrior.score(s)), alpha)
-			}, statePrior.support()))
-		})
+		var scaledPrior = normalize(map(function(pi){
+			return Math.pow(pi, alpha)
+		}, prior))
 
 		mapData({data: itemPriorData}, function(d){
-			// display(scaledPrior.score(d.roundedRate))
-			observe(scaledPrior, d.roundedRate)
-			// observe(statePrior, d.roundedRate)
+			// display(Categorical({ vs: midBins, ps: scaledPrior }).score(d.roundedRate))
+			observe(Categorical({ vs: midBins, ps: scaledPrior }), d.roundedRate)
 		})
 
-		query.add(["prior", i, "theta","NA", "NA"], theta)
-		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
-		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
+		foreach(_.range(0, prior.length), function(pi){
+			query.add(["prior",i, midBins[pi], pi, "NA"], prior[pi])
+		})
+
+		var statePrior = Categorical({ vs: midBins, ps: prior })
+		// --  -- //
+
+		// ---------------------- //
+
+		// -- STRUCTURED PRIOR -- //
+		// var theta = uniformDrift({a: 0, b: 1, width: 0.1});
+		//
+		// var priorParams = {
+		// 	mu: uniformDrift({a: -3, b: 9, width: 0.5}),
+		// 	sigma: uniformDrift({a: 0, b: 10, width: 0.5})
+		// }
+		//
+		// var statePrior = Infer({model: function(){
+		// 	sample(
+		// 		flip(theta) ?
+		// 			DiscretizedLognormal(priorParams) :
+		// 			Delta({v: _.min(midBins)})
+		// 		)
+		// 	}
+		// })
+		//
+		// var scaledPrior = Categorical({
+		// 	vs: statePrior.support(),
+		// 	ps: normalize(map(function(s){
+		// 		return Math.pow(exp(statePrior.score(s)), alpha)
+		// 	}, statePrior.support()))
+		// })
+		//
+		// mapData({data: itemPriorData}, function(d){
+		// 	// display(scaledPrior.score(d.roundedRate))
+		// 	observe(scaledPrior, d.roundedRate)
+		// 	// observe(statePrior, d.roundedRate)
+		// })
+		//
+		// query.add(["prior", i, "theta","NA", "NA"], theta)
+		// query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
+		// query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
+		// --                   -- //
+		// ---------------------- //
+
+
 
 		// var postpred = flip(Math.pow(theta, alpha)) ? Math.exp(sample(Gaussian(priorParams))) : 0
 		// query.add(["prior", i, "postPred", "NA", "NA"], postpred)
@@ -236,9 +265,9 @@ var model = function(){
 	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s1","interpretation", "NA"], speakerOptimality.s1i)
 	query.add(["param","speakerOptimality","s1","endorsement", "NA"], speakerOptimality.s1)
-	query.add(["param","speakerOptimality","s2","endorsement", "NA"], speakerOptimality.s2)
+	// query.add(["param","speakerOptimality","s2","endorsement", "NA"], speakerOptimality.s2)
 	query.add(["param","genCost","interpretation","NA", "NA"], uttCost.interpretation)
-	query.add(["param","genCost","endorsement","NA", "NA"], uttCost.endorsement)
+	// query.add(["param","genCost","endorsement","NA", "NA"], uttCost.endorsement)
 	query.add(["param","priorSoftmax","NA","NA", "NA"], alpha)
 
 	// query.add(["param", "speakerOptimality", "s1"], [
@@ -256,10 +285,10 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 100, lag = 10;
+var totalIterations = 30000, lag = 10;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'posterior-habituals-L1-S2-ffPrior2-separateS1opts-softmaxPrior-uttCostS1-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'posterior-habituals-L1-S2-ffPrior2unstruct-separateS1opts-softmaxPrior-uttCostInt-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 //var outfile = 'results-habituals-inferPrior-factorHabitual-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
