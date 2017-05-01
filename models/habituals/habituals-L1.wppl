@@ -76,19 +76,24 @@ var meaning = function(utt,state, theta) {
 var model = function(){
 
 	var speakerOptimality = {
-		s1i: uniformDrift({a: 0, b: 20, width: 2}),
-		s1: uniformDrift({a: 0, b: 20, width: 2}),
+		s1i: uniformDrift({a: 0, b: 50, width: 5}),
+		s1: uniformDrift({a: 0, b: 50, width: 5}),
 		s2: uniformDrift({a: 0, b: 5, width: 0.5})
 	}
 
 	var nullDist = Delta({v: -99})
 
-	var uttCost = uniformDrift({a: 0, b: 10, width:0.25});
+	var uttCost = {
+		interpretation: uniformDrift({a: 0, b: 10, width:0.25}),
+		endorsement: uniformDrift({a: 0, b: 10, width:0.25})
+	}
 
-	var utterancePrior = Categorical({
-		vs: [targetUtterance,"silence"],
-		ps: [exp(-uttCost), 1]
-	});
+	var utterancePrior = cache(function(cost){
+		return Categorical({
+			vs: [targetUtterance,"silence"],
+			ps: [exp(-cost), 1]
+		});
+	})
 
 	var alpha = sample(Gamma({shape: 2, scale: 1}), {
 		driftKernel: function(prevVal){
@@ -156,27 +161,30 @@ var model = function(){
 		    return state
 		 }})}, 10000)
 
-		var speaker1 = cache(function(state, theta, s1opt) {
+		var speaker1 = cache(function(state, theta, s1opt, c) {
 			Infer({model: function(){
-		    var utterance = sample(utterancePrior);
+		    var utterance = sample(utterancePrior(c));
 		    var L0 = listener0(utterance, theta);
 		    factor(s1opt * L0.score(state))
 		    return utterance
 			}})}, 10000)
 
-		var listener1 = cache(function(utterance, s1opt) {
+		var listener1 = cache(function(utterance, s1opt, c) {
 			Infer({model: function(){
 		    var state = sample(statePrior);
 		    var theta = targetUtterance === "habitual" ? sample(thetaPrior) : -99;
-		    var S1 = speaker1(state, theta, s1opt)
+		    var S1 = speaker1(state, theta, s1opt, c)
 		    observe(S1, utterance)
 		    return state
 			}})}, 10000)
 
-		var speaker2 = function(freq, s1opt){
+		var speaker2 = function(freq, s1opt, c){
 			Infer({model: function(){
-				var utterance = sample(utterancePrior);
-		    var L1 = listener1(utterance, s1opt)
+				var utterance = categorical({
+					vs: [targetUtterance,"silence"],
+					ps: [1, 1]
+				});
+		    var L1 = listener1(utterance, s1opt, c)
 		    factor(speakerOptimality.s2 * L1.score(freq))
 				// var _kl = KL(speakerBeliefs, L1, speakerBeliefs.support());
 				// factor(speakerOptimality.s2  * -1 * _kl)
@@ -184,7 +192,7 @@ var model = function(){
 		 }})}
 
 
-		var l1prediction = listener1("habitual", speakerOptimality.s1i);
+		var l1prediction = listener1("habitual", speakerOptimality.s1i, uttCost.interpretation);
 
 		mapData({data: byItemData.interpretation}, function(d){
 			// l1prediction.score(d.roundedRate) == -Infinity ? displayObj(d): null
@@ -200,7 +208,7 @@ var model = function(){
 		foreach(observedFrequencies, function(freq){
 			// display(freq)
 			var freqData = _.filter(byItemData.endorsement, {roundedRate: freq});
-			var s2prediction = speaker2(freq, speakerOptimality.s1);
+			var s2prediction = speaker2(freq, speakerOptimality.s1, uttCost.endorsement);
 			// display(map(function(s){return [s, s1prediction.score(s)]},
 			//  s1prediction.support()))
 
@@ -229,7 +237,8 @@ var model = function(){
 	query.add(["param","speakerOptimality","s1","interpretation", "NA"], speakerOptimality.s1i)
 	query.add(["param","speakerOptimality","s1","endorsement", "NA"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s2","endorsement", "NA"], speakerOptimality.s2)
-	query.add(["param","genCost","NA","NA", "NA"], uttCost)
+	query.add(["param","genCost","interpretation","NA", "NA"], uttCost.interpretation)
+	query.add(["param","genCost","endorsement","NA", "NA"], uttCost.endorsement)
 	query.add(["param","priorSoftmax","NA","NA", "NA"], alpha)
 
 	// query.add(["param", "speakerOptimality", "s1"], [
@@ -247,10 +256,10 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 40000, lag = 10;
+var totalIterations = 100, lag = 10;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'posterior-habituals-L1-S2-ffPrior2-separateS1opts-softmaxPrior-uttCost-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'posterior-habituals-L1-S2-ffPrior2-separateS1opts-softmaxPrior-uttCostS1-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 //var outfile = 'results-habituals-inferPrior-factorHabitual-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
