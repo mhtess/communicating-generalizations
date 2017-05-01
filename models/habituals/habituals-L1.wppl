@@ -288,7 +288,7 @@ var model = function(){
 var totalIterations = 30000, lag = 10;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'posterior-habituals-L1-S2-ffPrior2unstruct-separateS1opts-softmaxPrior-uttCostInt-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'posterior-habituals-L1-S2-ffPrior2struct-separateS1opts-softmaxPrior-uttCostInt-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 //var outfile = 'results-habituals-inferPrior-factorHabitual-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
