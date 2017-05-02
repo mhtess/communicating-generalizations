@@ -33,39 +33,49 @@ var d2 = dataFrame(utils.readCSV(endorsementDataFile).data,
 
 var data = {
 		prior: map(function(d){
-			var annualRate = intervals[d.interval] * d.n_times
+			var annualRate = intervals[d.interval] * d.n_times;
+			var logAnnualRate = (annualRate == 0) ?
+								lowerBound - binWidth :
+								Math.log(annualRate)
 				return extend(d, {
 					annualRate: annualRate,
-					logAnnualRate: annualRate == 0 ? -99 : Math.log(annualRate),
-					roundedRate: utils.closest(midBins, annualRate)
+					logAnnualRate: logAnnualRate,
+					roundedRate: utils.closest(midBins, logAnnualRate)
+					// roundedRate: utils.closest(midBins, annualRate)
 				})
 			}, d0.slice(0, d0.length -1)),
-			interpretation: filter(function(d){
-				return d.rate != 0;
-			}, map(function(d){
-					extend(d, {
-						rate: d.n_times / 5,
-						roundedRate: utils.closest(midBins, d.n_times / 5),
-					})
-				}, d1.slice(0, d1.length - 1))),
-			endorsement: map(function(d){
-					extend(d, {
-						rate: d.n_times / 5,
-						roundedRate: utils.closest(midBins, d.n_times / 5),
-						// rate: Math.log(d.n_times / 5),
-						// roundedRate: utils.closest(midBins, Math.log(d.n_times / 5)),
-						alignedResponse : responseDictionary[d.response]
-					})
-				}, d2.slice(0, d2.length - 1))
+		interpretation: filter(function(d){
+			return d.n_times != 0;
+		}, map(function(d){
+				var rate = intervals[d.interval] * d.n_times;
+				var logAnnualRate = Math.log(rate);
+				extend(d, {
+					annualRate: rate,
+					logAnnualRate: logAnnualRate,
+					roundedRate: utils.closest(midBins, logAnnualRate),
+				})
+			}, d1.slice(0, d1.length - 1))),
+		endorsement: map(function(d){
+			var rate = d.n_times / 5;
+			var logRate = Math.log(rate);
+				extend(d, {
+					annualRate: rate,
+					logAnnualRate: logRate,
+					roundedRate: utils.closest(midBins, logRate),
+					// rate: Math.log(d.n_times / 5),
+					// roundedRate: utils.closest(midBins, Math.log(d.n_times / 5)),
+					alignedResponse : responseDictionary[d.response]
+				})
+			}, d2.slice(0, d2.length - 1))
 };
 
 var items = levels(data.prior, "action");
 
-var utterancePrior = Infer({model: function(){
-	// return uniformDraw(["habitual","opposite habitual"])
-	// return uniformDraw(["habitual","habitual is false"])
-	return uniformDraw([targetUtterance,"silence"])
-}});
+// var utterancePrior = Infer({model: function(){
+// 	// return uniformDraw(["habitual","opposite habitual"])
+// 	// return uniformDraw(["habitual","habitual is false"])
+// 	return uniformDraw([targetUtterance,"silence"])
+// }});
 
 var meaning = function(utt,state, theta) {
   // return utt=="habitual"? state > theta[utt] :
@@ -84,12 +94,12 @@ var meaning = function(utt,state, theta) {
 var model = function(){
 
 	var speakerOptimality = {
-		s1: uniformDrift({a: 0.5, b: 5, width:1})
+		s1: uniformDrift({a: 0, b: 5, width:0.5})
 	}
 
-	var nullDist = Delta({v: -99})
+	var nullDist = Delta({v: _.min(midBins)})
 
-	var uttCost = uniformDrift({a: 0, b: 10, width:0.25});
+	var uttCost = 0// uniformDrift({a: 0, b: 10, width:0.25});
 	var utterancePrior = Categorical({
 		vs: [targetUtterance,"silence"],
 		ps: [exp(-uttCost), 1]
@@ -109,14 +119,15 @@ var model = function(){
 		var theta = uniformDrift({a: 0, b: 1, width: 0.1});
 
 		var priorParams = {
-			mu: uniformDrift({a: -2, b: 8, width: 0.5}),
+			mu: uniformDrift({a: -2.5, b: 9, width: 0.5}),
 			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
 		}
 
 		var statePrior = Infer({model: function(){
 			sample(
 				flip(theta) ?
-					DiscretizedLognormal(priorParams) :
+					DiscretizedGaussian(priorParams) :
+					// DiscretizedLognormal(priorParams) :
 					Delta({v: _.min(midBins)})
 				)
 			}
@@ -169,12 +180,13 @@ var model = function(){
 		var l0prediction = listener0("habitual");
 
 		mapData({data: byItemData.interpretation}, function(d){
-			l0prediction.score(d.roundedRate) == -Infinity ? displayObj(d): null
+			// l0prediction.score(d.roundedRate) == -Infinity ? displayObj(d): null
 			observe(l0prediction, d.roundedRate)
 		})
 
 		query.add(["predictive", i, "logL0", "NA", "NA"],
-			expectation(l0prediction, function(x){return Math.log(x)}));
+			expectation(l0prediction));
+			// expectation(l0prediction, function(x){return Math.log(x)}));
 
 		var observedFrequencies = levels(byItemData.endorsement, "roundedRate");
 
@@ -209,7 +221,7 @@ var model = function(){
 	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
 
-	query.add(["param","genCost","NA","NA", "NA"], uttCost)
+	// query.add(["param","genCost","NA","NA", "NA"], uttCost)
 	query.add(["param","priorSoftmax","NA","NA", "NA"], alpha)
 
 	// query.add(["param","habUttPrior","NA","NA", "NA"], c)
@@ -230,10 +242,10 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 500000, lag = 100;
+var totalIterations = 200000, lag = 30;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 // var lag = 0;
-var outfile = 'posterior-habituals-L0-S1-ffPrior2-softmaxPrior-uttCost-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'posterior-habituals-L0-S1-ffPrior2-softmaxPrior-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 //var outfile = 'results-habituals-inferPrior-factorHabitual-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
@@ -255,3 +267,5 @@ var posterior = Infer({
 	// ["type", "item", "cat", "param", 'freq', "val"])
 //
 display("written to " + outfile)
+// data.prior
+// _.min(midBins)
