@@ -50,41 +50,120 @@ model.path <- "models/habituals/model_comparison/"
 # lag <- 50
 
 
+n_chains <- 2
 #model1_prefix <- "logLikelihood-habituals-S2-ffPrior2Structured-silenceAlt-"
-model2_prefix <- "logLikelihood-habituals-S1-ffPrior2Structured-silenceAlt-"
-model1_prefix <- "logLikelihood-habituals-regression-intercept-freq-priorMean-ffPrior2Structured-"
-n_samples <- 10000
-burn <- n_samples / 2
-lag1 <- 10
-lag2 <- 5
-
-# m.samp <- data.frame()
-# for (i in seq(1, n_chains)){
-#   mi <- fread(paste(project.path, model.path,
-#                     "results/",
-#                     model_prefix, n_samples, "_burn", burn, "_lag", lag,
-#                     "_chain", i, ".csv", sep = ""))
+model1_prefix <- "logLikelihood-habituals-regression-intercept-freq-priorMean-narrowPriors-ffPrior2Structured-"
+n_samples1 <- 1000000
+burn1 <- n_samples1 / 2
+lag1 <- 100
 # 
-#   m.samp.i <- mi %>% mutate(chain = i)# %>% get_samples(., num_samples = n_samples - burn)
-#   m.samp <- bind_rows(m.samp, m.samp.i)
-#   print(i)
-# }
 
-i = 1
+# model1_prefix <- "logLikelihood-habituals-S2-ffPrior2Structured-silenceAlt-"
+# n_samples1 <- 100000
+# burn1 <- n_samples1 / 2
+# lag1 <- 10
+# 
+# 
 
-m.samp.1 <- fread(paste(project.path, model.path,
-                  "results/",
-                  model1_prefix, n_samples, "_burn", burn, "_lag", lag1,
-                  "_chain", i, ".csv", sep = ""))
+model2_prefix <- "logLikelihood-habituals-S1-ffPrior2Structured-silenceAlt-"
+n_samples2 <- 500000
+burn2 <- n_samples2 / 2
+lag2 <- 50
 
-m.samp.2 <- fread(paste(project.path, model.path,
-                  "results/",
-                  model2_prefix, n_samples, "_burn", burn, "_lag", lag2,
-                  "_chain", i, ".csv", sep = ""))
+
+
+
+m.samp.1 <- data.frame()
+m.samp.2 <- data.frame()
+for (i in seq(1, n_chains)){
+  
+  mi.1 <- fread(paste(project.path, model.path,
+                    "results/",
+                    model1_prefix, n_samples1, "_burn", burn1, "_lag", lag1,
+                    "_chain", i, ".csv", sep = ""))
+  m.samp.1.i <- mi.1 %>% mutate(chain = i)
+  m.samp.1 <- bind_rows(m.samp.1, m.samp.1.i)
+
+  
+  mi.2 <- fread(paste(project.path, model.path,
+                    "results/",
+                    model2_prefix, n_samples2, "_burn", burn2, "_lag", lag2,
+                    "_chain", i, ".csv", sep = ""))
+  m.samp.2.i <- mi.2 %>% mutate(chain = i)
+  m.samp.2 <- bind_rows(m.samp.2, m.samp.2.i)  
+  
+  
+  print(i)
+}
+
+# i = 1
+# 
+# m.samp.1 <- fread(paste(project.path, model.path,
+#                   "results/",
+#                   model1_prefix, n_samples, "_burn", burn, "_lag", lag1,
+#                   "_chain", i, ".csv", sep = ""))
+# 
+# m.samp.2 <- fread(paste(project.path, model.path,
+#                   "results/",
+#                   model2_prefix, n_samples, "_burn", burn, "_lag", lag2,
+#                   "_chain", i, ".csv", sep = ""))
 
 m.samp.2[is.na(m.samp.2$cat), "cat"] <- "s1"
 
+m.ll <- bind_rows(
+    m.samp.1 %>% filter(type == "logLikelihood"),
+    m.samp.2 %>% filter(type == "logLikelihood")
+  )
 
+```
+
+
+Convergence?
+
+Log-likelihoods by iteration
+
+```{r}
+m.ll.i <- m.ll %>% 
+  filter(type == "logLikelihood") %>% 
+  mutate(item = paste(type, item, cat, chain, sep = "_")) %>%
+  select(-type, -cat, -param, -gender, -chain) %>%
+  group_by(item) %>%
+  mutate(iteration = ave(item == item, item, FUN = cumsum)) %>%
+  separate(item, into = c("type", "action", "src", "chain"), sep = "_")
+
+
+m.ll.i %>%
+  group_by(iteration, src, chain) %>%
+  summarize(ll = sum(val)) %>%
+  filter((iteration %% 100) == 0) %>%
+  ggplot(., aes( x = iteration, y = ll, color = chain, lty = src))+
+  geom_line()
+```
+
+Cumulative (running) average log likelihoods
+
+```{r}
+m.ll.i %>%
+  group_by(src, chain, iteration) %>% 
+  summarize(loglik_i = sum(val)) %>%
+  group_by(src, chain) %>%
+  mutate(cs = cumsum(loglik_i) / iteration) %>%
+  filter((iteration %% 100) == 0) %>%
+  ggplot(., aes( x = iteration, y = cs, color = chain, lty = src))+
+  geom_line()
+```
+
+Bayes Factor by iteration
+
+```{r}
+m.ll.i %>%
+  group_by(iteration, src, chain) %>%
+  summarize(ll = sum(val)) %>%
+  ungroup() %>%
+  group_by(iteration, chain)
+  filter((iteration %% 100) == 0) %>%
+  ggplot(., aes( x = iteration, y = ll, color = chain, lty = src))+
+  geom_line()
 ```
 
 
@@ -103,13 +182,9 @@ m.samp %>%
 ### Average log-likelihood by item
 
 ```{r}
-m.ll <- bind_rows(
-    m.samp.1 %>% filter(type == "logLikelihood"),
-    m.samp.2 %>% filter(type == "logLikelihood")
-  )
 
 m.ll.item.summary <- m.ll %>%
-  group_by(item, cat) %>%
+  group_by(item, cat, chain) %>%
   summarize(MAP = estimate_mode(val),
             cred_upper = hdi_upper(val), cred_lower = hdi_lower(val)) %>%
   ungroup() %>% 
@@ -117,20 +192,29 @@ m.ll.item.summary <- m.ll %>%
 
 ggplot(m.ll.item.summary, 
        aes(x = item, y = MAP, ymin = cred_lower, ymax = cred_upper, fill = cat))+
-  geom_bar(stat = 'identity', position = position_dodge(), alpha = 0.3)+
-  geom_errorbar(position = position_dodge())+
+  geom_bar(stat = 'identity', position = position_dodge(), alpha = 0.5, color = 'black')+
+  #geom_errorbar(position = position_dodge())+
   theme(axis.text.x = element_text(angle = 90))+
-  coord_flip()
+  coord_flip() + 
+  facet_wrap(~chain)
 ```
 
 
 ```{r}
 m.ll.expectation <- m.ll %>%
-  filter(!(val == -Inf)) %>%
-  group_by(cat) %>%
+  #filter(!(val == -Inf)) %>%
+  group_by(cat, chain) %>%
   summarize(expval = mean(val))
 ```
 
+```{r}
+m.ll.expectation <- m.ll.i %>%
+  group_by(src, chain, iteration) %>%
+  summarize(sum_loglik = sum(val)) %>%
+  ungroup() %>%
+  group_by(src, chain) %>%
+  summarize(expval = mean(sum_loglik))
+```
 
 
 
