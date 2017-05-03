@@ -1,5 +1,5 @@
 ---
-title             : "Communicating generalizations about agents, objects, and events"
+title             : "Communicating generalizations about events, cua"
 shorttitle        : "Communicating generalizations"
 
 author: 
@@ -25,19 +25,13 @@ header-includes:
 author_note: >
   Enter author note here.
 
-abstract: >
-    Acquiring abstract knowledge requires making generalizations.
-    Generalizations form the foundation for abstract thought. 
-    Everyday generalizations typically rest not upon observational data, but upon testimony: Generalizations conveyed with language.
-    The language of generalizations---expressions of *genericity* (e.g., *Dogs bark.*)---appears early in development and is ubiqutious in everyday conversation.
-    However, sentences that convey generalizations are extremely flexible in their usage, while often conveying a strong inference: That the generalization should hold in the future. 
-    These phenonena have confounded previous attempts to formalize the meaning of linguistic expressions of genericity.
-    We formalize the idea that the meaning of such linguistic expressions is simple, but underspecified, and that general cognitive principles can be used to establish a more precise meaning in context.
-    We test our computational model on endorsements of generalizations about events and show that our model explains the extreme flexibility in usage that no simpler model could account for. 
-    We then manipulate participants' background knowledge about the domains and show that our the priors are causally related to their endorsements of generalizations.
-    Finally, we show how our computational framework naturally accounts for a number of well-documented psychological phenomena concerning generalizations about categories, a special kind of genericity --- so called, *generic language*.
-    Our model shows the central phenomena of genericity emerge from the interaction of diverse prior beliefs with communicative principles.
-    This theory provides the formal bridge between the words we use and the generalizations they describe.
+abstract: > 
+    Generalizations are the foundation of abstract thought and are naturally formalized in Bayesian models of cognition. 
+    The *language* of generalizations (e.g., *Birds fly.*), however, has received comparatively little attention by formal psychological models, despite its ubiquity in everyday discourse and child-directed speech.
+    One major issue in formalizing *genericity* is that such language is extremely flexible in its usage. 
+    Using a state-of-the-art probabilistic model of pragmatic reasoning, we explore the hypothesis that the meaning of such linguistic expressions is *simple but underspecified*, and that general communicative principles can be used to establish a more precise meaning in context. 
+    To test this theory, we examine 3 case studies: generalizations about events (i.e., *habitual language*, e.g., *John runs*), causes (i.e., *causal language*, e.g., *The block makes the machine play music.*), and categories (i.e., *generic language*, e.g., *Birds fly*), and find that the model, and not simpler models, explains both the endorsement and interpretation of generalizations in language.
+    The model suggests that central phenomena of genericity emerge from the interaction of diverse prior beliefs about properties with general communicative principles. 
   
 keywords          : "genericity, generalizations, generics, pragmatics, semantics, bayesian modeling"
 wordcount         : "X"
@@ -102,27 +96,29 @@ If we are starting with habituals and/or doing all 3 kinds of generalizations, w
 Figuring out that an agent tends to do an action, a cause tends to produce an effect, or an object tends to have a property is crucial knowledge for a cognitive agent.
 Such generalizations give rise to the productivity of human thought and form of foundations of cultural knowledge.
 They allow us to understand the complex world around us and dream up how possible future situations might unfold.
-Crucially, hard-won generalizations can pass between agents. 
+Crucially, hard-won generalizations can passed among agents. 
 Humans communicate generalizations to each other, something which other animals struggle to accomplish.
-Generalizable knowledge can be picked up in pedagogical contexts when ostensive cues are present [@Csibra]. By and large, however, language provides the most flexible and generative way to communicate generalizations. 
-A generalization gives us a relation between a category and a property: It tells us to predict that property of future instances of the category [@HumeTHN].
+Generalizable knowledge can be inferred through demonstration, or in pedagogical contexts when ostensive cues are present [@Csibra]. 
+By and large, however, language provides the most flexible and generative way to communicate generalizations. 
+
+A generalization provides a relation between a category and a property: It tells us to predict that property of future instances of the category [@HumeTHN].
 Thus, generalization can be described as a probability and inductive inference as a probabilistic model [@Tenenbaum2011].
 From a very young age, children make strong inductive inferences from their experience in a way consistent with the Bayesian probability calculus [@Dewar2010; @Gelman1986; @Markman1989].
 
 If generalizations can be described by predictive probabilities, it would stand to reason that the most direct way to communicate a generalization would be to convey probability. 
 Ironically, humans are very bad at describing and interpreting probabilities directly [@Tversky1974].
-Rather than being a deficit, however, the difficulty we have in understanding numerical descriptions of probability might reflect the flexible adaptivity of language to make vague or ambiguous that which shared context can be relied upon to guide interpretation [@Piantadosi2012].
+Rather than be a deficiency, however, the difficulty we have in understanding numerical descriptions of probability might reflect the flexible adaptivity of natural language to make vague or ambiguous that which shared context can be relied upon to guide interpretation [@Piantadosi2012].
 If language has evolved in a way to make efficient the kinds of inductive inferences that are central to human cognition, we would expect the language of generalizations to be simple [c.f., @Leslie2008].
 
 Indeed, generalizations in language (e.g., *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*) are among the simplest forms of compositional expressions. 
 Generalizations do not come in just one syntactic form: "*Dogs* are friendly", "*A library book* should be treated with respect", "*The contemporary foodie* seeks culinary experinces in menu-less restaurants and grandmothers' kitchens" [@Carlson1995; @NickelBlackwell; @sepGenerics].
-Each of these statements has in common the fact that they predicate a property of a category, but the properties themselves apply to instances of the category (unlike, e.g., *Dinosaurs are extinct*). 
+Each of these statements has in common the fact that they predicate a property of a category and the properties themselves apply to instances of the category (unlike, e.g., *Dinosaurs are extinct*). 
 In this way, these statements exhibit *genericity*; they support generalization to new, unobserved, concrete instances.
 
-In this paper, we explore the language of generalizations: How speakers convey generalizations and how listeners interpret them. 
+In this paper, we explore the language of generalizations: How speakers convey generalizations and how listeners interpret them.
 We describe computational models based on a state-of-the-art language interpretation framework --- the Rational Speech Act theory [@Frank2012; @Goodman2013; @Goodman2016].
 Computational modeling has deepened our scientific understanding of complex linguistic phenomena such as politeness [@Yoon2016], hyperbole [@Kao2014], and vagueness [@Lassiter2013]. 
-Until now, however, rational models of communication have focused on statements about *specific* situations: utterances that convey information about a particular entity or event. 
+Until now, however, rational models of communication have focused on statements about *particular* situations: utterances that convey information about a specific entity or event. 
 A formal theory of statements that convey generalizations about entities or events --- statements that extend beyond the here-and-now --- has heretofore been unexplored.
 
 We examine three case studies of generalizations in language: Generalizations about agents, objects, and events. 
@@ -143,9 +139,6 @@ We conclude with a general discussion about the relationship of our theory to ex
 
 
 
-
-
-
 <!-- In stark constrast, a computational understanding of communicating generalizations is not well understood at all.  -->
 
 <!-- Gathering data and observing evidence, however, is costly.  -->
@@ -155,17 +148,8 @@ We conclude with a general discussion about the relationship of our theory to ex
 
 
 
-Empirical work done on category generalizations --- so called *generic language* --- has elucidated another troubling phenomenon.
-<!-- One case study in the language of generalizations is about category generalizations. -->
-<!-- Category generalizations, called *generic statement*, has been studied extensively in cognitive and developmental psychology: *generic* statements, or generalizations about categories. -->
-Generic statements often imply the property is widespread in the category [e.g., *Swans have hollow bones* is a strong statement; much more so than *Some swans have hollow bones*; @Gelman2002; @Cimpian2010; @Brandone2014].
-This characteristically strong interpretation interacts with the indeterminacy in truth conditions to exaggerate evidence. 
-For a variety of features, both children and adults infer that a property is *more* prevalent when told the generalizations than when judging it true or not [@Cimpian2010; @Brandone2014].
 
-<!-- These *strong implications* might underly stereotype formation in social categories [@Rhodes2012]. -->
-<!-- In addition to the flexibility in truth conditions, two phenomena have been noted.  -->
-<!-- The case of *Mosquitos carry malaria* suggests the utterance must in some way be analogous to the quantifier "some" (e.g., *Some mosquitos carry malaria*).  -->
-<!-- Generic language, however, is often interpreted as implying the property is widespread: *Swans have hollow bones* means something different than *Some swans have hollow bones* [@Gelman2002]. -->
+
 
 In this paper, we introduce a formal model for understanding the language of generalizations.
 <!-- The fact that generalizations in language seem to convey something about the propensity but that there seem to be as many interpretations of generalized statements as there are generalizations have confounded formal models aimed to capture their meaning. -->
@@ -174,25 +158,6 @@ We extend a rational model of communication --- the Rational Speech Act theory -
 We provide a number of stringest tests of this theory to explain generalizations about categories, events, and causal forces. 
 
 
-<!-- These three phenomena---flexible truth, strong interpretations, and evidence exaggeration---have confounded all formal models aimed to capture the meaning of generalizations in language. -->
-<!-- Informal theories have argued that the nature of concepts and their relations are inextricably tied to their linguistic expression [@Leslie2007; @Prasada2013]. -->
-<!-- Formal theories have limited themselves to a measurable quantitative degree (e.g., how prevalent a property is in a category), which, in isolation, is difficult to reconcile with the extreme flexibility of generic language. -->
-<!-- Here, we present a theory formalizing the inuition that the core meaning of a linguistic generalization is simple, but underspecified, and that general principles of communication may be used to resolve the precise meaning in context.  -->
-<!-- This theory inherently relies upon measurable quantities (i.e., prevalence) but situates it within a Bayesian agent with potentially structured prior knowledge, providing a bridge to conceptual theories.  -->
-<!-- We find that this formalism (and not simpler ones) explains all three empirical puzzles. -->
-
-<!-- When interpretations are compared directly against truth conditions (i.e., how prevalent a property would need to be for the generic to be true),  -->
-
-<!-- Three empirical phenomena make generalizations in language difficult to formalize. -->
-<!-- The conditions under which a generalizations becomes "true" are variable: -->
-
-
-<!-- Existing work in both adults and children suggests that choosing to communicate a generalization can be used to exagerate evidence [@Cimpian2010; @Brandone2014]. -->
-
-<!-- In addition to having manifold interpretations, what makes linguistic generalizations true or false (i.e., their truth conditions) is also a mystery. -->
-<!-- The statement *Birds lay eggs* is true even though only about half of them do (namely, the females). -->
-<!-- Half of birds are also female, and yet *Birds are female* sounds like a strange thing to say. -->
-<!--  while *Canadians are right-handed* is also weird, even though the vast majority of them are.  -->
 
 <!-- How can generalizations in language have such flexible truth conditions while simultaneously carrying intuitive and, at times, very strong implications? -->
 <!-- This question has been investigated by psychologists, linguists, and philosophers since @Carlson1977. -->
@@ -223,16 +188,6 @@ Generic language is ubiquitous in everyday conversation as well as in child-dire
 and though English and many other languages do not possess an unambiguous form devoted to generic meaning [@Behrens2000, @AlMalki2014].
 Additionally, generics are the primary way by which speakers discuss social categories, making them key to propagating stereotypes [@GelmanEtAl2004; @Rhodes2012; @Leslie2015] and impacting motivation [@Cimpian2010motivation].
 Despite their psychological centrality, apparent simplicity, and ubiquity, a formal account of generic meaning remains elusive.
-
-The major issue in formalizing generic language is determining what makes a generic sentence true or false.
-At first glance, generics feel like universally-quantified statements as in \emph{All swans are white}. 
-Unlike universals, however, generics are resilient to counter-examples (e.g., \emph{Swans are white} even though there exist black swans). 
-Intuitions, then, fall back to something more vague like \emph{Swans, in general, are white} because indeed most swans are white.
-But mosquitos, in general, do not carry malaria, yet everyone agrees \emph{Mosquitos carry malaria}.
-Interpreting the generic as meaning "most" (i.e. \emph{Most swans are white}) captures many cases, but cannot explain why \emph{Robins lay eggs} and \emph{Mosquitos carry malaria} are so intuitively compelling: Only adult female robins lay eggs and a very tiny fraction of mosquitos actually carry malaria.
-Indeed, it appears that any \emph{truth condition} stated in terms of how common the property is within the kind violates intuitions.
-Consider the birds: for a bird, being female practically implies you will lay eggs (the properties are present in the same proportion), yet we say things like \emph{Birds lay eggs} and we do not say things like \emph{Birds are female}.
-
 
 
 How can generics have such flexible truth conditions while simultaneously carrying strong implications?
@@ -274,7 +229,7 @@ apa_table(df.tab,
 ```
 
 We can make particular statements about agents, objects, and events.
-We can say things like "My dog is friendly.", "John ran this afternoon.", or "My friend drank moonshine and it made him blind."
+We can say "My dog is friendly.", "John ran this afternoon.", or "My friend drank moonshine and it made him go blind."
 To consider the corresponding generalizations (i.e., "Dogs are friendly", "John runs", "Drinking moonshines makes you go blind"), we must say exactly how the particular relates to the generalization.
 We consider the generalization to be about a *category* and the particular to correspond to *instances* of that category.
 Thus, *dog* is an instance of the category \textsc{dogs}, *John at a particular time* is an instance of the category of \textsc{john}, and *drinking moonshine at a particular time* is an instance of the category of \textsc{drinking moonshine} (see Table \ref{tabgenPart}).
@@ -313,31 +268,30 @@ For abstract, generalizable knowledge to remain in a culture, it must be able to
 
 # Communicating Generalizations
 
-To understand generalizations in language we must first understand language.
-Understanding language depends upon assumptions interlocutors make about each other and can exhibit a complex sensitivity to context [@Clark1996; @Grice1975; @Levinson2000].
+To understand how generalizations are conveyed in language, we start by considering general purposes language understanding principles.
+Foremost, understanding language depends upon assumptions interlocutors make about each other and can exhibit a complex sensitivity to context [@Clark1996; @Grice1975; @Levinson2000].
 Though once viewed as a wastebasket in which to dump unexplained loose ends in service of more rigorous formal analysis, *pragmatics* --- or language understanding in context --- has seen an emergence of formal frameworks that connect closely with behavioral data [@Franke2015].
-One dominant framework --- the Rational Speech Act theory --- has had considerable success in providing a formal account of pragmatic language phenomena [i.e., interactions between language and context; @Goodman2016]
+
+One dominant framework --- the Rational Speech Act theory --- has had considerable success in providing a formal account of pragmatic language phenomena [i.e., interactions between language and context; @Goodman2016].
 This framework has been used to explain, in precise mathematical terms, how it is that utterances like "some of the kids failed the test" are interpreted to mean "some (but not all) of the kids failed the test" [@Goodman2013], how "I waited a million years to get a table" is interpreted as "I waited an obnoxiously long time to get a table" [@Kao2014], how "John is tall" can mean John is 5'4" is John if a 12-year-old but means John is 6'2" if he is 24-years-old [@Lassiter2015], and how "Your talk was fine" can be a polite way of saying your talk was less than fine [@Yoon2016]. 
 Computational modeling has pushed our understanding of these complex linguistic phenomena, but so far, rational models of language use have focused on *specific* statements: utterances that convey information about a particular entity or situation. 
 A formal theory of statements that convey generalizations about entities or situations ---  statements that extend beyond the here-and-now --- has remained elusive.
 
-Formalizing the meaning of linguistic expressions requires specifying *truth conditions*.
-Using the tools of formal semantics, we need to specify a truth function: A function from states of the world to truth-values. 
-This kind of machinery is used to formalize the intuition that utterances can truthfully apply to some possible worlds and would be false of others.
-A simple meaning function for a generalization would be a threshold on an agent's posterior probability: $\denote{u_{generalization}}(h, \theta): \{ h: h > \theta\}$, where $\denote{u_{generalization}}$ represents the semantic meaning of a statement conveying a generalization.
-Following convention in formal semantics, we treat this as a function, applied to variables $h$ (a probability or rate) and $\theta$ (a threshold).
-This function returns the sets of worlds that are consistent with $h > \theta$.
+Formalizing the meaning of linguistic expressions requires specifying *truth conditions*, or the states of the world in which the expression is true vs. false.
+Using the tools of formal semantics, we specify a *truth function*: A function from states of the world to truth-values. 
+A simple truth function for a generalization could be a threshold on an agent's posterior probability: $\denote{u_{generalization}}(h, \theta): \{ h: h > \theta\}$, where $\denote{u_{generalization}}$ represents a function from a state of the world $h$ and a threshold variable $\theta$ to the set of the states of the world where $h > \theta$. 
+Applying this function to a set of worlds returns a set of worlds that are consistent with $h > \theta$.
 
-This simple, threshold meaning for a generalization is problematic.
+Though intuitively appealing and simple, this threshold-based truth function for a generalization is problematic.
 <!-- fixed value of $\theta$ seems unlikely. -->
-The generalization *Mary smokes cigarettes* suggests a daily-habit, while *Bill writes poems* implies something much weaker, perhaps a poem every few weeks.
+The generalization *Mary smokes cigarettes* suggests a daily-habit (e.g., $h > \text{once a day}$), while *Bill writes poems* implies something much weaker, perhaps a poem every few weeks (e.g., $h > \text{once a month}$.
 *Drinking moonshine makes you go blind* and so does *staring at the sun*, but neither causal statement tells you to precisely the increased relative risk.
 *Mosquitos carry malaria* is a true statement despite the prevalence of carrying malaria among mosquitos being a just a fraction of 1\%, while *Ducks are female* might seem like a weird thing to say, even though the rate is much higher than the malaria-carrying mosquitos.
 Finally, *Ducks lay eggs* is a good generalization, though the rate is the same as *Ducks are female*.
 The meaning of generalizations, it seems, cannot reduce to a single, precise quantitative statement; this is the major stumbling block to providing a formal account of genericity [@Carlson1977; @Leslie2008; @NickelBlackwell].
 
-We hypothesize that meaning of a lingusitic generalization can be captured by a simple, but underspecified, meaning. 
-Concretely, we adopt a threshold semantics as described above, but imagine that $\theta$ is not a fixed property of language.
+We hypothesize the simple threshold-based truth function for lingusitic generalizations can be rescued by positing an *underspecified* meaning. 
+That is, we adopt a threshold semantics as described above, but imagine that $\theta$ is not a fixed property of language but rather is drawn from a prior probability distribution.
 In this formulation, listeners infer thresholds along with speakers' intended meanings in context.
 We formalize this hypothesis with a "literal listener" model from the Rational Speech Act framework [@Frank2012; @Goodman2013; @Goodman2016].
 
@@ -433,8 +387,8 @@ This can be modeled by a pragmatic listener who reasons about the threshold, but
 
 \begin{eqnarray}
 L_{1}(h, \theta \mid u) &\propto& S_{1}(u \mid h, \theta) \cdot P(h) \cdot P(\theta) \label{eq:L1l} \\
-S_{1}(u \mid h) \propto \exp{(\lambda \cdot U(u; h; \theta)  } \label{eq:S1l} \\
-U(u; h; \theta) = \ln{  L_0(h \mid u, \theta) } - C(u) \label{eq:utilS1nomarginalization} \\
+S_{1}(u \mid h) &\propto &\exp{(\lambda \cdot U(u; h; \theta)  } \label{eq:S1l} \\
+U(u; h; \theta)& =& \ln{  L_0(h \mid u, \theta) } - C(u) \label{eq:utilS1nomarginalization} \\
 L_{0}(h \mid u, \theta) &\propto& {\delta_{\denote{u}(h, \theta)}} \cdot P(h) \label{eq:L0l}
 \end{eqnarray}
 
@@ -763,21 +717,32 @@ all.simulations %>%
 <!-- In principle, thresholds could be learned over time for different contexts, but here we assume the listener has no informative knowledge about the semantic variable $P(\theta) = \text{Uniform([0, 1])}$. -->
 <!-- The pragmatic listener $L_1$ (Eq. \ref{eq:L1}) is thus a model of *generic interpretation*: Upon hearing a generic, how should a listener update her beliefs? -->
 
-# Communicating generalizations about events
+# Communicating Generalizations about Events
 
 *Habitual* language (e.g,. "Mary smokes."; "My car won't start.") conveys generalizations about events. 
-In this first set of experiments, we test whether or not the context-sensitivity of these generalizations can be explained by an underspecified threshold semantics.
-As our first case study, we focus on a particular class of events: people doing actions.
+As a first test of our communicative theory, we examine the conditions under which such statements are endorsed as well as the frequencies implied by such statements. 
+In this case study, we focus on a particular class of events: people doing actions.
 
-The internal structure of events can differ in several ways, one obvious way being the duration of the event [CITE event people?].
-For example, the event of *smoking a cigarette* takes between 5 - 10 minutes, while the event of *wearing socks* probably lasts for several hours.
-We take as a starting point the fact that events can be segmented and aggregated; the relevant dimension becomes the frequency with which the event occurs.
+This set of experiments is organized as follows.
+In the **Event Prior Elicitation** study (Expt. 1), we measure participants' latent prior belief distribution over the frequencies of people doing various actions (e.g., how often people *run*).
+In the **Endorsing Habitual Language** experiment (Expt. 2), we introduce a separate participants to different characters, each of whom have done some action with some frequeny (e.g., *In the last month, John ran 3 times*), and ask them to judge the corresponding generalization (e.g., *John runs*).
+In the **Interpreting Habitual Language** experiment (Expt. 3), we invert this paradigm, supplying participants with the generalization (e.g., *John runs*) and ask them to juge how often the person does some action (e.g., answer the question: *How often do you think John runs?*).
 
-In our main test of the hypothesis, we collect felicity or truth judgments for habitual statements about people's actions.
-The computational model described in Eq. \ref{eq:S1} is fully specified except for the prior distribution over the frequency of an event $P(h)$, which plausibly varies across different kinds of events.
-First, we measure the prior distribution, and use it and the computational model to predict human endorsement of habitual statements.
+We evaluate our family of RSA models, in addition to some ad-hoc non-Bayesian models, on these experimental data.
+Because the ad-hoc models do not comprise a formalized alternative theory of endorsement and interpretation, but rather statistical descriptions of the data, we compare the ad-hoc models to the simplest RSA model on endorsement and interpretation, separately.
+After presenting the results of Expts. 2 \& 3, we compare RSA models on their ability to jointly predict both endorsement and interpretation data simultaneously. 
 
-## Prior elicitation
+
+<!-- The internal structure of particular events can differ in substantial ways. -->
+<!-- For example, events differ in their expected duration. -->
+<!-- For example, the event of *smoking a cigarette* plausibly takes between 5 - 10 minutes, while the event of *wearing socks* probably lasts for several hours. -->
+<!-- We take as a starting point the fact that events can be segmented and aggregated; the relevant dimension becomes the frequency with which the event occurs. -->
+
+<!-- In our main test of the hypothesis, we collect felicity or truth judgments for habitual statements about people's actions. -->
+<!-- The computational model described in Eq. \ref{eq:S1} is fully specified except for the prior distribution over the frequency of an event $P(h)$, which plausibly varies across different kinds of events. -->
+<!-- First, we measure the prior distribution, and use it and the computational model to predict human endorsement of habitual statements. -->
+
+## Experiment 1: Event Prior Elicitation
 
 In this experiment we elicit the prior $P(h)$ for different events in order to generate model predictions for corresponding habitual statements.
 For the case of statements about the behaviors of people, $P(h)$ can be conceived as a distribution over *different people*, each of whom do the behavior with a different frequency.
@@ -805,22 +770,21 @@ Items were chosen to intuitively cover a range of likely frequencies of action, 
 
 #### Procedure
 
-The experiment began by having participants input the names of eight friends or family members that they could answer some questions about.
+The experiment began by having participants input the names of eight friends, family members, or people they knew well that they could answer some questions about.
 Participants were told that these names would only be used to assist them in reasoning through the second part of the experiment. 
-They were advised to restrict themselves to consider only adult friends or family members.
 
 In the second phase of the experiment, participants were asked: "For each of the following people, how often does he or she \textsc{do action}?"
 Participants had to fill in the blanks in sentences of the form: "\text{friend does action} ___ times per ___".
 The first blank was a text box where participants could enter a number.
-The second blank was a drop-down menu where participants could select a time interval from the following options: \{week, month, year, 5 years\}
+The second blank was a drop-down menu where participants could select a time interval from the following options: \{week, 2 weeks, month, 2 months, 6 months, year, 2 years, 5 years\}
 They completed this task for each of their eight listed friends or family members.
 To make the task slightly less tedious, there was an option where participants could set the time window for all eight of their responses.
 
-In order to get sufficient data for actions that are relatively uncommon (e.g., *climbs mountains*, *writes novels*), if participants responded that all of their friends do the action with a frequency of "0 times" (in whatever interval), a follow-up question appeared that read: "Do you know anybody who has \textsc{done action} before?". 
+In order to get sufficient data for actions that are relatively uncommon (e.g., *climbs mountains*, *writes novels*), if participants responded that all of their friends do the action with a frequency of "0 times" (in some interval), a follow-up question appeared that read: "Do you know anybody who has \textsc{done action} before?". 
 If they responded "Yes", another follow-up question appeared that read: "How often do you think that person \textsc{does action}?", with the same dependent measure format as before.
 
 Participants completed these elicitation trials for a random subset of 15 items, presented in a randomized order.
-The experiment can be viewed at \url{http://stanford.edu/~mtessler/generics-paper/experiments/habituals/priors/friends-and-family-1.html}.
+The experiment can be viewed at \url{http://stanford.edu/~mtessler/generics-paper/experiments/habituals/priors/friends-and-family-1.html}
 
 \begin{figure*}[t]
 \centering
@@ -902,10 +866,10 @@ VIZ (as before)?
 <!-- Some items show substantial differences between the genders (e.g., *wears a bra*) and some show subtle differences (e.g., *watches professional football*).  -->
 <!-- We will explore the possibility of different truth conditions for habituals of different gendered characters in Experiment 2, for select items with priors that differ substantially by gender. -->
 
-## Experiment 1: Endorsing generalizations about events
+## Experiment 2: Endorsing Habitual Language
 
 A present-tense habitual sentence is of the form \textsc{singular noun phrase} $+$ \textsc{present tense simple verb phrase} (e.g. \emph{Bill smokes cigarettes.}). 
-We next explore the endorsements of habituals of this form made from the items whose propensity priors were measured the prior elicitation task. 
+We next explore the endorsements of habituals of this form made from the items whose priors were measured the prior elicitation task. 
 
 ### Method
 
@@ -924,8 +888,10 @@ The particular intervals used (\{weeks, months, years\}) were selected after exa
 The items were the same as in the prior elicitation task.
 
 Participants were asked whether they agreed or disagreed with the corresponding habitual sentence: "\textsc{person does x}" (e.g., \emph{Bill smokes cigarettes}).
-Participants completed 37 trials, which were composed of the 27 items from the prior elicitation task and 4 additional filler items not in the prior elicitation task randomly paired with either a male or female character name. 6 of these items were then also paired with a name of the opposite gender (e.g., participants saw both a female character and a male character who watched professional football). These were used for an exploratory analysis on gender differences.
-The 4 filler items were not used in the prior elicitation because they described illegal activities (e.g., "doing cocaine").
+Participants completed 37 trials, which were composed of the 27 items from the prior elicitation task and 4 additional filler items not in the prior elicitation task randomly paired with either a male or female character name.
+6 of these items were then also paired with a name of the opposite gender (e.g., participants saw both a female character and a male character who watched professional football).
+These were used for an exploratory analysis on gender differences.
+The 4 filler items were not used in the prior elicitation because they described illegal activities (e.g., "doing cocaine", "stealing cars").
 The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/experiments/truth-judgments/tj-2.html}.
 
 ### Results
@@ -933,17 +899,19 @@ The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/exp
 #### Behavioral results
 
 On each trial of the experiment, the participant was told a person did a particular action 3 times during some time window. 
-A simple null hypothesis is that habitual statements convey that the a person *has done this thing before*. 
+A simple null hypothesis is that habitual statements convey that the a person *has done this action before*. 
 Under this hypothesis, all of the items used in our experiment would qualify as good habitual statements.
 A more sophisticated alternative hypothesis is that the degree to which the habitual statement is good is the frequency itself. 
 Our computational model predicts that the the degree to which the habitual statement is good is the frequency of event, normalized by the alternative possible frequencies under the prior.
 
-Both alternative hypotheses can immediately be ruled by out by visual inspection of Figure \ref{fig:tjScatters} (left), which shows the correspondence between the frequency of the event (transformed a log times-per-year scale) and the human-judged felicity of the corresponding habitual sentence. 
+[MHT: SENTENCE ABOVE IS THE SOFT-SEMANTICS INTERPRETATION]
+
+Both of the simple alternative hypotheses can immediately be ruled by out by visual inspection of Figure \ref{fig:tjScatters} (left), which shows the correspondence between the frequency of the event (transformed to a log times-per-year scale) and the human-judged felicity of the corresponding habitual sentence. 
 First, it is clear that not all habitual statements are strongly assented to, even though it is true that all the stimuli involved an agent doing the action with some non-zero frequency.
 It is also clear that a habitual sentence can receive strong agreement even when the actions are very infrequent (log frequency $\sim$ -1; 3 times in a 5-year interval; e.g. \emph{writes novels}, \emph{climbs mountains}), arguing against the second alternative.
-We also see even when actions are done relatively frequently (e.g. 3 times in a one month interval; log frequency $\sim$ 5), there are habitual sentences participants are reluctant to endorse completely (e.g. \emph{wears socks}, \emph{drinks coffee}). 
-In our data, actions completed with a high frequency (3 times in a one week interval; log frequency $\sim$ 6.5) receive at a minimum 75\% endorsement, though there is still variability among them (e.g. between 10-25\% of people disagree with \emph{wears a watch} and \emph{wears a bra}). %, suggesting that even actions that are completed almost everyday can insufficient to generalize.
-Overall, log frequency of action predicts only a fraction of the variability in responses ($r^2(93) = 0.33$).
+We see in addition that even when actions are done relatively frequently (e.g. 3 times in a one month interval; log frequency $\sim$ 5), some habitual sentences receive less than full endorsement (e.g. \emph{wears socks}, \emph{drinks coffee}). 
+In our data, actions completed with a high frequency (3 times in a one week interval; log frequency $\sim$ 6.5) receive at a minimum 75\% endorsement, though there is still variability among them (e.g. between 10-25\% of people disagree with \emph{wears a watch} and \emph{wears a bra}).
+Overall, the raw (log) frequency of action predicts only a fraction of the variability in responses ($r^2(93) = 0.33$).
 For actions that are done on the time scale of years or longer (lower median of frequency), frequency itself no longer explains the endorsements ($r^2(50) = 0.07$)
 
 We observe that none of our items receive less than 25\% endorsement (i.e., a maximum of about 75\% of participants disagree with the felicity of the utterance).
@@ -989,7 +957,12 @@ Only our pragmatic speaker model who reasons about a listener is able to capture
 In this experiment, we supplied participants with a statement about how often a person has done the action in the past and asked them to judge the correspoding habitual statement.
 This raises an interesting question: Does the propensity communicated by a generalization indicate an objective, past frequency or a subjective, future expectation?
 
-## Experiment 2: Communicating predictive propensities
+## Experiment 3: Interpreting Habitual Language
+
+
+
+
+## Experiment 4: Communicating predictive propensities
 
 People change: They might remember how much they enjoyed hiking and plan to do it more in the future; They might finally decide to quit smoking.
 Yet, there is an ambiguity in the propensity degree semantics we are positing.
@@ -1089,6 +1062,8 @@ We design this set of experiments with the goal of showing that:
 (2) abstract domain theories influence interpretation and endorsement of causals via the prevalence prior.
 Also, by designing the experiments in the domain of causal language, we also demonstrate the generality of our theory of communicating generalizations.
 
+## Experiment 4: Endorsing and Interpreting Causal Language
+
 ## Method
 
 The experiment is a single-trial experiment with 2 phases to the trial.
@@ -1167,6 +1142,52 @@ For example, people's theories of physical causation tends to be more determinis
 # Communicating Generalizations About Categories
 
 
+The major issue in formalizing generic language is determining what makes a generic sentence true or false.
+At first glance, generics feel like universally-quantified statements as in \emph{All swans are white}. 
+Unlike universals, however, generics are resilient to counter-examples (e.g., \emph{Swans are white} even though there exist black swans). 
+Intuitions, then, fall back to something more vague like \emph{Swans, in general, are white} because indeed most swans are white.
+But mosquitos, in general, do not carry malaria, yet everyone agrees \emph{Mosquitos carry malaria}.
+Interpreting the generic as meaning "most" (i.e. \emph{Most swans are white}) captures many cases, but cannot explain why \emph{Robins lay eggs} and \emph{Mosquitos carry malaria} are so intuitively compelling: Only adult female robins lay eggs and a very tiny fraction of mosquitos actually carry malaria.
+Indeed, it appears that any \emph{truth condition} stated in terms of how common the property is within the kind violates intuitions.
+Consider the birds: for a bird, being female practically implies you will lay eggs (the properties are present in the same proportion), yet we say things like \emph{Birds lay eggs} and we do not say things like \emph{Birds are female}.
+
+
+
+
+<!-- One case study in the language of generalizations is about category generalizations. -->
+<!-- Category generalizations, called *generic statement*, has been studied extensively in cognitive and developmental psychology: *generic* statements, or generalizations about categories. -->
+Empirical work done on category generalizations --- so called *generic language* --- has elucidated another troubling phenomenon.
+Generic statements often imply the property is widespread in the category [e.g., *Swans have hollow bones* is a strong statement; much more so than *Some swans have hollow bones*; @Gelman2002; @Cimpian2010; @Brandone2014].
+This characteristically strong interpretation interacts with the indeterminacy in truth conditions to exaggerate evidence. 
+For a variety of features, both children and adults infer that a property is *more* prevalent when told the generalizations than when judging it true or not [@Cimpian2010; @Brandone2014].
+
+<!-- These *strong implications* might underly stereotype formation in social categories [@Rhodes2012]. -->
+<!-- In addition to the flexibility in truth conditions, two phenomena have been noted.  -->
+<!-- The case of *Mosquitos carry malaria* suggests the utterance must in some way be analogous to the quantifier "some" (e.g., *Some mosquitos carry malaria*).  -->
+<!-- Generic language, however, is often interpreted as implying the property is widespread: *Swans have hollow bones* means something different than *Some swans have hollow bones* [@Gelman2002]. -->
+
+<!-- These three phenomena---flexible truth, strong interpretations, and evidence exaggeration---have confounded all formal models aimed to capture the meaning of generalizations in language. -->
+<!-- Informal theories have argued that the nature of concepts and their relations are inextricably tied to their linguistic expression [@Leslie2007; @Prasada2013]. -->
+<!-- Formal theories have limited themselves to a measurable quantitative degree (e.g., how prevalent a property is in a category), which, in isolation, is difficult to reconcile with the extreme flexibility of generic language. -->
+<!-- Here, we present a theory formalizing the inuition that the core meaning of a linguistic generalization is simple, but underspecified, and that general principles of communication may be used to resolve the precise meaning in context.  -->
+<!-- This theory inherently relies upon measurable quantities (i.e., prevalence) but situates it within a Bayesian agent with potentially structured prior knowledge, providing a bridge to conceptual theories.  -->
+<!-- We find that this formalism (and not simpler ones) explains all three empirical puzzles. -->
+
+<!-- When interpretations are compared directly against truth conditions (i.e., how prevalent a property would need to be for the generic to be true),  -->
+
+<!-- Three empirical phenomena make generalizations in language difficult to formalize. -->
+<!-- The conditions under which a generalizations becomes "true" are variable: -->
+
+
+<!-- Existing work in both adults and children suggests that choosing to communicate a generalization can be used to exagerate evidence [@Cimpian2010; @Brandone2014]. -->
+
+<!-- In addition to having manifold interpretations, what makes linguistic generalizations true or false (i.e., their truth conditions) is also a mystery. -->
+<!-- The statement *Birds lay eggs* is true even though only about half of them do (namely, the females). -->
+<!-- Half of birds are also female, and yet *Birds are female* sounds like a strange thing to say. -->
+<!--  while *Canadians are right-handed* is also weird, even though the vast majority of them are.  -->
+
+
+
 # Empirical Test 1: Flexible Truth Conditions
 
 Any theory of generic language must explain their puzzling flexibility of usage with respect to prevalence.
@@ -1180,7 +1201,10 @@ The pragmatic speaker model $S_2$ is fully-specified except for the prior distri
 To compare the model to empirical truth judgments, we thus first measure the prior distribution over prevalence of these properties (Expt.~1a).
 In Expt.~1b, we collect human judgements about the acceptability of the generic sentences. 
 
-## Experiment 1a: Prevalence Priors
+## Experiment 5: Endorsing Generic Language
+
+
+### Measuring prevalence and the prevalence prior
 
 The prior $P(x)$ (in Eqs.~\ref{eq:L1}, \ref{eq:L0}) describes the belief distribution on the prevalence of a given property (e.g. \textsc{lays eggs}) across relevant categories. 
 In exploring the model, we saw that the shape of this distribution affects model predictions, and this shape may vary significantly among different properties.
@@ -1221,7 +1245,7 @@ Properties like \textsc{doesn't attack swimmers} are very right-skewed; here, ev
 Some properties have priors that are unimodal with low variance (e.g. \textsc{is female}); these properties are present in every kind in almost exactly the same proportion and thus are too obvious and certain to allow for an informative generic utterance: The posterior is not very different from the prior. 
 With $P(x)$ now empirically established, we can test if our speaker model predicts human truth judgments of generic statements about these properties.
 
-## Experiment 1b: Truth Judgments
+## Experiment 5b: Truth Judgments
 
 ### Method
 
@@ -1354,6 +1378,9 @@ The implication of this finding is that conceptual structure may indeed find its
   \label{fig:pp-priorModel}
 \end{figure}
 
+## Experiment 6: Interpreting Generic Language (Replication and Extension of Cimpian et al, 2010)
+
+## Experiment 7: The asymmetry between interpretation and endorsement (Replication and Extension of Cimpian et al., 2010)
 
 
 # Empirical Test 2: Interpreting Novel Generics
