@@ -743,7 +743,7 @@ Finally, having validated a communicative theory of genericity, we probe the the
 <!-- The computational model described in Eq. \ref{eq:S1} is fully specified except for the prior distribution over the frequency of an event $P(h)$, which plausibly varies across different kinds of events. -->
 <!-- First, we measure the prior distribution, and use it and the computational model to predict human endorsement of habitual statements. -->
 
-## Experiment 1: Event Prior Elicitation
+## Experiment 1: Eliciting the Frequency Prior for Events
 
 In this experiment we elicit the prior $P(h)$ for different events in order to generate model predictions for corresponding habitual statements.
 For the case of statements about the behaviors of people, $P(h)$ can be conceived as a distribution over *different people*, each of whom do the behavior with a different frequency.
@@ -1082,32 +1082,60 @@ In the remaining sections of this paper, we extend our theory to communicating g
 
 # Communicating Generalizations About Causes
 
-Leraning that one event consistently tends to result in another event serves as the foundation for building an intuitive theory of causailty.
+Learning that an event consistently tends to result in another event serves as a foundation for an intuitive theory of causality (CITE noah's and kemp's causality and causal models papers?).
 Communicating generalizations about causally related events is potentially highly useful because no one individual can run all the experiments that she wants to run in a life time. 
-It's useful to divide labor and have some members research which modifications to the food preparation procedure are good modifications while others look into different ways of cutting stone. 
+The history of civilizations has shown that it is incredibly useful to divide labor: Some members can investigate modifications to the food preparation procedures while others can examine different ways of cutting stone. 
 
 Our framework for communicating generalizations makes predictions about statements conveying genericty about a category of causal events. 
-In this domain, an instance of the category is a single causal event (e.g., adding a particular amount of a particular kind of yeast to an actual at a particular time of the day). 
+In this domain, an instance of the category is a single causal event (e.g., adding a particular amount of a particular kind of yeast to an actual piece of dough at a particular time of the day). 
 @Gerstenberg
 The study of *elemental causal induction* is itself very subtle, depending on an observer's background theory of causality. [@Griffiths2005; @Schulz].
 
-We design this set of experiments with the goal of showing that:
-(1) background knowledge that gives rise to the prevalence priors are causally related to the interpretation and endorsement of causals
+We design this set of experiments with the goal of testing whether:
+(1) background knowledge that gives rise to the prevalence priors is causally related to the interpretation and endorsement of causal statements, and 
 (2) abstract domain theories influence interpretation and endorsement of causals via the prevalence prior.
 Also, by designing the experiments in the domain of causal language, we also demonstrate the generality of our theory of communicating generalizations.
 
-## Experiment 5: Endorsing and Interpreting Causal Language
 
-## Method
+In Experiment 5, we manipulate participants' beliefs about a causal system and measure their updated beliefs about causal power.
+In Experiment 6, we test whether these manipulated priors give rise to different endorsements of causal statements.
+In Experiment 7, we test the influence of these manipulated priors on interpretations of causal language.
+We conclude this section by comparing RSA models to the endorsement and interpretation data.
+
+
+## Experiment 5: Manipulating the Prevalence Prior for Causes
+
+People have theories about how different casusal systems work. 
+Physical causation tends to have a deterministic bend to it: If one billiard ball hits a second with a certain force, the second will respond by moving with a certain force. 
+If the experiment is repeated exactly, we would expect the same results.
+In other domains, probabilistic causes are plausible: Giving a sick animal a certain medication may sometimes make it better and other times it won't. 
+Finally, some events could have multiple possible causes: Testing whether or not a drug makes an animal *blink* might be difficult because animals will tend to *blink* even without intervention. 
+
+In this experiment, we examine causal domains that vary as to whether or not probabilistic causes are plausible and whether or not a background cause of the event is intuitively present.
+We introduce participants to the results of several experiments about each domain and see how different experimental results update participants' beliefs about causal power in these domains.
+
+
+### Method
+
+
+#### Participants 
+
+We recruited N participants from Amazon's Mechanical Turk.
+Participants were restricted to those with U.S. IP addresses and who had at least a 95\% work approval rating.
+The experiment took on average N minutes and participants were compensated \$N.NN for their work.
+
+
+<!-- The different kinds of system are described in more detail below. -->
+<!-- Participants are then told that the team of scientists is conducting experiments with different possible causes (e.g., different kinds of foods). -->
+
 
 The experiment is a single-trial experiment with 2 phases to the trial.
-In the first phase, participants are given a story about an experimental domain in question.
-This information is common to all 3 between-subjects conditions.
+In the first phase, participants are given a story about a causal domain in question.
 In the second phase, participants are asked to make a judgment corresponding to the between-subjects condition they are assigned (prior, endorsement, interpretation). 
 
-### Procedure
+#### Procedure
 
-Participants re that they are an astronaut-scientist on a distant planet trying to figure out how some system works (e.g., how to make a certain kind of animal more alert). They are told:
+Participants are told that they are an astronaut-scientist on a distant planet trying to figure out how some system works (e.g., how to make a certain kind of animal more alert). They are told:
 
 \begin{quotation}
 You are an astronaut-scientist exploring a distant planet. 
@@ -1118,42 +1146,14 @@ The results are shown below:
 
 Participants then must click a button to show the results of the experiments.
 Experiment results appear one at a time (upon a click), and are described verbally (e.g., The team tested Food A on 100 daiths. 30 of them were made more alert.) as well as put into a table showing the number of successes per number of attempts (always 100 per experiment). 
-Eleven "experiments" are shown, though one of the experiments had their results misplaced so they cannot report on the results at that point.
+Eleven "experiments" are shown, though one of the experiments had their results misplaced so they cannot report on the results at that point (the significance of this "missing experiment" will be described in Experiment 6).
 After participants view the results of the 10 "experiments" (and 1 missing experiment), they are told to review the results of the experiments before continuing. 
 
-Upon proceeding to phase 2, the results of the "experiments" are removed and participants are assigned to one of three conditions: (a) prior / manipulation check; (b) endorsement; or (c) interpretation. 
-We will describe each of those, and then discuss the materials in more detail.
-
-### Conditions
-
-#### Prior / manipulation check
-
-In the first part of the trial (described above), participants are shown a distribution of results of experiments.
-We do not assume that the distributions shown in the trial are directly encoded as participants' prior beliefs about causal power.
-People have higher-order beliefs about diferrent kinds of causal systems.
-To highlight just one dimension of variability, some systems are likely to have deterministic cause-effect relations (e.g., physical systems), while others be more permissible of probabilistic causes (e.g., behavioral, psychological, or social systems). 
-We harness this variability in the design of our materials (described below), and measure participants' nwe beliefs about the domain in question, after having seen the results of the experiment.
-Thus, we manipulate participants' prior beliefs and then measure their resulting predictions about future instances of domain. 
-We expect the manipulation by way of "experiments" to interact with participants' domain knowledge.
-
-When the participant clicks to advance to the next slide (phase 2), the results of the experiments are removed and participants are told they there were some more experiments conducted, and they were asked to predict the results of the next 4 experiments.
+Upon proceeding to phase 2, the results of the "experiments" are removed and participants are told more experiments were conducted.
+Participants were asked to predict the results of the next 4 experiments.
 Participants were given 4 slider bars ranging from 0 - 100, and asked to predict the next four treatments (e.g., foods M, N, P, and Q). 
 
-#### Endorsement
-
-In phase 2 of the endorsement task, the participant is told that the results of the "lost experiment" were found. 
-The results are reported to the participant in terms of how many out of 100 of the attempts were successful. 
-Participants were then asked to judge the causal sentence: "Treatment X makes the effect happen". 
-Partipants responded by either clicking "Yes" or "No". 
-
-#### Interpretation
-
-In phase 2 of the endorsement task, the participant is told that the results of the "lost experiment" were found and that their colleague has reported to them about the results using the causal: "Treatment X makes the effect happen". 
-Participants were then asked to guess how many out of the 100 of the attempts were successful.
-Partipants responded using a slider bar that ranged from 0 - 100.
-
-
-### Materials 
+#### Materials 
 
 The kind of causal events in question were selected to correspond roughly to different positions in a theoretically meaningful space defined by the model.
 Research in elemental causal induction suggests people use causal models that correspond to a mixture probability distributions, where one component of the distribution is a consequence to the intrinsic causal force while the other component is a result of some extrinsic background cause.
@@ -1163,17 +1163,73 @@ A second dimension of manipulation corresponds to the extent to which *determini
 For example, people's theories of physical causation tends to be more deterministic (i.e., favoring probabilities 1 and 0) then causation in the social or psychological domain. 
 
 
-### Participants 
-
-<!-- The different kinds of system are described in more detail below. -->
-<!-- Participants are then told that the team of scientists is conducting experiments with different possible causes (e.g., different kinds of foods). -->
+### Results
 
 
-## Results
+...
 
-### Model predictions
+## Experiment 6: Endorsing Causal Language
+
+In this experiment, we tested whether the manipulated priors of Expt. 5 are causally related to the endorsement of casusal statements.
+
+### Method
+
+Most of the experiment was identical to that of Experiment 5.
+
+#### Participants
+
+We recruited N participants from Amazon's Mechanical Turk.
+Participants were restricted to those with U.S. IP addresses and who had at least a 95\% work approval rating.
+None of the participants had participated in Experiment 5. 
+The experiment took on average N minutes and participants were compensated \$N.NN for their work.
+
+#### Procedure and materials
+
+The materials were the same as in Experiment 5.
+Phase 1 of the experiment was identical to that of Experiment 5.
+In phase 2 of the endorsement task, the table and story were removed from the screen and the participant is told that the results of the "lost experiment" were found. 
+The results are reported to the participant in terms of how many out of 100 of the attempts were successful. 
+Participants were then asked to judge the causal sentence: "Treatment X makes the effect happen". 
+Partipants responded by either clicking "Yes" or "No". 
+
+Participants saw 1 of 3 frequencies: 20\%, 50\%, or 80\%.
+
+### Results
+
+...
+
+## Experiment 7: Interpreting Causal Language
+
+
+In this experiment, we tested whether the manipulated priors of Expt. 5 are causally related to the interpretation of casusal statements.
+
+### Method
+Most of the experiment was identical to that of Experiments 5 \& 6.
+
+#### Participants
+
+We recruited N participants from Amazon's Mechanical Turk.
+Participants were restricted to those with U.S. IP addresses and who had at least a 95\% work approval rating.
+None of the participants had participated in either Experiment 5 or Experiment 6.
+The experiment took on average N minutes and participants were compensated \$N.NN for their work.
+
+#### Procedure and materials
+
+The materials were the same as in Experiments 5 \& 6.
+Phase 1 of the experiment was identical to that of Experiments 5 \& 6.
+In phase 2 of the endorsement task, the table and story were removed from the screen and the participant is told that the results of the "lost experiment" were found and that their colleague has reported to them about the results using the causal: "Treatment X makes the effect happen". 
+Participants were then asked to guess how many out of the 100 of the attempts were successful.
+Partipants responded using a slider bar that ranged from 0 - 100.
+
+### Results
+
+
+## Discussion
+
 
 # Communicating Generalizations About Categories
+
+
 
 
 The major issue in formalizing generic language is determining what makes a generic sentence true or false.
@@ -1235,10 +1291,8 @@ The pragmatic speaker model $S_2$ is fully-specified except for the prior distri
 To compare the model to empirical truth judgments, we thus first measure the prior distribution over prevalence of these properties (Expt.~1a).
 In Expt.~1b, we collect human judgements about the acceptability of the generic sentences. 
 
-## Experiment 5: Endorsing Generic Language
 
-
-### Measuring prevalence and the prevalence prior
+## Experiment 8: Measuring the Prevalence Prior for Categories
 
 The prior $P(x)$ (in Eqs.~\ref{eq:L1}, \ref{eq:L0}) describes the belief distribution on the prevalence of a given property (e.g. \textsc{lays eggs}) across relevant categories. 
 In exploring the model, we saw that the shape of this distribution affects model predictions, and this shape may vary significantly among different properties.
@@ -1279,7 +1333,9 @@ Properties like \textsc{doesn't attack swimmers} are very right-skewed; here, ev
 Some properties have priors that are unimodal with low variance (e.g. \textsc{is female}); these properties are present in every kind in almost exactly the same proportion and thus are too obvious and certain to allow for an informative generic utterance: The posterior is not very different from the prior. 
 With $P(x)$ now empirically established, we can test if our speaker model predicts human truth judgments of generic statements about these properties.
 
-## Experiment 5b: Truth Judgments
+## Experiment 9: Endorsing Generic Language
+
+
 
 ### Method
 
@@ -1412,10 +1468,8 @@ The implication of this finding is that conceptual structure may indeed find its
   \label{fig:pp-priorModel}
 \end{figure}
 
-## Experiment 6: Interpreting Generic Language (Replication and Extension of Cimpian et al, 2010)
 
-## Experiment 7: The asymmetry between interpretation and endorsement (Replication and Extension of Cimpian et al., 2010)
-
+## Experiment 10: The Asymmetry between Endorsement and Interpretation of Generic Language (replication and extension of Cimpian et al., 2010)
 
 # Empirical Test 2: Interpreting Novel Generics
 
