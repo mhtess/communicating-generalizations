@@ -1,0 +1,217 @@
+// time ~/webppl-fork/webppl regression-structuredPriorData-loglik.wppl --require ../node_modules/utils 1
+
+var chain = last(process.argv) // load index as last command line index
+
+var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
+var intervals = {
+	"week": 52,
+	"2 weeks": 26,
+	"month": 12,
+	"2 months": 6,
+	"6 months": 2,
+	"year": 1,
+	"2 years": 1/2,
+	"5 years": 1/5
+};
+
+
+var dataPath = "../data/"
+var targetUtterance = "habitual"
+
+
+var prior_existenceFile = dataPath + "prior2-existence.csv";
+var prior_waitFile = dataPath + "prior2-timesper5yr.csv";var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
+
+var d0 = dataFrame(utils.readCSV(prior_existenceFile).data, ["val"]);
+var d1 = dataFrame(utils.readCSV(prior_waitFile).data,
+					["val", "logval"]);
+var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data,
+				["n_times", "log_times"]);
+
+var data = {
+	speaker: map(function(d){
+			extend(d, {
+				// rate: d.n_times / 5,
+				// roundedRate: utils.closest(midBins, d.n_times / 5),
+				rate: Math.log(d.n_times / 5),
+				roundedRate: utils.closest(midBins, Math.log(d.n_times / 5)),
+				alignedResponse : responseDictionary[d.response]
+			})
+		}, d2.slice(0, d2.length - 1)),
+		prior: {
+			mixture: map(function(d){
+					extend(d, {
+						avoided_endval: avoidEnds(d.val)
+					})
+			}, d0.slice(0, d0.length - 1)),
+			frequency: filter(function(d){
+				d.val != 0
+			}, map(function(d){
+				var annualRate = d.val / 5;
+				extend(d, {
+					annualRate: annualRate,
+					logAnnualRate: Math.log(annualRate)
+				})
+			}, d1.slice(0, d1.length - 1)))
+		}
+};
+
+var items = levels(data.prior.mixture, "item");
+
+var logisticFunction = function(y) {
+   return 1 / (1 + exp(-y));
+};
+
+var model = function(){
+
+	var bs = {
+    intercept: uniform({a: -5, b: 0}),
+    freq: uniform({a: -5, b: 5}),
+    priorMean: uniform({a: -5, b: 5})
+  }
+
+	var linearFunction = function(xs){
+     bs.intercept +
+     bs.freq * xs.freq +
+     bs.priorMean * xs.priorMean;
+  };
+
+	foreach(items, function(i){
+		// display(i)
+		var itemData = {
+			speaker: _.filter(data.speaker, {habitual: i}),
+			prior: {
+				mixture: _.filter(data.prior.mixture, {item: i}),
+				frequency: _.filter(data.prior.frequency, {item: i})
+			}
+		};
+		// displayObj(itemData)
+
+		var mixtureParams = {
+			male: {
+				g: uniformDrift({a: 0, b: 1, width: 0.2}),
+				d: uniformDrift({a: 0, b: 100, width: 5})
+			},
+			female: {
+				g: uniformDrift({a: 0, b: 1, width: 0.2}),
+				d: uniformDrift({a: 0, b: 100, width: 5})
+			}
+		};
+
+		var mixtureShapes = {
+			male: betaShape(mixtureParams.male),
+			female: betaShape(mixtureParams.female)
+		};
+
+		mapData({data: itemData.prior.mixture}, function(d){
+			// Beta(mixtureShapes[d.gender]).score(d.avoided_endval) == -Infinity ? display(JSON.stringify(d) + Beta(mixtureShapes[d.gender]).score(d.avoided_endval)) : null
+			observe(Beta(mixtureShapes[d.gender]), d.avoided_endval)
+		})
+
+		var frequencyWhenPresent = {
+			male: {
+				mu: uniformDrift({a: -2, b: 8, width: 0.5}),
+				sigma: uniformDrift({a:0, b:5, width: 0.5})
+			},
+			female: {
+				mu: uniformDrift({a: -2, b: 8, width: 0.5}),
+				sigma: uniformDrift({a:0, b:5, width: 0.5})
+			}
+		}
+
+		mapData({data: itemData.prior.frequency}, function(d){
+			// Gaussian(frequencyWhenPresent[d.gender]).score( d.logAnnualRate) == -Infinity ? display(JSON.stringify(d) + Gaussian(frequencyWhenPresent[d.gender]).score( d.logAnnualRate)) : null
+			observe(Gaussian(frequencyWhenPresent[d.gender]), d.logAnnualRate)
+		})
+
+		var existenceProb = {
+			male: beta(mixtureShapes.male),
+			female: beta(mixtureShapes.female)
+		};
+
+		var statePrior = Infer({model: function(){
+			sample(
+				flip(0.5) ?
+					flip(existenceProb.female) ?
+						DiscretizedLognormal(frequencyWhenPresent.female) :
+						Delta({v: _.min(midBins)}) :
+					flip(existenceProb.male) ?
+						DiscretizedLognormal(frequencyWhenPresent.male) :
+						Delta({v: _.min(midBins)})
+					)
+				}
+			})
+
+			var freqWhenPresent = {
+				male: gaussian(frequencyWhenPresent.male),
+				female: gaussian(frequencyWhenPresent.female)
+			};
+
+		// var logMeanPriorFreq = Math.log(expectation(statePrior));
+		var logMeanPriorFreq = expectation(statePrior);
+
+		// displayObj(bs)
+		// display(logMeanPriorFreq)
+		// display(freq)
+		var regressionSpeaker = cache(function(freq){
+			// display(freq)
+			return Infer({model: function(){
+		  var habitual = flip(Math.exp(bs.intercept));
+		  factor( habitual ?
+				(bs.priorMean*logMeanPriorFreq + bs.freq*freq) :
+				0
+			)
+		  return habitual ? 1 : 0
+		}})})
+
+		var observedFrequencies = levels(itemData.speaker, "roundedRate");
+
+		var itemLogLike = sum(map(function(freq){
+			// display(freq)
+			var freqData = _.filter(itemData.speaker, {roundedRate: freq});
+      // display(freqData)
+			var regressionPrediction = regressionSpeaker(freq);
+      // displayObj(s1prediction)
+
+      var logLike = sum(map(function(d){
+        // display(regressionPrediction.score(d.alignedResponse))
+        return regressionPrediction.score(d.alignedResponse)
+      }, freqData))
+
+      return logLike
+
+		}, observedFrequencies))
+
+    // display(i + " --> " + itemLogLike)
+
+    query.add(["logLikelihood", i, "regression","NA", "NA"], itemLogLike)
+
+	})
+
+	query.add(["param", "beta", "intercept","NA", "NA"], bs.intercept)
+	query.add(["param", "beta", "freq","NA", "NA"], bs.freq)
+	query.add(["param", "beta", "priorMean","NA", "NA"], bs.priorMean)
+
+	return query
+}
+
+// items
+
+var totalIterations = 100000, lag = 20;
+var mhiter = totalIterations/lag, burn = totalIterations / 2;
+var outfile = 'logLikelihood-habituals-regression-structuredPriorData-logSpace-intercept-freq-priorMean-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+
+var posterior = Infer({
+  model: model,
+  method: "incrementalMH",
+  samples: mhiter, burn: burn, lag: lag, verbose: T,
+	verboseLag: totalIterations/50,
+	stream: {
+		path: "results/" + outfile,
+		header: [
+			"type", "item", "cat", "param", "gender", "val"
+		]
+	}
+})
+
+display("written to " + outfile)

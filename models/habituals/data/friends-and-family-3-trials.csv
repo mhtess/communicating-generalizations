@@ -231,14 +231,14 @@
 1,10509,"5 years",14,"Cyan","plays the banjo",0
 1,10509,"5 years",14,"Ryen","plays the banjo",0
 1,10509,"5 years",14,"Cudolis","plays the banjo",0
-1,10614,"2 years",15,"Dax","sell things on eBay",3
-1,10614,"2 years",15,"JC","sell things on eBay",0
-1,10614,"2 years",15,"Erin","sell things on eBay",0
-1,10614,"2 years",15,"Matt","sell things on eBay",0
-1,10614,"2 years",15,"Oliver","sell things on eBay",0
-1,10614,"2 years",15,"Cyan","sell things on eBay",2
-1,10614,"2 years",15,"Ryen","sell things on eBay",0
-1,10614,"2 years",15,"Cudolis","sell things on eBay",0
+1,10614,"2 years",15,"Dax","sells things on eBay",3
+1,10614,"2 years",15,"JC","sells things on eBay",0
+1,10614,"2 years",15,"Erin","sells things on eBay",0
+1,10614,"2 years",15,"Matt","sells things on eBay",0
+1,10614,"2 years",15,"Oliver","sells things on eBay",0
+1,10614,"2 years",15,"Cyan","sells things on eBay",2
+1,10614,"2 years",15,"Ryen","sells things on eBay",0
+1,10614,"2 years",15,"Cudolis","sells things on eBay",0
 2,98926,"week",1,"Erik","eats peanut butter",2
 2,98926,"week",1,"Aimee","eats peanut butter",3
 2,98926,"week",1,"Mason","eats peanut butter",2
@@ -353,15 +353,15 @@
 2,17200,"year",14,"Art","climbs mountains",5
 2,17200,"year",14,"Dom","climbs mountains",4
 2,17200,"year",14,"Anthony","climbs mountains",2
-2,19079,"year",15,"Erik","sell things on eBay",0
-2,19079,"year",15,"Aimee","sell things on eBay",0
-2,19079,"year",15,"Mason","sell things on eBay",0
-2,19079,"year",15,"Greg","sell things on eBay",0
-2,19079,"year",15,"Erika","sell things on eBay",0
-2,19079,"year",15,"Art","sell things on eBay",0
-2,19079,"year",15,"Dom","sell things on eBay",0
-2,19079,"year",15,"Anthony","sell things on eBay",0
-2,19079,"year",15,"hypothetical","sell things on eBay",2
+2,19079,"year",15,"Erik","sells things on eBay",0
+2,19079,"year",15,"Aimee","sells things on eBay",0
+2,19079,"year",15,"Mason","sells things on eBay",0
+2,19079,"year",15,"Greg","sells things on eBay",0
+2,19079,"year",15,"Erika","sells things on eBay",0
+2,19079,"year",15,"Art","sells things on eBay",0
+2,19079,"year",15,"Dom","sells things on eBay",0
+2,19079,"year",15,"Anthony","sells things on eBay",0
+2,19079,"year",15,"hypothetical","sells things on eBay",2
 3,75178,"week",1,"Dave","plays tennis",2
 3,75178,"month",1,"Alice","plays tennis",1
 3,75178,"5 years",1,"James","plays tennis",1
@@ -442,14 +442,14 @@
 3,47386,"2 years",10,"Mike","hikes",1
 3,47386,"month",10,"Suzy","hikes",2
 3,47386,"5 years",10,"Eddy","hikes",2
-3,51644,"month",11,"Dave","sell things on eBay",2
-3,51644,"6 months",11,"Alice","sell things on eBay",1
-3,51644,"week",11,"James","sell things on eBay",1
-3,51644,"2 weeks",11,"Eric","sell things on eBay",1
-3,51644,"2 weeks",11,"Susan","sell things on eBay",1
-3,51644,"6 months",11,"Mike","sell things on eBay",3
-3,51644,"month",11,"Suzy","sell things on eBay",1
-3,51644,"month",11,"Eddy","sell things on eBay",3
+3,51644,"month",11,"Dave","sells things on eBay",2
+3,51644,"6 months",11,"Alice","sells things on eBay",1
+3,51644,"week",11,"James","sells things on eBay",1
+3,51644,"2 weeks",11,"Eric","sells things on eBay",1
+3,51644,"2 weeks",11,"Susan","sells things on eBay",1
+3,51644,"6 months",11,"Mike","sells things on eBay",3
+3,51644,"month",11,"Suzy","sells things on eBay",1
+3,51644,"month",11,"Eddy","sells things on eBay",3
 3,53073,"week",12,"Dave","eats peanut butter",3
 3,53073,"week",12,"Alice","eats peanut butter",5
 3,53073,"month",12,"James","eats peanut butter",1
@@ -586,14 +586,14 @@
 4,18959,"5 years",13,"Fred","eats caviar",0
 4,18959,"5 years",13,"Alice","eats caviar",0
 4,18959,"2 months",13,"Amanda","eats caviar",2
-4,23720,"2 months",14,"Janice","sell things on eBay",10
-4,23720,"5 years",14,"Candice","sell things on eBay",0
-4,23720,"5 years",14,"Al","sell things on eBay",0
-4,23720,"5 years",14,"Chris","sell things on eBay",0
-4,23720,"5 years",14,"Thomas","sell things on eBay",0
-4,23720,"5 years",14,"Fred","sell things on eBay",0
-4,23720,"5 years",14,"Alice","sell things on eBay",0
-4,23720,"5 years",14,"Amanda","sell things on eBay",0
+4,23720,"2 months",14,"Janice","sells things on eBay",10
+4,23720,"5 years",14,"Candice","sells things on eBay",0
+4,23720,"5 years",14,"Al","sells things on eBay",0
+4,23720,"5 years",14,"Chris","sells things on eBay",0
+4,23720,"5 years",14,"Thomas","sells things on eBay",0
+4,23720,"5 years",14,"Fred","sells things on eBay",0
+4,23720,"5 years",14,"Alice","sells things on eBay",0
+4,23720,"5 years",14,"Amanda","sells things on eBay",0
 4,33489,"year",15,"Janice","watches professional football",5
 4,33489,"year",15,"Candice","watches professional football",2
 4,33489,"year",15,"Al","watches professional football",25
@@ -610,14 +610,14 @@
 5,88408,"month",1,"Mom","drinks coffee",800
 5,88408,"month",1,"Billy","drinks coffee",420
 5,88408,"month",1,"Dragon","drinks coffee",100
-5,15003,"2 months",2,"April","sell things on eBay",0
-5,15003,"2 months",2,"Derial","sell things on eBay",0
-5,15003,"2 months",2,"Lisa","sell things on eBay",0
-5,15003,"2 months",2,"Bonnie","sell things on eBay",0
-5,15003,"2 months",2,"Dad","sell things on eBay",5
-5,15003,"2 months",2,"Mom","sell things on eBay",0
-5,15003,"2 months",2,"Billy","sell things on eBay",0
-5,15003,"2 months",2,"Dragon","sell things on eBay",0
+5,15003,"2 months",2,"April","sells things on eBay",0
+5,15003,"2 months",2,"Derial","sells things on eBay",0
+5,15003,"2 months",2,"Lisa","sells things on eBay",0
+5,15003,"2 months",2,"Bonnie","sells things on eBay",0
+5,15003,"2 months",2,"Dad","sells things on eBay",5
+5,15003,"2 months",2,"Mom","sells things on eBay",0
+5,15003,"2 months",2,"Billy","sells things on eBay",0
+5,15003,"2 months",2,"Dragon","sells things on eBay",0
 5,13424,"week",3,"April","wears socks",7
 5,13424,"week",3,"Derial","wears socks",7
 5,13424,"week",3,"Lisa","wears socks",7
@@ -908,15 +908,15 @@
 7,23659,"2 weeks",8,"sue","wears a bra",8
 7,23659,"2 weeks",8,"brandy","wears a bra",14
 7,23659,"2 weeks",8,"kevin","wears a bra",0
-7,38564,"week",9,"diane","sell things on eBay",0
-7,38564,"week",9,"rocky","sell things on eBay",0
-7,38564,"week",9,"ian","sell things on eBay",0
-7,38564,"week",9,"marty","sell things on eBay",0
-7,38564,"week",9,"rick","sell things on eBay",0
-7,38564,"week",9,"sue","sell things on eBay",0
-7,38564,"week",9,"brandy","sell things on eBay",0
-7,38564,"week",9,"kevin","sell things on eBay",0
-7,38564,"2 years",9,"hypothetical","sell things on eBay",2
+7,38564,"week",9,"diane","sells things on eBay",0
+7,38564,"week",9,"rocky","sells things on eBay",0
+7,38564,"week",9,"ian","sells things on eBay",0
+7,38564,"week",9,"marty","sells things on eBay",0
+7,38564,"week",9,"rick","sells things on eBay",0
+7,38564,"week",9,"sue","sells things on eBay",0
+7,38564,"week",9,"brandy","sells things on eBay",0
+7,38564,"week",9,"kevin","sells things on eBay",0
+7,38564,"2 years",9,"hypothetical","sells things on eBay",2
 7,18812,"month",10,"diane","goes to the movies",0
 7,18812,"month",10,"rocky","goes to the movies",0
 7,18812,"month",10,"ian","goes to the movies",0
@@ -1168,15 +1168,15 @@
 9,18885,"week",10,"cathy","listens to Pandora",0
 9,18885,"week",10,"robyn","listens to Pandora",0
 9,18885,"week",10,"tina","listens to Pandora",3
-9,27622,"week",11,"christie","sell things on eBay",0
-9,27622,"week",11,"donna","sell things on eBay",0
-9,27622,"week",11,"steffi","sell things on eBay",0
-9,27622,"week",11,"daniel","sell things on eBay",0
-9,27622,"week",11,"brian","sell things on eBay",0
-9,27622,"week",11,"cathy","sell things on eBay",0
-9,27622,"week",11,"robyn","sell things on eBay",0
-9,27622,"week",11,"tina","sell things on eBay",0
-9,27622,"5 years",11,"hypothetical","sell things on eBay",1
+9,27622,"week",11,"christie","sells things on eBay",0
+9,27622,"week",11,"donna","sells things on eBay",0
+9,27622,"week",11,"steffi","sells things on eBay",0
+9,27622,"week",11,"daniel","sells things on eBay",0
+9,27622,"week",11,"brian","sells things on eBay",0
+9,27622,"week",11,"cathy","sells things on eBay",0
+9,27622,"week",11,"robyn","sells things on eBay",0
+9,27622,"week",11,"tina","sells things on eBay",0
+9,27622,"5 years",11,"hypothetical","sells things on eBay",1
 9,23949,"year",12,"christie","volunteers for political campaigns",0
 9,23949,"year",12,"donna","volunteers for political campaigns",0
 9,23949,"year",12,"steffi","volunteers for political campaigns",0
@@ -1233,14 +1233,14 @@
 10,37560,"week",3,"Sue","wears socks",7
 10,37560,"week",3,"Kay","wears socks",7
 10,37560,"week",3,"Amanda","wears socks",7
-10,39871,"5 years",4,"Mike","sell things on eBay",0
-10,39871,"2 weeks",4,"Scott","sell things on eBay",5
-10,39871,"year",4,"Zach","sell things on eBay",3
-10,39871,"5 years",4,"Rach","sell things on eBay",0
-10,39871,"5 years",4,"Lesley","sell things on eBay",0
-10,39871,"5 years",4,"Sue","sell things on eBay",0
-10,39871,"5 years",4,"Kay","sell things on eBay",0
-10,39871,"5 years",4,"Amanda","sell things on eBay",0
+10,39871,"5 years",4,"Mike","sells things on eBay",0
+10,39871,"2 weeks",4,"Scott","sells things on eBay",5
+10,39871,"year",4,"Zach","sells things on eBay",3
+10,39871,"5 years",4,"Rach","sells things on eBay",0
+10,39871,"5 years",4,"Lesley","sells things on eBay",0
+10,39871,"5 years",4,"Sue","sells things on eBay",0
+10,39871,"5 years",4,"Kay","sells things on eBay",0
+10,39871,"5 years",4,"Amanda","sells things on eBay",0
 10,33192,"5 years",5,"Mike","wears a watch",0
 10,33192,"5 years",5,"Scott","wears a watch",0
 10,33192,"5 years",5,"Zach","wears a watch",0
@@ -1774,14 +1774,14 @@
 14,36444,"year",10,"Donna","watches professional football",8
 14,36444,"5 years",10,"Eve","watches professional football",0
 14,36444,"5 years",10,"Blair","watches professional football",0
-14,27535,"5 years",11,"Katy","sell things on eBay",2
-14,27535,"5 years",11,"Tyler","sell things on eBay",0
-14,27535,"5 years",11,"Carol","sell things on eBay",15
-14,27535,"5 years",11,"Stacy","sell things on eBay",0
-14,27535,"5 years",11,"Kristina","sell things on eBay",0
-14,27535,"5 years",11,"Donna","sell things on eBay",0
-14,27535,"5 years",11,"Eve","sell things on eBay",3
-14,27535,"5 years",11,"Blair","sell things on eBay",0
+14,27535,"5 years",11,"Katy","sells things on eBay",2
+14,27535,"5 years",11,"Tyler","sells things on eBay",0
+14,27535,"5 years",11,"Carol","sells things on eBay",15
+14,27535,"5 years",11,"Stacy","sells things on eBay",0
+14,27535,"5 years",11,"Kristina","sells things on eBay",0
+14,27535,"5 years",11,"Donna","sells things on eBay",0
+14,27535,"5 years",11,"Eve","sells things on eBay",3
+14,27535,"5 years",11,"Blair","sells things on eBay",0
 14,51359,"5 years",12,"Katy","runs",2
 14,51359,"5 years",12,"Tyler","runs",1
 14,51359,"week",12,"Carol","runs",3
@@ -1990,14 +1990,14 @@
 16,33808,"month",7,"craig","listens to Pandora",0
 16,33808,"month",7,"kelly","listens to Pandora",0
 16,33808,"month",7,"scott","listens to Pandora",0
-16,30751,"2 months",8,"anne","sell things on eBay",4
-16,30751,"2 months",8,"marina","sell things on eBay",2
-16,30751,"2 months",8,"jeri","sell things on eBay",0
-16,30751,"2 months",8,"rachael","sell things on eBay",0
-16,30751,"2 months",8,"max","sell things on eBay",0
-16,30751,"2 months",8,"craig","sell things on eBay",2
-16,30751,"2 months",8,"kelly","sell things on eBay",0
-16,30751,"2 months",8,"scott","sell things on eBay",0
+16,30751,"2 months",8,"anne","sells things on eBay",4
+16,30751,"2 months",8,"marina","sells things on eBay",2
+16,30751,"2 months",8,"jeri","sells things on eBay",0
+16,30751,"2 months",8,"rachael","sells things on eBay",0
+16,30751,"2 months",8,"max","sells things on eBay",0
+16,30751,"2 months",8,"craig","sells things on eBay",2
+16,30751,"2 months",8,"kelly","sells things on eBay",0
+16,30751,"2 months",8,"scott","sells things on eBay",0
 16,27713,"2 weeks",9,"anne","wears a bra",14
 16,27713,"2 weeks",9,"marina","wears a bra",14
 16,27713,"2 weeks",9,"jeri","wears a bra",14
@@ -2202,14 +2202,14 @@
 18,23789,"year",3,"Sarah","watches space launches",0
 18,23789,"year",3,"Jon","watches space launches",1
 18,23789,"year",3,"Liam","watches space launches",2
-18,19556,"5 years",4,"Wes","sell things on eBay",0
-18,19556,"5 years",4,"Veronica","sell things on eBay",0
-18,19556,"5 years",4,"Madeline","sell things on eBay",0
-18,19556,"5 years",4,"Talita","sell things on eBay",1
-18,19556,"5 years",4,"Nathaniel","sell things on eBay",0
-18,19556,"5 years",4,"Sarah","sell things on eBay",25
-18,19556,"5 years",4,"Jon","sell things on eBay",5
-18,19556,"5 years",4,"Liam","sell things on eBay",0
+18,19556,"5 years",4,"Wes","sells things on eBay",0
+18,19556,"5 years",4,"Veronica","sells things on eBay",0
+18,19556,"5 years",4,"Madeline","sells things on eBay",0
+18,19556,"5 years",4,"Talita","sells things on eBay",1
+18,19556,"5 years",4,"Nathaniel","sells things on eBay",0
+18,19556,"5 years",4,"Sarah","sells things on eBay",25
+18,19556,"5 years",4,"Jon","sells things on eBay",5
+18,19556,"5 years",4,"Liam","sells things on eBay",0
 18,30647,"year",5,"Wes","watches professional football",45
 18,30647,"year",5,"Veronica","watches professional football",35
 18,30647,"year",5,"Madeline","watches professional football",45
@@ -2298,15 +2298,15 @@
 18,30515,"6 months",15,"Sarah","wears a suit",3
 18,30515,"6 months",15,"Jon","wears a suit",30
 18,30515,"6 months",15,"Liam","wears a suit",20
-19,70578,"5 years",1,"John","sell things on eBay",0
-19,70578,"5 years",1,"Jeff","sell things on eBay",0
-19,70578,"5 years",1,"Ola","sell things on eBay",0
-19,70578,"5 years",1,"Justin","sell things on eBay",0
-19,70578,"5 years",1,"Kim","sell things on eBay",0
-19,70578,"5 years",1,"Stephanie","sell things on eBay",0
-19,70578,"5 years",1,"Olga","sell things on eBay",0
-19,70578,"5 years",1,"Stina","sell things on eBay",0
-19,70578,"5 years",1,"hypothetical","sell things on eBay",1
+19,70578,"5 years",1,"John","sells things on eBay",0
+19,70578,"5 years",1,"Jeff","sells things on eBay",0
+19,70578,"5 years",1,"Ola","sells things on eBay",0
+19,70578,"5 years",1,"Justin","sells things on eBay",0
+19,70578,"5 years",1,"Kim","sells things on eBay",0
+19,70578,"5 years",1,"Stephanie","sells things on eBay",0
+19,70578,"5 years",1,"Olga","sells things on eBay",0
+19,70578,"5 years",1,"Stina","sells things on eBay",0
+19,70578,"5 years",1,"hypothetical","sells things on eBay",1
 19,30352,"5 years",2,"John","writes novels",0
 19,30352,"5 years",2,"Jeff","writes novels",0
 19,30352,"5 years",2,"Ola","writes novels",0
@@ -2495,14 +2495,14 @@
 20,13434,"2 months",9,"bob","writes novels",0
 20,13434,"2 months",9,"kate","writes novels",0
 20,13434,"2 months",9,"joe","writes novels",0
-20,14887,"year",10,"ashley","sell things on eBay",1
-20,14887,"year",10,"lan","sell things on eBay",0
-20,14887,"year",10,"kyle","sell things on eBay",0
-20,14887,"year",10,"john","sell things on eBay",0
-20,14887,"year",10,"robert","sell things on eBay",0
-20,14887,"year",10,"bob","sell things on eBay",0
-20,14887,"year",10,"kate","sell things on eBay",4
-20,14887,"year",10,"joe","sell things on eBay",0
+20,14887,"year",10,"ashley","sells things on eBay",1
+20,14887,"year",10,"lan","sells things on eBay",0
+20,14887,"year",10,"kyle","sells things on eBay",0
+20,14887,"year",10,"john","sells things on eBay",0
+20,14887,"year",10,"robert","sells things on eBay",0
+20,14887,"year",10,"bob","sells things on eBay",0
+20,14887,"year",10,"kate","sells things on eBay",4
+20,14887,"year",10,"joe","sells things on eBay",0
 20,13182,"5 years",11,"ashley","sells companies",0
 20,13182,"5 years",11,"lan","sells companies",0
 20,13182,"5 years",11,"kyle","sells companies",0
@@ -2895,14 +2895,14 @@
 23,16278,"6 months",14,"Shan","listens to live music",3
 23,16278,"6 months",14,"Patty","listens to live music",5
 23,16278,"6 months",14,"Al","listens to live music",1
-23,20042,"year",15,"Jamie","sell things on eBay",3
-23,20042,"year",15,"David","sell things on eBay",0
-23,20042,"year",15,"George","sell things on eBay",0
-23,20042,"year",15,"James","sell things on eBay",2
-23,20042,"year",15,"Diana","sell things on eBay",1
-23,20042,"year",15,"Shan","sell things on eBay",1
-23,20042,"year",15,"Patty","sell things on eBay",4
-23,20042,"year",15,"Al","sell things on eBay",0
+23,20042,"year",15,"Jamie","sells things on eBay",3
+23,20042,"year",15,"David","sells things on eBay",0
+23,20042,"year",15,"George","sells things on eBay",0
+23,20042,"year",15,"James","sells things on eBay",2
+23,20042,"year",15,"Diana","sells things on eBay",1
+23,20042,"year",15,"Shan","sells things on eBay",1
+23,20042,"year",15,"Patty","sells things on eBay",4
+23,20042,"year",15,"Al","sells things on eBay",0
 24,56832,"5 years",1,"John","watches space launches",1
 24,56832,"5 years",1,"Debbie","watches space launches",1
 24,56832,"5 years",1,"James","watches space launches",3
@@ -2943,14 +2943,14 @@
 24,17550,"5 years",5,"Cheryl","volunteers for soup kitchens",0
 24,17550,"5 years",5,"Dee","volunteers for soup kitchens",0
 24,17550,"5 years",5,"Robin","volunteers for soup kitchens",0
-24,20458,"5 years",6,"John","sell things on eBay",0
-24,20458,"5 years",6,"Debbie","sell things on eBay",1
-24,20458,"5 years",6,"James","sell things on eBay",2
-24,20458,"5 years",6,"Jackie","sell things on eBay",0
-24,20458,"5 years",6,"Amelia","sell things on eBay",0
-24,20458,"5 years",6,"Cheryl","sell things on eBay",0
-24,20458,"5 years",6,"Dee","sell things on eBay",0
-24,20458,"5 years",6,"Robin","sell things on eBay",0
+24,20458,"5 years",6,"John","sells things on eBay",0
+24,20458,"5 years",6,"Debbie","sells things on eBay",1
+24,20458,"5 years",6,"James","sells things on eBay",2
+24,20458,"5 years",6,"Jackie","sells things on eBay",0
+24,20458,"5 years",6,"Amelia","sells things on eBay",0
+24,20458,"5 years",6,"Cheryl","sells things on eBay",0
+24,20458,"5 years",6,"Dee","sells things on eBay",0
+24,20458,"5 years",6,"Robin","sells things on eBay",0
 24,15799,"week",7,"John","wears a bra",0
 24,15799,"week",7,"Debbie","wears a bra",7
 24,15799,"week",7,"James","wears a bra",0
@@ -3023,14 +3023,14 @@
 24,27327,"month",15,"Cheryl","eats peanut butter",4
 24,27327,"month",15,"Dee","eats peanut butter",4
 24,27327,"month",15,"Robin","eats peanut butter",6
-25,34096,"year",1,"Gabe","sell things on eBay",0
-25,34096,"year",1,"Justin","sell things on eBay",1
-25,34096,"year",1,"Tarek","sell things on eBay",0
-25,34096,"year",1,"David","sell things on eBay",0
-25,34096,"year",1,"Vivian","sell things on eBay",0
-25,34096,"year",1,"Keith","sell things on eBay",1
-25,34096,"year",1,"Tiffany","sell things on eBay",0
-25,34096,"year",1,"Brandon","sell things on eBay",5
+25,34096,"year",1,"Gabe","sells things on eBay",0
+25,34096,"year",1,"Justin","sells things on eBay",1
+25,34096,"year",1,"Tarek","sells things on eBay",0
+25,34096,"year",1,"David","sells things on eBay",0
+25,34096,"year",1,"Vivian","sells things on eBay",0
+25,34096,"year",1,"Keith","sells things on eBay",1
+25,34096,"year",1,"Tiffany","sells things on eBay",0
+25,34096,"year",1,"Brandon","sells things on eBay",5
 25,33517,"week",2,"Gabe","wears a bra",0
 25,33517,"week",2,"Justin","wears a bra",0
 25,33517,"week",2,"Tarek","wears a bra",0
@@ -3243,14 +3243,14 @@
 26,12998,"5 years",12,"XT","writes novels",0
 26,12998,"5 years",12,"PH","writes novels",0
 26,12998,"month",12,"hypothetical","writes novels",2
-26,9091,"5 years",13,"CS","sell things on eBay",0
-26,9091,"5 years",13,"YL","sell things on eBay",0
-26,9091,"5 years",13,"HZ","sell things on eBay",0
-26,9091,"5 years",13,"XQ","sell things on eBay",0
-26,9091,"5 years",13,"JH","sell things on eBay",0
-26,9091,"5 years",13,"YHH","sell things on eBay",0
-26,9091,"5 years",13,"XT","sell things on eBay",0
-26,9091,"5 years",13,"PH","sell things on eBay",0
+26,9091,"5 years",13,"CS","sells things on eBay",0
+26,9091,"5 years",13,"YL","sells things on eBay",0
+26,9091,"5 years",13,"HZ","sells things on eBay",0
+26,9091,"5 years",13,"XQ","sells things on eBay",0
+26,9091,"5 years",13,"JH","sells things on eBay",0
+26,9091,"5 years",13,"YHH","sells things on eBay",0
+26,9091,"5 years",13,"XT","sells things on eBay",0
+26,9091,"5 years",13,"PH","sells things on eBay",0
 26,13046,"5 years",14,"CS","plays the banjo",0
 26,13046,"5 years",14,"YL","plays the banjo",0
 26,13046,"5 years",14,"HZ","plays the banjo",0
@@ -3978,14 +3978,14 @@
 32,15692,"6 months",13,"Cyrus","smokes cigarettes",10
 32,15692,"6 months",13,"Devon","smokes cigarettes",5
 32,15692,"6 months",13,"Ben","smokes cigarettes",1
-32,15244,"year",14,"Tim","sell things on eBay",0
-32,15244,"year",14,"Mark","sell things on eBay",1
-32,15244,"year",14,"Sam","sell things on eBay",0
-32,15244,"year",14,"Tyler","sell things on eBay",0
-32,15244,"year",14,"Zach","sell things on eBay",0
-32,15244,"year",14,"Cyrus","sell things on eBay",0
-32,15244,"year",14,"Devon","sell things on eBay",1
-32,15244,"year",14,"Ben","sell things on eBay",0
+32,15244,"year",14,"Tim","sells things on eBay",0
+32,15244,"year",14,"Mark","sells things on eBay",1
+32,15244,"year",14,"Sam","sells things on eBay",0
+32,15244,"year",14,"Tyler","sells things on eBay",0
+32,15244,"year",14,"Zach","sells things on eBay",0
+32,15244,"year",14,"Cyrus","sells things on eBay",0
+32,15244,"year",14,"Devon","sells things on eBay",1
+32,15244,"year",14,"Ben","sells things on eBay",0
 32,16670,"year",15,"Tim","plays tennis",0
 32,16670,"year",15,"Mark","plays tennis",20
 32,16670,"year",15,"Sam","plays tennis",0
@@ -4213,14 +4213,14 @@
 34,15011,"5 years",12,"andrea","goes to the ballet",10
 34,15011,"5 years",12,"patricia","goes to the ballet",0
 34,15011,"5 years",12,"jack","goes to the ballet",0
-34,17969,"5 years",13,"vivien","sell things on eBay",50
-34,17969,"5 years",13,"camille","sell things on eBay",5
-34,17969,"5 years",13,"chenelle","sell things on eBay",10
-34,17969,"5 years",13,"rosemary","sell things on eBay",0
-34,17969,"5 years",13,"ken","sell things on eBay",0
-34,17969,"5 years",13,"andrea","sell things on eBay",10
-34,17969,"5 years",13,"patricia","sell things on eBay",20
-34,17969,"5 years",13,"jack","sell things on eBay",0
+34,17969,"5 years",13,"vivien","sells things on eBay",50
+34,17969,"5 years",13,"camille","sells things on eBay",5
+34,17969,"5 years",13,"chenelle","sells things on eBay",10
+34,17969,"5 years",13,"rosemary","sells things on eBay",0
+34,17969,"5 years",13,"ken","sells things on eBay",0
+34,17969,"5 years",13,"andrea","sells things on eBay",10
+34,17969,"5 years",13,"patricia","sells things on eBay",20
+34,17969,"5 years",13,"jack","sells things on eBay",0
 34,20275,"6 months",14,"vivien","watches professional football",3
 34,20275,"6 months",14,"camille","watches professional football",2
 34,20275,"6 months",14,"chenelle","watches professional football",3
@@ -4407,14 +4407,14 @@
 36,17285,"5 years",6,"ted","volunteers for soup kitchens",0
 36,17285,"5 years",6,"jeff","volunteers for soup kitchens",0
 36,17285,"5 years",6,"dennis","volunteers for soup kitchens",0
-36,29197,"5 years",7,"ralph","sell things on eBay",5
-36,29197,"5 years",7,"rob","sell things on eBay",1
-36,29197,"5 years",7,"danny","sell things on eBay",0
-36,29197,"5 years",7,"kevin","sell things on eBay",0
-36,29197,"5 years",7,"tom","sell things on eBay",0
-36,29197,"5 years",7,"ted","sell things on eBay",15
-36,29197,"5 years",7,"jeff","sell things on eBay",10
-36,29197,"5 years",7,"dennis","sell things on eBay",20
+36,29197,"5 years",7,"ralph","sells things on eBay",5
+36,29197,"5 years",7,"rob","sells things on eBay",1
+36,29197,"5 years",7,"danny","sells things on eBay",0
+36,29197,"5 years",7,"kevin","sells things on eBay",0
+36,29197,"5 years",7,"tom","sells things on eBay",0
+36,29197,"5 years",7,"ted","sells things on eBay",15
+36,29197,"5 years",7,"jeff","sells things on eBay",10
+36,29197,"5 years",7,"dennis","sells things on eBay",20
 36,15831,"5 years",8,"ralph","eats caviar",0
 36,15831,"5 years",8,"rob","eats caviar",0
 36,15831,"5 years",8,"danny","eats caviar",0
@@ -4568,14 +4568,14 @@
 37,20920,"week",11,"brian","listens to Pandora",0
 37,20920,"week",11,"beth","listens to Pandora",0
 37,20920,"week",11,"Lindsay ","listens to Pandora",0
-37,15792,"2 weeks",12,"tom","sell things on eBay",0
-37,15792,"2 weeks",12,"steve","sell things on eBay",0
-37,15792,"2 weeks",12,"dee","sell things on eBay",1
-37,15792,"2 weeks",12,"james","sell things on eBay",0
-37,15792,"2 weeks",12,"brenden","sell things on eBay",0
-37,15792,"2 weeks",12,"brian","sell things on eBay",0
-37,15792,"2 weeks",12,"beth","sell things on eBay",0
-37,15792,"2 weeks",12,"Lindsay ","sell things on eBay",0
+37,15792,"2 weeks",12,"tom","sells things on eBay",0
+37,15792,"2 weeks",12,"steve","sells things on eBay",0
+37,15792,"2 weeks",12,"dee","sells things on eBay",1
+37,15792,"2 weeks",12,"james","sells things on eBay",0
+37,15792,"2 weeks",12,"brenden","sells things on eBay",0
+37,15792,"2 weeks",12,"brian","sells things on eBay",0
+37,15792,"2 weeks",12,"beth","sells things on eBay",0
+37,15792,"2 weeks",12,"Lindsay ","sells things on eBay",0
 37,14312,"6 months",13,"tom","listens to live music",0
 37,14312,"6 months",13,"steve","listens to live music",0
 37,14312,"6 months",13,"dee","listens to live music",1
@@ -4800,14 +4800,14 @@
 39,15270,"week",10,"duke","wears a watch",7
 39,15270,"week",10,"alyssa","wears a watch",2
 39,15270,"week",10,"sasha","wears a watch",4
-39,15689,"2 months",11,"danny","sell things on eBay",1
-39,15689,"2 months",11,"eric","sell things on eBay",0
-39,15689,"2 months",11,"robin","sell things on eBay",3
-39,15689,"2 months",11,"peter","sell things on eBay",2
-39,15689,"2 months",11,"kevin","sell things on eBay",6
-39,15689,"2 months",11,"duke","sell things on eBay",0
-39,15689,"2 months",11,"alyssa","sell things on eBay",1
-39,15689,"2 months",11,"sasha","sell things on eBay",2
+39,15689,"2 months",11,"danny","sells things on eBay",1
+39,15689,"2 months",11,"eric","sells things on eBay",0
+39,15689,"2 months",11,"robin","sells things on eBay",3
+39,15689,"2 months",11,"peter","sells things on eBay",2
+39,15689,"2 months",11,"kevin","sells things on eBay",6
+39,15689,"2 months",11,"duke","sells things on eBay",0
+39,15689,"2 months",11,"alyssa","sells things on eBay",1
+39,15689,"2 months",11,"sasha","sells things on eBay",2
 39,14322,"week",12,"danny","wears a suit",1
 39,14322,"week",12,"eric","wears a suit",0
 39,14322,"week",12,"robin","wears a suit",0
@@ -4977,14 +4977,14 @@
 41,28456,"year",2,"Sol","drinks beer",15
 41,28456,"year",2,"Jeff","drinks beer",305
 41,28456,"year",2,"adora","drinks beer",48
-41,13060,"2 years",3,"Tabatha","sell things on eBay",5
-41,13060,"2 years",3,"Eddie","sell things on eBay",2
-41,13060,"2 years",3,"Tom","sell things on eBay",1
-41,13060,"2 years",3,"Steve","sell things on eBay",3
-41,13060,"2 years",3,"Jennifer","sell things on eBay",7
-41,13060,"2 years",3,"Sol","sell things on eBay",5
-41,13060,"2 years",3,"Jeff","sell things on eBay",2
-41,13060,"2 years",3,"adora","sell things on eBay",1
+41,13060,"2 years",3,"Tabatha","sells things on eBay",5
+41,13060,"2 years",3,"Eddie","sells things on eBay",2
+41,13060,"2 years",3,"Tom","sells things on eBay",1
+41,13060,"2 years",3,"Steve","sells things on eBay",3
+41,13060,"2 years",3,"Jennifer","sells things on eBay",7
+41,13060,"2 years",3,"Sol","sells things on eBay",5
+41,13060,"2 years",3,"Jeff","sells things on eBay",2
+41,13060,"2 years",3,"adora","sells things on eBay",1
 41,24935,"year",4,"Tabatha","drinks coffee",1
 41,24935,"year",4,"Eddie","drinks coffee",365
 41,24935,"year",4,"Tom","drinks coffee",50
@@ -5211,14 +5211,14 @@
 43,68486,"2 years",1,"Alain","climbs mountains",0
 43,68486,"2 years",1,"Cindy","climbs mountains",0
 43,68486,"2 years",1,"Maddie","climbs mountains",2
-43,31910,"year",2,"Kate","sell things on eBay",5
-43,31910,"year",2,"Julie","sell things on eBay",0
-43,31910,"year",2,"Alec","sell things on eBay",4
-43,31910,"year",2,"Alyssa","sell things on eBay",0
-43,31910,"year",2,"May","sell things on eBay",1
-43,31910,"year",2,"Alain","sell things on eBay",0
-43,31910,"year",2,"Cindy","sell things on eBay",0
-43,31910,"year",2,"Maddie","sell things on eBay",0
+43,31910,"year",2,"Kate","sells things on eBay",5
+43,31910,"year",2,"Julie","sells things on eBay",0
+43,31910,"year",2,"Alec","sells things on eBay",4
+43,31910,"year",2,"Alyssa","sells things on eBay",0
+43,31910,"year",2,"May","sells things on eBay",1
+43,31910,"year",2,"Alain","sells things on eBay",0
+43,31910,"year",2,"Cindy","sells things on eBay",0
+43,31910,"year",2,"Maddie","sells things on eBay",0
 43,29543,"5 years",3,"Kate","watches space launches",2
 43,29543,"5 years",3,"Julie","watches space launches",0
 43,29543,"5 years",3,"Alec","watches space launches",3
@@ -5323,14 +5323,14 @@
 43,33324,"week",15,"Alain","wears socks",7
 43,33324,"week",15,"Cindy","wears socks",2
 43,33324,"week",15,"Maddie","wears socks",5
-44,43495,"year",1,"kim","sell things on eBay",1
-44,43495,"year",1,"lauren","sell things on eBay",1
-44,43495,"year",1,"mary","sell things on eBay",3
-44,43495,"5 years",1,"nicki","sell things on eBay",5
-44,43495,"year",1,"mike","sell things on eBay",0
-44,43495,"year",1,"jon","sell things on eBay",1
-44,43495,"2 years",1,"jacklyn","sell things on eBay",1
-44,43495,"2 years",1,"marina","sell things on eBay",1
+44,43495,"year",1,"kim","sells things on eBay",1
+44,43495,"year",1,"lauren","sells things on eBay",1
+44,43495,"year",1,"mary","sells things on eBay",3
+44,43495,"5 years",1,"nicki","sells things on eBay",5
+44,43495,"year",1,"mike","sells things on eBay",0
+44,43495,"year",1,"jon","sells things on eBay",1
+44,43495,"2 years",1,"jacklyn","sells things on eBay",1
+44,43495,"2 years",1,"marina","sells things on eBay",1
 44,31302,"2 years",2,"kim","climbs mountains",1
 44,31302,"2 years",2,"lauren","climbs mountains",0
 44,31302,"5 years",2,"mary","climbs mountains",0
@@ -5534,15 +5534,15 @@
 45,16761,"week",11,"Adelle","wears a watch",7
 45,16761,"week",11,"Alan","wears a watch",0
 45,16761,"week",11,"Scott","wears a watch",7
-45,16026,"week",12,"Meg","sell things on eBay",0
-45,16026,"week",12,"Sara","sell things on eBay",0
-45,16026,"week",12,"Jessica","sell things on eBay",0
-45,16026,"week",12,"Wayne","sell things on eBay",0
-45,16026,"week",12,"Elaine","sell things on eBay",0
-45,16026,"week",12,"Adelle","sell things on eBay",0
-45,16026,"week",12,"Alan","sell things on eBay",0
-45,16026,"week",12,"Scott","sell things on eBay",0
-45,16026,"year",12,"hypothetical","sell things on eBay",1
+45,16026,"week",12,"Meg","sells things on eBay",0
+45,16026,"week",12,"Sara","sells things on eBay",0
+45,16026,"week",12,"Jessica","sells things on eBay",0
+45,16026,"week",12,"Wayne","sells things on eBay",0
+45,16026,"week",12,"Elaine","sells things on eBay",0
+45,16026,"week",12,"Adelle","sells things on eBay",0
+45,16026,"week",12,"Alan","sells things on eBay",0
+45,16026,"week",12,"Scott","sells things on eBay",0
+45,16026,"year",12,"hypothetical","sells things on eBay",1
 45,11750,"week",13,"Meg","listens to Pandora",4
 45,11750,"week",13,"Sara","listens to Pandora",3
 45,11750,"week",13,"Jessica","listens to Pandora",4
@@ -6026,14 +6026,14 @@
 49,24900,"5 years",12,"Gabbi","eats caviar",1
 49,24900,"5 years",12,"Jim","eats caviar",0
 49,24900,"5 years",12,"Pete","eats caviar",0
-49,20106,"week",13,"Dan","sell things on eBay",0
-49,20106,"week",13,"Felicia","sell things on eBay",0
-49,20106,"week",13,"Morgan","sell things on eBay",3
-49,20106,"week",13,"John","sell things on eBay",0
-49,20106,"week",13,"Hunter","sell things on eBay",0
-49,20106,"week",13,"Gabbi","sell things on eBay",2
-49,20106,"week",13,"Jim","sell things on eBay",0
-49,20106,"week",13,"Pete","sell things on eBay",0
+49,20106,"week",13,"Dan","sells things on eBay",0
+49,20106,"week",13,"Felicia","sells things on eBay",0
+49,20106,"week",13,"Morgan","sells things on eBay",3
+49,20106,"week",13,"John","sells things on eBay",0
+49,20106,"week",13,"Hunter","sells things on eBay",0
+49,20106,"week",13,"Gabbi","sells things on eBay",2
+49,20106,"week",13,"Jim","sells things on eBay",0
+49,20106,"week",13,"Pete","sells things on eBay",0
 49,21811,"5 years",14,"Dan","goes to the ballet",0
 49,21811,"5 years",14,"Felicia","goes to the ballet",0
 49,21811,"5 years",14,"Morgan","goes to the ballet",0
