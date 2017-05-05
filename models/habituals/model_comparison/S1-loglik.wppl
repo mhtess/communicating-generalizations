@@ -85,7 +85,7 @@ var model = function(){
 		var statePrior = Infer({model: function(){
 			sample(
 				flip(theta) ?
-					DiscretizedLognormal(priorParams) :
+					DiscretizedGaussian(priorParams) :
 					Delta({v: _.min(midBins)})
 				)
 			}
@@ -144,7 +144,7 @@ var model = function(){
       // displayObj(s1prediction)
 
       var logLike = sum(map(function(d){
-        // display(s1prediction.score(d.alignedResponse))
+        display(s1prediction.score(d.alignedResponse))
         return s1prediction.score(d.alignedResponse)
       }, freqData))
 
@@ -171,7 +171,7 @@ var posterior = Infer({
   model: model,
   method: "incrementalMH",
   samples: mhiter, burn: burn, lag: lag, verbose: T,
-	verboseLag: totalIterations/20,
+	verboseLag: totalIterations/50,
 	stream: {
 		path: "results/" + outfile,
 		header: [

@@ -27,8 +27,10 @@ var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data, ["n_times", "log_t
 var data = {
 	speaker: map(function(d){
 			extend(d, {
-				rate: d.n_times / 5,
-				roundedRate: utils.closest(midBins, d.n_times / 5),
+				// rate: d.n_times / 5,
+				// roundedRate: utils.closest(midBins, d.n_times / 5),
+				rate: Math.log(d.n_times / 5),
+				roundedRate: utils.closest(midBins, Math.log(d.n_times / 5)),
 				alignedResponse : responseDictionary[d.response]
 			})
 		}, d2.slice(0, d2.length - 1)),
@@ -62,13 +64,14 @@ var model = function(){
      bs.priorMean * xs.priorMean;
   };
 
-	var nullDist = Delta({v: -99})
+	var alpha = gamma({shape: 2, scale: 1})
 
 	foreach(items, function(i){
-
+		// display(i)
 		var itemPriorData = _.filter(data.prior, {action: i})
+		// display(itemPriorData)
     var itemData = _.filter(data.speaker, {habitual: i});
-
+		// display(itemData)
 		var theta = uniformDrift({a: 0, b: 1, width: 0.1});
 
 		var priorParams = {
@@ -79,23 +82,36 @@ var model = function(){
 		var statePrior = Infer({model: function(){
 			sample(
 				flip(theta) ?
-					DiscretizedLognormal(priorParams) :
+					DiscretizedGaussian(priorParams) :
 					Delta({v: _.min(midBins)})
 				)
 			}
 		})
+
+		var scaledPrior = Categorical({
+			vs: statePrior.support(),
+			ps: normalize(map(function(s){
+				return Math.pow(exp(statePrior.score(s)), alpha)
+			}, statePrior.support()))
+		})
+
     // displayObj(statePrior)
 		mapData({data: itemPriorData}, function(d){
-      // display(statePrior.score(d.roundedRate))
-			observe(statePrior, d.roundedRate)
+			// display(scaledPrior.score(d.roundedRate))
+			observe(scaledPrior, d.roundedRate)
+			// observe(statePrior, d.roundedRate)
 		})
+
 
 		query.add(["prior", i, "theta","NA", "NA"], theta)
 		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
 		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
 
-		var logMeanPriorFreq = Math.log(expectation(statePrior));
+		// var logMeanPriorFreq = Math.log(expectation(statePrior));
+		var logMeanPriorFreq = expectation(statePrior);
 		// displayObj(bs)
+		// display(logMeanPriorFreq)
+		// display(freq)
 		var regressionSpeaker = cache(function(freq){
 			return Infer({model: function(){
 		  var habitual = flip(Math.exp(bs.intercept));
@@ -112,11 +128,10 @@ var model = function(){
 
 			var freqData = _.filter(itemData, {roundedRate: freq});
       // display(freqData)
-			var regressionPrediction = regressionSpeaker(Math.log(freq));
+			var regressionPrediction = regressionSpeaker(freq);
       // displayObj(s1prediction)
 
       var logLike = sum(map(function(d){
-        // display(s1prediction.score(d.alignedResponse))
         return regressionPrediction.score(d.alignedResponse)
       }, freqData))
 
@@ -130,12 +145,20 @@ var model = function(){
 
 	})
 
+	query.add(["param", "beta", "intercept","NA", "NA"], bs.intercept)
+	query.add(["param", "beta", "freq","NA", "NA"], bs.freq)
+	query.add(["param", "beta", "priorMean","NA", "NA"], bs.priorMean)
+	query.add(["param","alpha","NA","NA", "NA"], alpha)
+
+
 	return query
 }
 
-var totalIterations = 1000000, lag = 100;
+// items
+
+var totalIterations = 100000, lag = 20;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
-var outfile = 'logLikelihood-habituals-regression-intercept-freq-priorMean-ffPrior2Structured-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'logLikelihood-habituals-regression-softmaxPrior-intercept-freq-priorMean-ffPrior2Structured-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
