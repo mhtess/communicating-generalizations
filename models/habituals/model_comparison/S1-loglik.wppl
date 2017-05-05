@@ -27,8 +27,10 @@ var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data, ["n_times", "log_t
 var data = {
 	speaker: map(function(d){
 			extend(d, {
-				rate: d.n_times / 5,
-				roundedRate: utils.closest(midBins, d.n_times / 5),
+				// rate: d.n_times / 5,
+				// roundedRate: utils.closest(midBins, d.n_times / 5),
+				rate: Math.log(d.n_times / 5),
+				roundedRate: utils.closest(midBins, Math.log(d.n_times / 5)),
 				alignedResponse : responseDictionary[d.response]
 			})
 		}, d2.slice(0, d2.length - 1)),
