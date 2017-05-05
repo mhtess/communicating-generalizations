@@ -66,6 +66,8 @@ var model = function(){
 
 	var nullDist = Delta({v: -99})
 
+	var alpha = gamma({shape: 2, scale: 1})
+
 	foreach(items, function(i){
 
 		var itemPriorData = _.filter(data.prior, {action: i})
@@ -86,11 +88,25 @@ var model = function(){
 				)
 			}
 		})
-    // displayObj(statePrior)
-		mapData({data: itemPriorData}, function(d){
-      // display(statePrior.score(d.roundedRate))
-			observe(statePrior, d.roundedRate)
+
+		var scaledPrior = Categorical({
+			vs: statePrior.support(),
+			ps: normalize(map(function(s){
+				return Math.pow(exp(statePrior.score(s)), alpha)
+			}, statePrior.support()))
 		})
+
+		mapData({data: itemPriorData}, function(d){
+			// display(scaledPrior.score(d.roundedRate))
+			observe(scaledPrior, d.roundedRate)
+			// observe(statePrior, d.roundedRate)
+		})
+
+    // displayObj(statePrior)
+		// mapData({data: itemPriorData}, function(d){
+    //   // display(statePrior.score(d.roundedRate))
+		// 	observe(statePrior, d.roundedRate)
+		// })
 
 		query.add(["prior", i, "theta","NA", "NA"], theta)
 		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
@@ -140,13 +156,14 @@ var model = function(){
 	})
 
 	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+	query.add(["param","alpha","NA","NA", "NA"], alpha)
 
 	return query
 }
 
-var totalIterations = 500000, lag = 50;
+var totalIterations = 100000, lag = 20;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
-var outfile = 'logLikelihood-habituals-S1-ffPrior2Structured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'logLikelihood-habituals-S1-ffPrior2Structured-softmaxPrior-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
