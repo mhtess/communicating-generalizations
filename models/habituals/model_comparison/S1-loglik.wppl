@@ -144,7 +144,7 @@ var model = function(){
       // displayObj(s1prediction)
 
       var logLike = sum(map(function(d){
-        display(s1prediction.score(d.alignedResponse))
+        // display(s1prediction.score(d.alignedResponse))
         return s1prediction.score(d.alignedResponse)
       }, freqData))
 
