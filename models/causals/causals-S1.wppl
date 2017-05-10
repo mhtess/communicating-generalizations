@@ -141,7 +141,7 @@ var model = function(){
 	return query
 }
 
-var totalIterations = 500, lag = 10;
+var totalIterations = 15000, lag = 50;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
 var outfile = 'pilot-results-causals-S1-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
@@ -159,3 +159,5 @@ var posterior = Infer({
 })
 
 display("written to " + outfile)
+// _.pick(_.filter(data.prior, {distribution: "rare_strong"}), "response")
+// _.filter(data.prior, {distribution: "rare_strong"})
