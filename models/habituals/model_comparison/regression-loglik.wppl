@@ -50,13 +50,27 @@ var logisticFunction = function(y) {
    return 1 / (1 + exp(-y));
 };
 
+var globalParamPriors = {
+	intercept: Uniform({a: -5, b: 0}),
+	freq: Uniform({a: -5, b: 5}),
+	priorMean: Uniform({a: -5, b: 5})
+}
+
 var model = function(){
 
 	var bs = {
-    intercept: uniform({a: -5, b: 0}),
-    freq: uniform({a: -5, b: 5}),
-    priorMean: uniform({a: -5, b: 5})
+    intercept: sample(globalParamPriors.intercept),
+    freq: sample(globalParamPriors.freq),
+    priorMean: sample(globalParamPriors.priorMean)
   }
+
+	var globalLatentLike = globalParamPriors.intercept.score(bs.intercept) +
+													globalParamPriors.freq.score(bs.freq) +
+													globalParamPriors.priorMean.score(bs.priorMean)
+
+	// display(globalLatentLike)
+
+	query.add(["logLikelihood", "globalLatents", "NA", "NA", "NA"], globalLatentLike)
 
 	var linearFunction = function(xs){
      bs.intercept +
@@ -64,7 +78,7 @@ var model = function(){
      bs.priorMean * xs.priorMean;
   };
 
-	var alpha = gamma({shape: 2, scale: 1})
+	// var alpha = gamma({shape: 2, scale: 1})
 
 	foreach(items, function(i){
 		// display(i)
@@ -79,6 +93,10 @@ var model = function(){
 			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
 		}
 
+		var itemPriorLike = Uniform({a:0, b:1}).score(theta) +
+												Uniform({a:-2, b:8}).score(priorParams.mu) +
+												Uniform({a:0, b:10}).score(priorParams.sigma)
+
 		var statePrior = Infer({model: function(){
 			sample(
 				flip(theta) ?
@@ -88,24 +106,24 @@ var model = function(){
 			}
 		})
 
-		var scaledPrior = Categorical({
-			vs: statePrior.support(),
-			ps: normalize(map(function(s){
-				return Math.pow(exp(statePrior.score(s)), alpha)
-			}, statePrior.support()))
-		})
+		// var scaledPrior = Categorical({
+		// 	vs: statePrior.support(),
+		// 	ps: normalize(map(function(s){
+		// 		return Math.pow(exp(statePrior.score(s)), alpha)
+		// 	}, statePrior.support()))
+		// })
 
     // displayObj(statePrior)
 		mapData({data: itemPriorData}, function(d){
 			// display(scaledPrior.score(d.roundedRate))
-			observe(scaledPrior, d.roundedRate)
-			// observe(statePrior, d.roundedRate)
+			// observe(scaledPrior, d.roundedRate)
+			observe(statePrior, d.roundedRate)
 		})
 
 
-		query.add(["prior", i, "theta","NA", "NA"], theta)
-		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
-		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
+		// query.add(["prior", i, "theta","NA", "NA"], theta)
+		// query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
+		// query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
 
 		// var logMeanPriorFreq = Math.log(expectation(statePrior));
 		var logMeanPriorFreq = expectation(statePrior);
@@ -132,6 +150,7 @@ var model = function(){
       // displayObj(s1prediction)
 
       var logLike = sum(map(function(d){
+				// display(regressionPrediction.score(d.alignedResponse))
         return regressionPrediction.score(d.alignedResponse)
       }, freqData))
 
@@ -139,16 +158,18 @@ var model = function(){
 
 		}, observedFrequencies))
 
+		var itemMarginalLike = itemLogLike + itemPriorLike
+
     // display(i + " --> " + itemLogLike)
 
-    query.add(["logLikelihood", i, "regression","NA", "NA"], itemLogLike)
+    query.add(["logLikelihood", i, "regression","NA", "NA"], itemMarginalLike)
 
 	})
 
-	query.add(["param", "beta", "intercept","NA", "NA"], bs.intercept)
-	query.add(["param", "beta", "freq","NA", "NA"], bs.freq)
-	query.add(["param", "beta", "priorMean","NA", "NA"], bs.priorMean)
-	query.add(["param","alpha","NA","NA", "NA"], alpha)
+	// query.add(["param", "beta", "intercept","NA", "NA"], bs.intercept)
+	// query.add(["param", "beta", "freq","NA", "NA"], bs.freq)
+	// query.add(["param", "beta", "priorMean","NA", "NA"], bs.priorMean)
+	// query.add(["param","alpha","NA","NA", "NA"], alpha)
 
 
 	return query
@@ -156,9 +177,9 @@ var model = function(){
 
 // items
 
-var totalIterations = 100000, lag = 20;
+var totalIterations = 200000, lag = 20;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
-var outfile = 'logLikelihood-habituals-regression-softmaxPrior-intercept-freq-priorMean-ffPrior2Structured-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'logLikelihood-withPrior-habituals-regression-softmaxPrior-intercept-freq-priorMean-ffPrior2Structured-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,

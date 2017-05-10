@@ -66,9 +66,13 @@ var model = function(){
 		s1: uniform({a: 0, b: 5})
 	}
 
+	var globalLatentLike = Uniform({a: 0, b: 5}).score(speakerOptimality.s1)
+
+	query.add(["logLikelihood", "globalLatents", "NA", "NA", "NA"], globalLatentLike)
+
 	var nullDist = Delta({v: -99})
 
-	var alpha = gamma({shape: 2, scale: 1})
+	// var alpha = gamma({shape: 2, scale: 1})
 
 	foreach(items, function(i){
 
@@ -81,6 +85,9 @@ var model = function(){
 			mu: uniformDrift({a: -2, b: 8, width: 0.5}),
 			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
 		}
+		var itemPriorLike = Uniform({a:0, b:1}).score(theta) +
+												Uniform({a:-2, b:8}).score(priorParams.mu) +
+												Uniform({a:0, b:10}).score(priorParams.sigma)
 
 		var statePrior = Infer({model: function(){
 			sample(
@@ -91,17 +98,17 @@ var model = function(){
 			}
 		})
 
-		var scaledPrior = Categorical({
-			vs: statePrior.support(),
-			ps: normalize(map(function(s){
-				return Math.pow(exp(statePrior.score(s)), alpha)
-			}, statePrior.support()))
-		})
+		// var scaledPrior = Categorical({
+		// 	vs: statePrior.support(),
+		// 	ps: normalize(map(function(s){
+		// 		return Math.pow(exp(statePrior.score(s)), alpha)
+		// 	}, statePrior.support()))
+		// })
 
 		mapData({data: itemPriorData}, function(d){
 			// display(scaledPrior.score(d.roundedRate))
-			observe(scaledPrior, d.roundedRate)
-			// observe(statePrior, d.roundedRate)
+			// observe(scaledPrior, d.roundedRate)
+			observe(statePrior, d.roundedRate)
 		})
 
     // displayObj(statePrior)
@@ -110,9 +117,9 @@ var model = function(){
 		// 	observe(statePrior, d.roundedRate)
 		// })
 
-		query.add(["prior", i, "theta","NA", "NA"], theta)
-		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
-		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
+		// query.add(["prior", i, "theta","NA", "NA"], theta)
+		// query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
+		// query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
 
 
 		/// RSA model
@@ -153,19 +160,23 @@ var model = function(){
 		}, observedFrequencies))
     // display(i + " --> " + itemLogLike)
 
-    query.add(["logLikelihood", i, "NA","NA", "NA"], itemLogLike)
+		var itemMarginalLike = itemLogLike + itemPriorLike
+
+    query.add(["logLikelihood", i, "s1","NA", "NA"], itemMarginalLike)
 
 	})
 
-	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
-	query.add(["param","alpha","NA","NA", "NA"], alpha)
+
+
+	// query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+	// query.add(["param","alpha","NA","NA", "NA"], alpha)
 
 	return query
 }
 
-var totalIterations = 100000, lag = 20;
+var totalIterations = 75000, lag = 20;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
-var outfile = 'logLikelihood-habituals-S1-ffPrior2Structured-softmaxPrior-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'logLikelihood-withPrior-habituals-S1-ffPrior2Structured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
