@@ -20,10 +20,12 @@ var data = {
 	})}, d_prior.slice(0, d_prior.length - 1)),
 	endorsement: map(function(d){ return extend(d, {
 				binnedFreq:  utils.closest(midBins, d.frequency / 100)
-	})}, d2.slice(0, d2.length - 1)),
-	interpretation: map(function(d){ return extend(d, {
-				avoided_endval: utils.closest(midBins, d.response)
-	})}, d_interpretation.slice(0, d_interpretation.length - 1))
+	})}, d_endorsement.slice(0, d_endorsement.length - 1)),
+	interpretation: filter(function(d){return d.avoided_endval != midBins[0]},
+			map(function(d){ return extend(d, {
+					avoided_endval: utils.closest(midBins, d.response)
+		})}, d_interpretation.slice(0, d_interpretation.length - 1))
+	)
 };
 
 var distributions = levels(data.prior, "distribution");
@@ -68,7 +70,7 @@ var model = function(){
 					 Math.log(theta) + Beta(priorParams).score(d.avoided_endval),
 					 Math.log(1 - theta) + nullDistribution.score(d.avoided_endval)
 				])
-			console.log(scr)
+			// console.log(scr)
 			factor(scr)
 		})
 
@@ -104,28 +106,31 @@ var model = function(){
 		var l0prediction = listener0("causal")
 
 		mapData({data:distData.interpretation}, function(d){
-			// display(d)
-			display("listener score = " + l0prediction.score(d.avoided_endval))
+			// var scr = l0prediction.score(d.avoided_endval)
+			// scr == -Infinity ? displayObj(d) : null
+			// display("listener score = " + l0prediction.score(d.avoided_endval))
 			observe(l0prediction, d.avoided_endval)
 		})
 
 		query.add(["predictive", "L0", dist, "NA", "NA"], expectation(l0prediction));
 
-		var observedFrequencies = levels(distData.endorsement, "roundedRate");
+		var observedFrequencies = levels(distData.endorsement, "binnedFreq");
 
 		foreach(observedFrequencies, function(freq){
 
-			var freqData = _.filter(distData.endorsement, {roundedRate: freq});
+			var freqData = _.filter(distData.endorsement, {binnedFreq: freq});
 			var s1prediction = speaker1(freq);
 
 			mapData({data:freqData}, function(d){
 				// display(d)
-				display("speaker score = " + s1prediction.score(d.response))
+				// var scr = s1prediction.score(d.response)
+				// scr == -Infinity ? displayObj(d) : null
 				observe(s1prediction, d.response)
 			})
 
+			// display(freqData)
 
-			query.add(["predictive", "S1", dist, freq, freqData[0].frequency], expectation(s1prediction));
+			query.add(["predictive", "S1", dist, freq, freqData[0]["frequency"]], expectation(s1prediction));
 
 		})
 
@@ -145,12 +150,12 @@ var posterior = Infer({
   method: "incrementalMH",
   samples: mhiter, burn: burn, lag: lag,
   verbose: T, verboseLag: totalIterations / 20,
-	// stream: {
-	// 	path: "results/" + outfile,
-	// 	header: [
-	// 		"type", "item", "dist", "roundedFreq", "frequency", "val"
-	// 	]
-	// }
+	stream: {
+		path: "results/" + outfile,
+		header: [
+			"type", "item", "dist", "roundedFreq", "frequency", "val"
+		]
+	}
 })
 
 display("written to " + outfile)
