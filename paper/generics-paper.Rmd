@@ -26,11 +26,12 @@ author_note: >
   Enter author note here.
 
 abstract: > 
-    Generalizations are the foundation of abstract thought and are naturally formalized in Bayesian models of cognition. 
-    The *language* of generalizations (e.g., *Birds fly.*), however, has received comparatively little attention by formal psychological models, despite its ubiquity in everyday discourse and child-directed speech.
+    Generalizations are central to human understanding yet can be difficult to acquire through direct experience (e.g., learning that a plant is poisonous).
+    Language provides simple ways to convey generalizations (e.g., *Birds fly.*), and the language of generalizations is ubiquitous in everyday discourse and child-directed speech.
+    Yet the meaning of these expressions is philosophically puzzling (e.g., not all birds fly) and has resisted precise formalization.
     One major issue in formalizing *genericity* is that such language is extremely flexible in its usage. 
     Using a state-of-the-art probabilistic model of pragmatic reasoning, we explore the hypothesis that the meaning of such linguistic expressions is *simple but underspecified*, and that general communicative principles can be used to establish a more precise meaning in context. 
-    To test this theory, we examine 3 case studies: generalizations about events (i.e., *habitual language*, e.g., *John runs*), causes (i.e., *causal language*, e.g., *The block makes the machine play music.*), and categories (i.e., *generic language*, e.g., *Birds fly*), and find that the model, and not simpler models, explains both the endorsement and interpretation of generalizations in language.
+    To test this theory, we examine endorsements of generalizations about three different domains: generalizations about events (i.e., *habitual language*, e.g., *John runs*), causes (i.e., *causal language*, e.g., *The block makes the machine play music.*), and categories (i.e., *generic language*, e.g., *Birds fly*), and find that the model, and not simpler models, explains full spectra of endorsements of generalizations in language.
     The model suggests that central phenomena of genericity emerge from the interaction of diverse prior beliefs about properties with general communicative principles. 
   
 keywords          : "genericity, generalizations, generics, pragmatics, semantics, bayesian modeling"
@@ -96,26 +97,35 @@ If we are starting with habituals and/or doing all 3 kinds of generalizations, w
 Figuring out that an agent tends to do an action, a cause tends to produce an effect, or an object tends to have a property is crucial knowledge for a cognitive agent.
 Such generalizations give rise to the productivity of human thought and form of foundations of cultural knowledge.
 They allow us to understand the complex world around us and dream up how possible future situations might unfold.
-Crucially, hard-won generalizations can passed among agents. 
-Humans communicate generalizations to each other, something which other animals struggle to accomplish.
+It's been suggested that were psychology to have *general laws* akin to Newtonian laws in physics, the first general law in psychology would be of generalizations [Shepard1987].
+
+Yet, generalizations can be hard to acquire.
+Consider what it would take to learn that under certain conditions (e.g., when eaten raw) a plant is poisonous, while under other conditions (e.g., when processed appropriately) the plant is nutritious. 
+This is a common ecological problem and historical examples suggest that humans are not particularly good at learning such generalizations [e.g., the Australian explorers case; @Henrich2015].
+In this domain, the relationship to be learned (i.e., between different ways of food processing and the poisonousness of the plant) is non-obvious and trial-and-error learning is costly (negative examples entail death).
+
+Crucially, once acquired, such hard-won generalizations can be communicated among humans, something which other animals struggle to accomplish [cite tomasello apes something].
+<!-- Humans communicate generalizations to each other, -->
 Generalizable knowledge can be inferred through demonstration, or in pedagogical contexts when ostensive cues are present [@Csibra]. 
 By and large, however, language provides the most flexible and generative way to communicate generalizations. 
 
 A generalization provides a relation between a category and a property: It tells us to predict that property of future instances of the category [@HumeTHN].
-Thus, generalization can be described as a probability and inductive inference as a probabilistic model [@Tenenbaum2011].
+Generalization can be described as a probability and inductive inference as a probabilistic model [@Tenenbaum2011].
 From a very young age, children make strong inductive inferences from their experience in a way consistent with the Bayesian probability calculus [@Dewar2010; @Gelman1986; @Markman1989].
 
 If generalizations can be described by predictive probabilities, it would stand to reason that the most direct way to communicate a generalization would be to convey probability. 
-Ironically, humans are very bad at describing and interpreting probabilities directly [@Tversky1974].
+Ironically, humans are very bad at describing and interpreting probabilities explicitly [@Tversky1974].
 Rather than be a deficiency, however, the difficulty we have in understanding numerical descriptions of probability might reflect the flexible adaptivity of natural language to make vague or ambiguous that which shared context can be relied upon to guide interpretation [@Piantadosi2012].
 If language has evolved in a way to make efficient the kinds of inductive inferences that are central to human cognition, we would expect the language of generalizations to be simple [c.f., @Leslie2008].
 
 Indeed, generalizations in language (e.g., *Dogs are friendly*, *Mary smokes cigarettes*, *Yeast makes bread rise*) are among the simplest forms of compositional expressions. 
 Generalizations do not come in just one syntactic form: "*Dogs* are friendly", "*A library book* should be treated with respect", "*The contemporary foodie* seeks culinary experinces in menu-less restaurants and grandmothers' kitchens" [@Carlson1995; @NickelBlackwell; @sepGenerics].
-Each of these statements has in common the fact that they predicate a property of a category and the properties themselves apply to instances of the category (unlike, e.g., *Dinosaurs are extinct*). 
-In this way, these statements exhibit *genericity*; they support generalization to new, unobserved, concrete instances.
+Each of these statements has in common the fact that they predicate a property of a category and the properties themselves apply to instances of the category (unlike, e.g., *Dinosaurs are extinct* because being extinct is not a property that can be true of a particular dinosaur). 
+In this way, these statements exhibit *genericity*, or put another way, they convey generalizations.
 
-In this paper, we explore the language of generalizations: How speakers convey generalizations and how listeners interpret them.
+In this paper, we formalize the language of generalizations with the interest is deciding what makes a generalization in language *true or false*.
+
+How speakers convey generalizations and how listeners interpret them.
 We describe computational models based on a state-of-the-art language interpretation framework --- the Rational Speech Act theory [@Frank2012; @Goodman2013; @Goodman2016].
 Computational modeling has deepened our scientific understanding of complex linguistic phenomena such as politeness [@Yoon2016], hyperbole [@Kao2014], and vagueness [@Lassiter2013]. 
 Until now, however, rational models of communication have focused on statements about *particular* situations: utterances that convey information about a specific entity or event. 
@@ -239,7 +249,7 @@ Suppose we observe instances $\{x_1, x_2, ..., x_n\}$ of category $k$ and some n
 For properties among instances of a category, we can describe an inductive inference by a probability $h$ $h = P(x \in f \mid x \in k)$^[
 With a frequentist interpretation, this can be thought of as the *prevalence* of $f$ among $k$.
 ].
-Here, $x$ is an object.
+In the study of categories and properties, $x$ is an object.
 For a behavior exhibited by an agent, the inference concerns a rate --- how frequently (in time) does $x \in f$ occur --- which can be described as a probability integral: $h = \int_{t} P(x \in f_t \mid x \in k_t) \diff t$
 Here, $x$ is a instance.
 A Bayesian agent will have prior beliefs about the probability (potentially an uninformed prior) and uses Bayesian inference to learn about the probability from her observations.
@@ -268,7 +278,22 @@ For abstract, generalizable knowledge to remain in a culture, it must be able to
 
 # Communicating Generalizations
 
-To understand how generalizations are conveyed in language, we start by considering general purposes language understanding principles.
+We will discuss communicating generalizations in the context of generalizations about categories (i.e., *generic language*), though the arguments will extend to events and causes as well. 
+Generics express a relation between a kind K (e.g., \textsc{dogs}) and a property F (e.g., \textsc{is friendly}), such that the property can also be said to be applicable of an individual (i.e., "My dog is friendly"). 
+Bare plural statements (e.g., *Dogs are friendly*) strongly tend to yield a generic meaning, though other forms can express such a meaning [e.g., *A mongoose eats snakes.*; @Carlson1977] .
+
+Given that generics express a property that can be applied to individuals, it seems intuitive that what makes the statement true or false would correspond to the number of individuals who hold the property.
+At first glance, generics convey that *most* have the property, such as *Most dogs are friendly*.
+*Robins lay eggs* is true, though, despite the fact that only female robins lay eggs (not exactly *most robins*). 
+If generic statements can be true by restricting themselves to only be describing females, why does *Robins are female* seem like a weird statement to make?
+Finally, *Mosquitos carry malaria* is intuitively true despite malaria only being present in a tiny fraction of a percentage of mosquitos.
+It seems that any hard condition on the prevalence of the feature in the category (e.g., how many robins lay eggs) would violate intuitions. 
+
+
+: Do female robins (the only robins that lay eggs) constitute *most robins*?
+
+
+To understand how generalizations are conveyed in language, we start by considering general purpose language understanding principles.
 Foremost, understanding language depends upon assumptions interlocutors make about each other and can exhibit a complex sensitivity to context [@Clark1996; @Grice1975; @Levinson2000].
 Though once viewed as a wastebasket in which to dump unexplained loose ends in service of more rigorous formal analysis, *pragmatics* --- or language understanding in context --- has seen an emergence of formal frameworks that connect closely with behavioral data [@Franke2015].
 
