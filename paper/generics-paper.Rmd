@@ -72,11 +72,36 @@ library("papaja")
 ```
 
 
-```{r}
+```{r helpers}
 library(rwebppl)
 library(xtable)
 library(tidyverse)
 library(forcats)
+library(langcog)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(coda)
+library(knitr)
+library(ggthemes)
+library(rwebppl)
+theme_set(theme_few())
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+project.path <- "~/Documents/research/communicating-generalizations/"
+data.path <- "data/generics/endorsement/"
+model.path <- "models/generics/"
+options("scipen"=10) 
 ```
 
 # Introduction 
@@ -1038,16 +1063,50 @@ In total, each participant generated 10 animal names and reported on the prevale
 For a full list of the properties, and generic sentences used in Expt. 1b, see Table 2 (Appendix).
 The experiment can be viewed at \url{http://stanford.edu/~mtessler/experiments/generics/experiments/real-kinds/prior-2.html}.
 
-### Data analysis and model predictions
+### Bayesian analysis
 
-To process the priors data, we discretize the prevalence judgments to 12 discrete bins: $\{[0-0.01), (0.01-0.05), (0.05-0.15), (0.15-0.25),  ..., (0.75-0.85), (0.85-0.95), (0.95-1]\}$, and look at the counts within each bin, after doing add-1 Laplace smoothing, as the relative probability of that prevalence. 
+We begin by exploring the hypothesis prior is structured as a result of deeper conceptual knowledge.
+This is one way in which our theory can touch upon other psychological accounts of generic language [cf., @Prasada; @Gelman; @Leslie].
+If, indeed, there were such things as different types of kind--property relations (e.g., *principled* v. *accidental relations*), we would expect the prior data to follow a multi-modal, mixture distribution where different modes or components of the prior are the results of the different types of relations.
 
-WHAT SHOULD WE DO HERE?
+We formalize this hypothesis using a simple, Bayesian mixture model. 
+We test the simplest "structural" hypothesis, where there are two distinct components, for example, if participants believe that some kinds have a causal mechanism that *could* give rise to the property, while kinds others do not [@Griffiths2005].
+In this task, participants give responses in the form of numbers between 0 and 100 (or, rescaled to be between 0 - 1).
+The canonical prior for generating numbers between 0 - 1 is the Beta distribution.
+Because the Beta distribution is not defined at the points 0 and 1, we add $\epsilon$ to the 0 responses and subtract $\epsilon$ from the 1 responses.
 
+We then assume the data, for each item independently, was generated from one of two distributions: a distribution corresponds to those kinds with a stable causal mechanism that *could* give rise to the property ($\mathcal{D_{stable}}$) or a distribution corresponding to those kinds without a stable mechanism ($\mathcal{D_{transient}}$).
+The "transient" distribution intuitively corresponds to accidental causes of the feature (e.g., a lion, who through some genetic mutation, reproduces by laying eggs).
+We model this distribution is a Beta distribuition that heavily favors values near 0: $\text{Beta}(1, 100)$.
+The "stable" distribution is modeled as a Beta distribution with unknown parameters $\text{Beta}(\alpha, \beta)$.
+In addition, we assume that these two components combine with some weighting $\phi$ such that the data we observe is $$P(d) = \phi\cdot \text{Beta} (d \mid \alpha, \beta) + (1 -  \phi) \cdot \text{Beta}(d \mid \alpha = 1, \beta = 100) $$.
+
+We put priors over the latent parameters of this model and infer their credible values by way of Bayesian infernence.
+
+\begin{eqnarray}
+\theta & \sim & \text{Uniform}(0, 1) \\
+\alpha & \sim & \text{Uniform}(0, 100) \\
+\beta & \sim & \text{Uniform}(0, 100) \\
+\end{eqnarray}
+
+To see how well this data-analytic model fits the prevalence prior data, we can use the inferred parameters to generate new data.
+This is called the *posterior predictive distribution* and is an important step in model validation. 
+If the model is a good representation of the data, the posterior predictive data will align with the experimental data. 
+We construct a posterior predictive distribution by first flipping a coin weighted by $\theta$.
+If it comes up heads, we then sample from the "stable" component: $\text{Beta}(\alpha, \beta)$.
+If it comes up tails, we sample from the "transient" component: $\text{Beta}(1, 100)$.
+We do at each run of the model to generate a distribution over predicted prevalence ratings.
+
+
+We implemented this statistical model using the probabilistic programming language WebPPL [@dippl].
+To learn about the credible values of the parameters, we ran separate MCMC chains for each item, collecting 50,000 samples and discarding an additional 25,000 for burn-in.
+
+### Results
+
+<!-- To process the priors data, we discretize the prevalence judgments to 12 discrete bins: $\{[0-0.01), (0.01-0.05), (0.05-0.15), (0.15-0.25),  ..., (0.75-0.85), (0.85-0.95), (0.95-1]\}$, and look at the counts within each bin, after doing add-1 Laplace smoothing, as the relative probability of that prevalence.  -->
+<!-- Do a BDA to describe the data in a more compact form. -->
 <!-- We can explore how the underspecified-threshold listener model $L_{0}(x , \theta \mid u)$ (Eq. \ref{eq:L0}) interprets generic utterances with these priors on prevalence (Figure \ref{fig:commongenerics}a, insets).  -->
-
 <!-- The prior beliefs over the prevalence of the property, $P(h)$, can also be interpreted as the pragmatic listener's posterior upon hearing the null utterance, because the null utterance has no information content. -->
-
 <!-- We see the interpretation of the generic is quite variable across our empirically measured priors. -->
 <!-- For instance, in the case of \textsc{carries malaria}, the prior is very left-skewed; with this prior, the threshold $\theta$ can plausibly be very low because high prevalence is unlikely. -->
 <!-- Properties like \textsc{doesn't attack swimmers} are very right-skewed; with this prior, not many thresholds lead to a substantial update in beliefs, and so the generic is unlikely to be used by speaker $S_1$ unless the property is practically-universal within the target category.  -->
@@ -1058,6 +1117,67 @@ WHAT SHOULD WE DO HERE?
 ### Experiment 1b: Endorsing generic statements
 
 #### Method
+
+```{r generic.endorsement}
+d.gen.endorse.catch <- read.csv(paste(project.path, data.path, 
+                    "truth-judgments_catch-trials.csv", sep = ""))
+
+d.gen.endorse <- read.csv(paste(project.path, data.path, 
+                    "truth-judgments.csv", sep = ""))
+
+
+d.gen.endorse.summary <- left_join(
+  d.gen.endorse, 
+  d.gen.endorse.catch %>% select(workerid, pass)
+  ) %>%
+  filter(pass == 1) %>%
+  rowwise() %>%
+  mutate(response = ifelse(response == "agree-key", 1, 0),
+         sentence = gsub('&quotechar', '', sentence),
+         sentence = gsub('lyme', 'Lyme', sentence)) %>%
+  group_by(sentence) %>%
+  multi_boot_standard(column = "response") %>%
+  ungroup() %>%
+  mutate(sentence = factor(sentence, levels = sentence[order(mean)]))
+
+d.gen.endorse.bayes <- left_join(
+  d.gen.endorse, 
+  d.gen.endorse.catch %>% select(workerid, pass)
+  ) %>%
+  filter(pass == 1) %>%
+  rowwise() %>%
+  mutate(response = ifelse(response == "agree-key", 1, 0),
+         sentence = gsub('&quotechar', '', sentence),
+         sentence = gsub('lyme', 'Lyme', sentence)) %>%
+  group_by(sentence) %>%
+  summarize(k = sum(response), n = n()) %>%
+  ungroup() %>%
+  mutate(a = 1 + k,
+         b = 1 + n - k,
+         low  = qbeta(.025, a, b),
+         high = qbeta(.975, a, b),
+         MAP_h = (a-1)/(a+b-2),
+         mean = a / (a + b)) %>% 
+  ungroup() %>%
+  mutate(sentence = factor(sentence, levels = sentence[order(MAP_h)]))
+
+
+# d.gen.endorse.summary %>%
+#   ggplot(., aes(x = sentence, y = mean, ymin = ci_lower, ymax = ci_upper))+
+d.gen.endorse.bayes %>%
+  #ggplot(., aes(x = sentence, y = MAP_h, ymin = low, ymax = high))+
+  ggplot(., aes(x = sentence, y = MAP_h - 0.5, ymin = low - 0.5, ymax = high - 0.5))+
+  geom_bar(stat = 'identity', position = position_dodge(),fill = 'grey')+
+  geom_linerange(position = position_dodge())+
+  #geom_errorbar(position = position_dodge())+
+  coord_flip()+
+  ylab("Proportion Endorsement")+
+  xlab("")+
+  #scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1))+
+  scale_y_continuous(limits = c(-0.5,0.5), breaks = c(-0.5, 0, 0.5), labels = c(0, 0.5, 1))#+
+  #geom_hline(yintercept = -0.25, lty = 3)+
+  #geom_hline(yintercept = 0.25, lty = 3)
+```
 
 ##### Participants
 
@@ -1082,6 +1202,9 @@ As a manipulation check, the first author assigned an \emph{a priori} truth-judg
 This was a significant predictor of the empirical truth judgments: true generics were significantly more likely to be agreed with than the indeterminate generics ($\beta = 3.14; SE = 0.15; z = 21.5$), as revealed by a mixed-effect logistic regression with random by-participant effects of intercept.
 Indeterminate generics were agreed with \emph{less} likely than chance ($\beta = -0.49; SE = 0.09; z = -5.3$) but significantly more than false generics ($\beta = 2.09; SE = 0.14; z = 14.5$).
 
+To understand the contribution of our model, we articulate plausible alternative models that have been proposed informally in the literature. 
+We describe these two alternatives before describing the fit of our model.
+
 From the prevalence prior data (Expt. 1a), we estimate participants' beliefs about the prevalence of a property \emph{for particular kinds} (e.g., the percentage of \textsc{robins} that \textsc{lay eggs}; see green intervals on Figure \ref{fig:commongenerics}a insets, and Table 2 in Appendix).
 As a simple baseline hypothesis, we first explore whether these prevalence values themselves predict generic endorsement (e.g., does the fraction of \textsc{robins} that \textsc{lay eggs} predict the felicity of \emph{Robins lay eggs}?).
 We find a little over half of the variance in the endorsement data is explained this way ($r^2 = 0.599$; MSE=0.065; Figure \ref{fig:commongenerics}b, right). 
@@ -1103,16 +1226,20 @@ A linear model that uses predictors for both prevalence and cue validity does a 
 This model is able to account for the endorsements of examples like "Mosquitos carry malaria" and "Lions have manes", as these features are very diagnostic of the kind.
 Deviations, however, still remain.
 For example, "Robins lay eggs" still only receives only intermediate endorsement by this model, and this highlights a shortcoming of the summary statistic of cue validity. 
-"Lays eggs" is somewhat diagnostic for birds, but there are many kinds of birds, and the feature is not itself diagnostic for "Robins". 
+"Lays eggs" is a somewhat diagnostic features for *birds*, but there are many kinds of birds, and the feature is not itself diagnostic for "Robins". 
+Cue validity is too blunt a metric to capture this subtlety.
 The enriched alternative model also falls short for "Mosquitos don't carry malaria".
-Negative properties (like, "not carrying malaria") is completely undiagnostic for every category, and this model ends up believing "Mosquitos don't carry malaria" is a relatively good statement becuase of the high prevalence (i.e., most mosquitos don't arry malaria).
+Negative properties (like, "not carrying malaria") is completely undiagnostic for almost every category, and this model ends up believing "Mosquitos don't carry malaria" is a relatively good statement because of the high prevalence (i.e., most mosquitos don't arry malaria).
 
-The pragmatic speaker model, $S_2$ in Eq.~\ref{eq:S2}, predicts an endorsement probability for a generic sentence, given prior beliefs about the property, $P(x)$, and a prevalence-level,  $x$, within the kind-of-interest. (That is, $S_2$ provides a model of whether someone who knows $x$ would say the generic to someone who doesn't, but shares prior $P(x)$; as discussed above we adopt this as a model of agreement judgments.)  
-We use the empirically estimated within-kind prevalence as the $x$ that the speaker $S_2$ is trying to communicate, and use the empirically measured priors from Expt.~1a as the listener's prior $P(x)$. 
-The $S_2$ model is then fully specified after setting the speaker optimality parameters $\lambda_1$ and $\lambda_2$ (in Eqs.~\ref{eq:S1}, \ref{eq:S2}).
-%In order to get estimates of the $S_2$ model's predictive probability for endorsing generic sentences, we performed a bootstrap procedure on the empirical prior data. For each sample of the bootstrapped prior, we performed a Bayesian data analysis to infer the likely values of the model parameters. 
-Rather than fitting the parameters, we inferred them and integrated over their plausible values using Bayesian data analysis [@LW2014]. We put uninformative priors over these parameters, with a range consistent with previous literature using the same model class: $\lambda_1 \sim \text{Uniform}(0,20)$, $\lambda_2 \sim \text{Uniform}(0,5)$.
-We learn about the \emph{a posteriori} credible values of our model parameters by collecting samples from MCMC chains of 10,000 iterations removing the first 5,000 iterations, using the Metropolis-Hastings algorithm. 
+Our underspecified threshold model has access to the full prior distribution on prevalence $P(h)$, from which it infers likely thresholds for the generic. 
+Our pragmatic speaker model, $S_1$ in Eq. \ref{eq:S1}, reasons about whether it would be useful to say to the generic to this kind of listener so that the listener may acquire the same beliefs as the speaker (represented as the prevalence of the property within the target category $h'$).
+We use the empirically estimated within-kind prevalence as the $h$ that the speaker $S_1$ is trying to communicate, and use the empirically measured priors from Expt. 1a as the listener's prevalence prior $P(h)$.^[
+Rather than trying to communicate a particular $h$, the speaker could plausibly try to communicate her full belief distribution over $h$ to the listener. This corresponds to the more general form of the model described in **Alternative Formulations** section. With these data, the predictions of these two models are nearly identical.
+]
+The $S_1$ model is then fully specified after setting the speaker optimality parameter $\lambda_1$ (in Eq. \ref{eq:S1).
+Rather than fitting the parameter, we inferred them and integrated over their plausible values using Bayesian data analysis [@LW2014].
+We put an uninformative prior over this parameter, with a range consistent with previous literature using the same model class: $\lambda_1 \sim \text{Uniform}(0,5)$.
+We learn about the \emph{a posteriori} credible values of our model parameter by collecting samples from MCMC chains of 10,000 iterations removing the first 5,000 iterations, using the Metropolis-Hastings algorithm. 
 
 The above analysis provides a single estimate for model predictions, but it is based on noisy empirical measurements of $P(x)$. In order to estimate the impact of this empirical noise on our model predictions, we resampled the prior data (with replacement) for 57 participants worth of data, discretizing and binning as we did above and then inferring parameters.
 This procedure (re-sample prior, discretize and bin, infer parameters) was repeated 500 times to bootstrap the model predictions.
@@ -1150,62 +1277,74 @@ This is strong evidence that the puzzling flexibility of generic truth-condition
 \end{figure}
 
 
-
-## Experiment 9: The Asymmetry between Endorsement and Interpretation of Generic Language (replication and extension of Cimpian et al., 2010)
+## Experiment 2: Interpreting generalizations about categories
 
 One of the most important roles for generic language is to provide learners information about new or poorly understood categories. 
 This role depends on how unfamiliar generic sentences are interpreted [e.g., @Gelman2002; @Cimpian2010].
-The pragmatic theory we present includes such a theory of generic comprehension: the listener model (Eq.~\ref{eq:L1}) describes interpretation of a generic utterance---\emph{Kind \textsc{has property}}---without previously knowing the prevalence of the property within this kind.
-In our theory, the meaning is uncertain, but the pressure to be informative operates over \emph{a priori} beliefs about properties to produce an interpretation. 
+Interpretating generic language has been shown to impact how kinds are represented in the mind [@Cimpian2009; @Cimpian2010], how essentialism develops [@Rhodes2012], and individual motivation [@Cimpian2007; Cimpian2010].
+In this rich space of conveyed content, our theory posits that the mediating force in these cases is probability.
+The theory we present includes the most basic model of generic comprehension: the listener model (Eq. \ref{eq:L0}) describes interpretation of a generic utterance---\emph{Kind \textsc{has property}}---without previously knowing the prevalence of the property within the kind.
+
 Classic work in generalization suggests beliefs about the prevalence of properties differ by type of property, including relatively fine distinctions among properties that are all biological in nature [@Nisbett1983]. 
-We leverage these diverse expectations, using properties that explore a wide range of \emph{a priori} beliefs about prevalence. 
+We harness these diverse expectations, using properties that explore a wide range of \emph{a priori} beliefs about prevalence. 
+We test the impact of generic language on prevalence [following @Gelman2002; @Cimpian2010].
 
-Measuring \emph{a priori} beliefs is subtle when the kinds are unknown.
-We cannot, as before, have participants fill out a table with rows corresponding to different animal kinds and columns corresponding to different properties:  Nothing would distinguish the rows.
-Instead, we leverage the latent structure uncovered in our extended model analysis of Expt.~1 and decompose prevalence priors into 2 components: the property's potential to be present in a kind and the mean prevalence when present.
+Measuring *a priori* beliefs when the kinds are unknown is subtle.
+We cannot, as before, have participants fill out a table with rows corresponding to different novel animal kinds and columns corresponding to different properties:  Nothing would distinguish the rows.
+Instead, we build our finding in Expt. 1a that the prevalence prior is structured (i.e., it is implicitly representing two or more primitive distributions: a null distribution and a present distribution).
+We assume the null distribution is a transient cause of the property and follows a $Beta(1, 100)$ distribution.
+We assume the "present" distribution is a Beta distribution whose mean and variance parameters we wish to measure for different properties. 
+We also will measure the relative weighting of these two distributions (i.e., the mixture component) in the prior task (Expt. 2a).
 
-We use this novel method for measuring \emph{a priori} beliefs about the prevalence of these properties for unfamiliar kinds (Expt.~2a).
-We then test the predictions of the pragmatic listener model $L_1$ using these empirically derived priors against human \emph{interpretations} of novel generic sentences (Expt.~2b).
-Finally, we explain a previously reported empirical asymmetry between truth conditions and interpretations by comparing the speaker $S_2$ and listener $L_1$ models in the same experimental context (Expt.~2c).
+By measuring these two aspects of the prior, we build a Bayesian data analysis model to reconstruct the marginal distribution on prevalence $P(h)$ from these measurements.
+We then test the predictions of the underspecified-threshold listener model $L_0$ using these empirically derived priors against human interpretations of novel generic sentences (Expt. 2b).
 
-### Experiment 9a: Prevalence Priors for Unfamiliar Kinds
+### Experiment 2a: Measuring the prevalence prior with unfamiliar kinds
 
-### Method
-
-#### Participants
+##### Participants
 
 We recruited 40 participants over MTurk.  
 All participants were native English speakers. 
 The experiment took about 5-7 minutes and participants were compensated \$0.75.
 
-#### Procedure and materials
+##### Procedure and materials
 
-We constructed forty different properties to explore a wide range of \emph{a priori} beliefs about prevalence. 
-These items make up four categories of properties: body parts of a particular color (e.g. \textsc{has green feathers}), described vaguely (e.g. \textsc{has small wings}), in accidental or disease states (e.g. \textsc{has wet fur}, \textsc{has swollen ears}), and without modification (e.g. \textsc{has claws}).
-Because pilot testing revealed more variability for items in the accidental category relative to the other types of properties, we used twice as many exemplars of accidental properties, yielding a more thorough test of the quantitative predictive power of the $L_1$ interpretation model. 
-We used 8 exemplars of each of the three non-accidental properties ("parts", "colored parts", "vague parts"), and 16 exemplars of accidental properties, building on a stimulus set from @Cimpian2010.
+We constructed forty different properties to explore a wide range of \emph{a priori} beliefs about prevalence, building on a stimulus set from @Cimpian2010. 
+These items make up four sub-categories of properties concerning body-parts: without modification (e.g. \textsc{has claws}), of a particular color (e.g. \textsc{has green feathers}), 
+described vaguely (e.g. \textsc{has small wings}), or in accidental or disease states (e.g. \textsc{has wet fur}, \textsc{has swollen ears}).
+Because pilot testing revealed more variability for items in the accidental category relative to the other types of properties, we used twice as many exemplars of accidental properties to yield a data set with more item-wise variability. 
+We used 8 exemplars of each of the three non-accidental properties ("parts", "colored parts", "vague parts"), and 16 exemplars of accidental properties.
 All materials are shown in Table 3 in the Appendix.
 
 In the task, participants were introduced to a "data-collection robot" that was tasked with learning about properties of animals. 
 Participants were told the robot randomly sampled an animal to ask the participant about (e.g. The robot says: "We recently discovered animals called feps."). 
-We then used a two-stage elicitation procedure, aimed to measure the two components of the structured prior model: (1) the potential of the property to be present in a kind and (2) the expected prevalence when present.
-To get at (1), the robot asked how likely it was that "there was \emph{a} fep with \textsc{property}" (potential to be present), to which participants reported on a scale from "unlikely" to "likely".
-For example, it is very likely that there is a fep that is female, less likely that there is a fep that has wings, and even less likely that there is a fep that has purple wings. 
-To get at (2), the robot then asked, "Suppose there is a fep that has wings. What percentage of feps do you think have wings?" (expected prevalence when present). 
+We then used a two-stage elicitation procedure, aimed to measure two relevant components of the structured prior model: (i) the *potential* of the property to be present in a kind and (ii) the *expected prevalence* when present.
+The former relates to the distinctiveness of the feature and the latter corresponds to the prevalence among those animals with the capacity to have the feature.
+To get at (i), the robot asked how likely it was that "there was \emph{a} fep with \textsc{property}" (potential to be present), to which participants reported on a scale from "unlikely" to "likely".
+For example, it is very likely that there is a fep that *is female*, less likely that there is a fep that *has wings*, and even less likely that there is a fep that *has purple wings*. 
+To get at (ii), the robot asked, "Suppose there is a fep that has wings. What percentage of feps do you think have wings?" (expected prevalence when present). 
 Participants completed a practice trial to make sure they understood the meanings of these two questions.
 
-### Data analysis and results
+#### Data analysis and results
 
-We used the same structured, statistical model for the prior data from Expt.~1.
-The only difference from Expt.~1a. is that our experimental data comes from inquiring about the parameters of the priors directly, as opposed to asking about particular samples from the prior (i.e. particular kinds) as was done in Expt.~1a. 
-We assume these two measurements follow Beta distributions ($d_{potential} \sim \text{Beta}(\gamma_{1}, \xi_{1})$; $d_{expected} \sim \text{Beta}(\gamma_{2}, \xi_{2})$), and construct single prevalence distributions, $P(x)$, by sampling from the posterior predictive distribution of prevalence as we did before: $P(x) = \int [ \phi\cdot \text{Beta} (x \mid \gamma_{2}, \xi_{2}) + (1 -  \phi) \cdot \delta_{x=0} ] \cdot \text{Beta}(\phi \mid \gamma_{1}, \xi_{1}) d\phi$.
-We used the same uninformative priors over parameters $\phi, \gamma_{i}, \xi_{i}$ as in Expt.~1a.
+We used the same structured, data analysis model from Expt. 1a.
+The only difference analytically is that this experiment measures different components of the prior. (In Expt. 1a., our experimental data came asking about particular samples from the prior, i.e., particular familiar categories). 
+
+The two measurements in this experiment are slider bar ratings ranging from 0 to 1 in increments of 0.01.
+The canonical prior for generating numbers between 0 - 1 is the Beta distribution.
+We assume these two measurements follow Beta distributions ($d_{potential} \sim \text{Beta}(\gamma_{1}, \xi_{1})$; $d_{expected} \sim \text{Beta}(\gamma_{2}, \xi_{2})$). 
+The posterior predictive of $d_{potential}$ corresponds to the relative weighting of the "present" component in the prior. 
+In our Bayesian data analysis model, we then flip a coin weighted by a posterior predictive sample $\phi$ of $\text{Beta}(\gamma_{1}, \xi_{1})$.
+If it comes up heads, we then sample from the "present" component: $\text{Beta}(\gamma_{2}, \xi_{2})$.
+If it comes up tails, we sample from the "null" component: $\text{Beta}(1, 100)$.
+Thus, we construct single prevalence distributions, $P(h)$, by sampling from the posterior predictive distribution of prevalence as we did before: $$P(h) = \int [ \phi\cdot \text{Beta} (x \mid \gamma_{2}, \xi_{2}) + (1 -  \phi) \cdot \text{Beta}(1, 100)] \cdot \text{Beta}(\phi \mid \gamma_{1}, \xi_{1}) d\phi$$.
+We used the same uninformative priors over parameters $\phi, \gamma_{i}, \xi_{i}$ as in Expt. 1a.
 
 Figure \ref{fig:prior2}a shows a summary of the elicited priors, in terms of the diversity of $d_{potential}$ and $d_{expected}$.
 Biological properties are expected to be \emph{a priori} more prevalent within a kind when present than accidental properties, with additional fine-grained differences within biological and accidental properties.
 Like the priors elicited using familiar categories, these priors elicited using unfamiliar categories have diverse shapes (see insets). 
 Biological properties ("biological", "vague", and "color" body parts) have prevalence distributions that are bimodal with peaks at 0\% and near-100\% prevalence. 
-Interpretations of generics about these properties ($L_1$ model, Eq.~\ref{eq:L1}) update these distributions to concave posteriors peaked at 100\% (Figure \ref{fig:prior2}a; red, blue and green insets); the model predicts these novel generics will be interpreted as implying the property is widespread in the category.
+Interpretations of generics about these properties ($L_0$ model, Eq. \ref{eq:L0}) update these distributions to concave posteriors peaked at 100\% (Figure \ref{fig:prior2}a; red, blue and green insets); the model predicts these novel generics will be interpreted as implying the property is widespread in the category.
 By contrast, accidental properties (both "rare" and "common") follow unimodal prior distributions and update to convex posterior distributions, predicting weaker and more variable interpretations of novel generics for these properties. 
 
 \begin{figure*}
@@ -1223,11 +1362,10 @@ By contrast, accidental properties (both "rare" and "common") follow unimodal pr
   \label{fig:prior2}
 \end{figure*}
 
+### Experiment 2b: Interpreting novel generic statements
 
-### Experiment 9b: Interpreting Novel Generic Statements
-
-Our model of generic interpretation, the pragmatic listener model $L_1$ (Eq.~\ref{eq:L1}), predicts that the interpretations of generics in terms of prevalence should vary as a function of the prevalence prior.
-Here, we test the degree to which the predictions based on the empirically elicited prevalence priors for 40 items (from Expt.~2a) match human judgments of how the widespread the property is upon hearing a generic.
+Our model of generic interpretation, the listener model $L_0$ (Eq. \ref{eq:L0}), predicts that the implied prevalence of generics should vary as a function of the prevalence prior.
+Here, we test the degree to which the predictions based on the empirically elicited prevalence priors for 40 items (from Expt. 2a) match human judgments of how the widespread the property is upon hearing a generic.
 
 ### Method
 
@@ -1242,18 +1380,17 @@ The experiment took about 5 minutes and participants were compensated \$0.60.
 
 In order to get participants motivated to reason about novel kinds, they were told they were the resident zoologist of a team of scientists on a recently discovered island with many unknown animals; their task was to provide their expert opinion on questions about these animals.
 Participants were supplied with the generic (e.g., "Feps have yellow fur.") and asked to judge prevalence: "What percentage of feps do you think have yellow fur?". 
-Participants completed in randomized order 25 trials: 5 for each of the biological properties and 10 for the accidental (described in Expt.~2a).
+Participants completed in randomized order 25 trials: 5 for each of the biological properties and 10 for the accidental (described in Expt. 2a).
 The experiment in full can be viewed at \url{http://stanford.edu/~mtessler/generics/experiments/asymmetry/asymmetry-2.html}. 
 
 ### Analysis and results
 
-The pragmatic listener $L_1$ model provides posterior beliefs about prevalence, given prior beliefs and a generic utterance.
-This model has one parameter governing the optimality of the hypothetical speaker $S_1$ in Eq.~2. 
-We put the same uninformative prior over this parameter as previously: $\lambda_1 \sim \text{Uniform}(0, 20)$.
-We learned about the parameter's \emph{a posteriori} credible values by running 3 MCMC chains of 100,000 samples (removing 50,000 for burn-in) using the Metropolis-Hastings algorithm.
-The MAP and 95\% credible interval for $\lambda_1$ are $14.8 [6.4, 19.9]$.
+The underspecified-threshold listener $L_0$ model provides posterior beliefs about prevalence, given prior beliefs and a generic utterance.
+This model has zero parameters and its predictions are derived by marginalizing out the uniform prior on threshold $P(\theta)$.
 
-We look at the posterior predictive distribution of $L_1$, integrating out the model parameter.
+NEED TO REWRITE
+
+We look at the posterior predictive distribution of $L_0$, integrating out the model parameter.
 We first explore two important trends predicted by the pragmatic listener model.
 In Figure \ref{fig:exp2b} (solid lines) we see the implied prevalence judgments are predicted (at the property class level) to vary linearly with the \emph{a proiri} expected prevalence. 
 A mixed-effects linear model with random by-participant effects of intercept and slope indeed reveals the more prevalent a property is expected to be \emph{a priori}, the stronger the implications of a generic statement ($\beta = 0.57; SE = 0.08; t(39) = 7.12; p < 0.001$).
@@ -1263,44 +1400,46 @@ As for the quantitative accuracy of the model, on a by-item level, the pragmatic
 Human participants and our model display the same sensitivity of generic interpretation to details of the property (Figure \ref{fig:prior2}b). 
 We now have strong support for both of the major predictive components of our model: generic endorsement, modeled as a speaker $S_2$, and generic interpretation, modeled as a listener $L_1$.
 
-### Experiment 9c: The Asymmetry Between Truth Conditions and Interpretations
+## Experiment 3: The Asymmetry Between Endorsements and Interpretations
 
 There is a surprising d\'{e}colage between the truth conditions and interpretations of generic language: Interpretations are often strong while truth conditions are flexible. 
-@Cimpian2010 found that upon reading a generic (e.g. \emph{Glippets have yellow fur.}), participants infer (in an \emph{implied prevalence} task) that the property is widespread (e.g. almost all glippets have yellow fur).
-By contrast, participants endorse generics (in a \emph{truth conditions} task) for a wide range of prevalence levels (e.g. even when "30\% of glippets have yellow fur."), thus showing an asymmetry between truth conditions and implied prevalence. 
-However, this mismatch is not found for the behavior of quantified statements involving "all" or "most," and 
-is significantly reduced for generics of accidental properties  (e.g. \emph{Glippets have wet fur.}).
+@Cimpian2010 found that upon reading a generic (e.g., \emph{Glippets have yellow fur.}), participants infer (in an \emph{implied prevalence} task; Expt. 2b) that the property is widespread (e.g., almost all glippets have yellow fur).
+By contrast, participants endorse generics (in an endorsement task) for a wide range of prevalence levels (e.g., even when "30\% of glippets have yellow fur."), thus highlighting an asymmetry between endorsements  and implied prevalence. 
+This mismatch is not found for the behavior of quantified statements involving "all" or "most," and is significantly reduced or disappears for generics of accidental properties  (e.g., \emph{Glippets have wet fur.}).
 
-Below we replicate the basic asymmetry findings of @Cimpian2010 and reveal even more variability in the mismatch between \emph{truth conditions} and \emph{implied prevalence} using the expanded stimulus set from Expt.~2a.
-In addition, we now test both our models (generic endorsement [speaker $S_2$] and generic interpretation [listener $L_1$]) in the same experimental paradigm. %models predicts the asymmetry and the context-sensitivity of this phenomenon.
-
-%Expt.~2b revealed how generics imply the property is more widespread than what would be expected \emph{a priori}. 
-%Comparing to the average prevalence required to assent is another way to explore how generics exaggerate the evidence. 
+Below, we measure endorsements using the same stimuli as Expt. 2b. 
+We replicate the basic asymmetry findings of @Cimpian2010 and reveal even more variability in the mismatch between *endorsements* and \emph{implied prevalence} using the expanded stimulus set from Expt. 2.
+In addition, we now test both our models (generic endorsement [speaker $S_1$] and generic interpretation [listener $L_0$]) in the same experimental paradigm.
 
 ### Method
 
-We re-analyze the data from Expt.~2b as the \emph{implied prevalence} data.
-The following paradigm is to measure the corresponding \emph{truth conditions}.
+We re-analyze the data from Expt. 2b as the \emph{implied prevalence} data.
+The following paradigm is to measure the corresponding \emph{endorsements}.
 
 #### Participants
 
 We recruited 40 participants over MTurk.  
 All participants were native English speakers. 
-None of the participants completed Expt.~2b (interpretations of novel generics).
+None of the participants completed Expt. 2b (interpretations of novel generics).
 The experiment took about 5 minutes and participants were compensated \$0.60.
 
 #### Procedure and materials
 
-The cover story and materials were the same as in Expt.~2b.
-On each trial, participants were given a statement about a property's prevalence within a novel kind (e.g. \emph{50\% of feps have yellow fur.}). Participants were then asked whether or not they agreed or disagreed with the corresponding generic sentence (e.g. \emph{Feps have yellow fur.}). Prevalence varied between 10, 30, 50, 70, and 90\%.
+The cover story and materials were the same as in Expt. 2b.
+On each trial, participants were given a statement about a property's prevalence within a novel kind (e.g., \emph{50\% of feps have yellow fur.}).
+Participants were then asked whether or not they agreed or disagreed with the corresponding generic sentence (e.g., \emph{Feps have yellow fur.}).
+Prevalence varied between 10, 30, 50, 70, and 90\%.
 
-The experiment consisted of 25 trials: 5 trials for each of 5 types of properties measured in Expt.~2a (part, color part, vague part, common accidental, rare accidental). 
+The experiment consisted of 25 trials: 5 trials for each of 5 types of properties measured in Expt. 2a (part, color part, vague part, common accidental, rare accidental). 
 Each prevalence level appeared once for each property type (5 prevalence levels x 5 property types). 
 
 ### Analysis and results
 
-For both behavioral data and model predictions (Eq.~\ref{eq:S2}) we computed the average prevalence that led to an assenting judgment (the \emph{average prevalence score}), for each property type and participant, following the procedure used by @Cimpian2010.
-For example, if a participant agreed with the generic whenever the prevalence was 70\% or 90\% and disagreed at the other prevalence levels, that participant received an \emph{average prevalence score} of 80\%.
+For both behavioral data and model predictions (Eq. \ref{eq:S1}) we computed the average prevalence that led to an assenting judgment (the \emph{average prevalence score}), for each property type and participant, following the procedure used by @Cimpian2010.
+For example, if a participant endorsed the generic whenever the prevalence was 70\% or 90\% and disagreed at the other prevalence levels, that participant received an \emph{average prevalence score} of 80\%.
+If a participant didn't endorse the generic at any prevalence level, their \emph{average prevalence score} was 100\% because presumably they would only endorse the generic if the property was universal.
+
+RE-DO
 
 For our pair of models, there are two parameters (the two speaker optimality parameters).
 We infer them using the same Bayesian data analytic approach as before. 
@@ -1330,12 +1469,38 @@ Thus, our model predicts that the asymmetry between truth conditions and implied
   \label{fig:exp2b}
 \end{figure*}
 
+## Discussion
+
+Generic language is the premier case study for generalizations in language. 
+Generics have been studied extensively in the cognitive and developmental psychological literatures and have been shown to have implications for wide ranging phenomena from stereotype propogataion [@Rhodes2012] to motivation [@Cimpian2007].
+However, no formal model has been able to make precise quantitative predictions about the basic phonemena of generics, and classic counterexamples to theories based on probability (*Birds lay eggs* v. *are female*; *Mosquitos carry malaria*) have stifled the development of formal models.
+By measuring listeners' prior beliefs about the prevalence of the property across kinds and the prevalence of the target kind (e.g., the percentage of birds that lay eggs), we were able to show how an underspecified-threshold semantics is tenable inspite of these seeming counterexamples.
+The decision of whether or not to endorse the generic comes down to whether or not the generic would make the listener's belief distribution more in line with the speaker's.
+
+In addition, why generics often imply the property is widespread has also been puzzling [@Gelman2004].
+We show that this is the result of the shape of listener's prior knowledge and that when that shape differs, the implied prevalence is much weaker (e.g., with accidental properties).
+Even more puzzling has been the basic asymmetry between endorsements and interpretations [@Cimpian2010].
+We show that this asymmetry arises from the underspecified-threshold interacting with diverse prior beliefs. 
+While implied prevalences vary wildly for different kinds of properties under discussion, the endorsements are relatively less sensitive to these distinctions.
+Thus, the basic asymmetry is largely being driven by the listener's interpretation of a generic.
+
+In explaining these three phenomena (variable endorsements, implied prevalence, and the asymmetry), we measured the prior distribution over the prevalence of the features across categories. 
+In addition, for the endorsement data, we had to measure the prevalence of the feature in the target category (e.g., the percentage of robins that lay eggs) to model the endorsement data.
+Thus, this evidence is largely correlational in nature. 
+We do not yet know if these variables that we are measuring are causally related to endorsement and interpretation.
 
 # Case Study 2: Habitual Language
 
-*Habitual* language (e.g,. "Mary smokes."; "My car won't start.") conveys generalizations about events. 
-As a first test of our communicative theory, we examine the conditions under which such statements are endorsed as well as the frequencies implied by such statements. 
+In our second case study, we continue to measure the prior distribution but manipulate the target probability.
+We do this in the domain of generalizations about events (i.e., *habitual language*).
 In this case study, we focus on a particular class of events: people doing actions.
+While we could manipulate the target probability for generic endorsements (e.g., the prevalence of feature in a kind), this may interact with domain knowledge in complex ways (e.g., it's *a priori* very unlikely that 90% of a hypothetical kind---lorches--- have broken wings).
+Instead, we carry out this manipulation in the case of events, where manipulating target probability is quite straightforward.
+In this domain, target probabilities correspond to the frequency with which a person does an action.
+In addition to generalizing our theory to a novel domain, these experiments provide the first test of the generality of our theory.
+
+*Habitual* language (e.g,. "Mary smokes."; "My car won't start.") convey generalizations about events. 
+As a first test of our communicative theory, we examine the conditions under which such statements are endorsed as well as the frequencies implied by such statements. 
 
 This set of experiments is organized as follows.
 In the **Event Prior Elicitation** study (Expt. 1), we measure participants' latent prior belief distribution over the frequencies of people doing various actions (e.g., how often people *run*).
@@ -1357,22 +1522,24 @@ Finally, having validated a communicative theory of genericity, we probe the the
 <!-- The computational model described in Eq. \ref{eq:S1} is fully specified except for the prior distribution over the frequency of an event $P(h)$, which plausibly varies across different kinds of events. -->
 <!-- First, we measure the prior distribution, and use it and the computational model to predict human endorsement of habitual statements. -->
 
-## Experiment 1: Eliciting the Frequency Prior for Events
+## Experiment 4: Endorsing and interpreting generalizations about events
+
+### Experiment 4a: Measuring the propensity prior for event knowledge
 
 In this experiment we elicit the prior $P(h)$ for different events in order to generate model predictions for corresponding habitual statements.
 For the case of statements about the behaviors of people, $P(h)$ can be conceived as a distribution over *different people*, each of whom do the behavior with a different frequency.
 To better understand what frequencies should be expected for different actions, we had participants judge the frequency of action for people they were familiar with.
 
 
-### Method
+#### Method
 
-#### Participants
+##### Participants
 
 We recruited 50 participants from Amazon's Mechanical Turk.
 Participants were restricted to those with U.S. IP addresses and who had at least a 95\% work approval rating.
 The experiment took on average 12 minutes and participants were compensated \$1.25 for their work.
 
-#### Materials
+##### Materials
 
 <!-- We created thirty-one events organized into pairs or triplets from 5 different conceptual categories:  -->
 We created twenty-seven events organized into pairs or triplets from 5 different conceptual categories: 
@@ -1383,7 +1550,7 @@ entertainment (e.g. \emph{watches professional football}, \emph{watches space la
 hobbies (e.g. \emph{runs}, \emph{hikes}). 
 Items were chosen to intuitively cover a range of likely frequencies of action, as well as to provide a minimal comparison to another item by having a common superordinate action (e.g. \emph{eating} caviar vs. peanut butter).
 
-#### Procedure
+##### Procedure
 
 The experiment began by having participants input the names of eight friends, family members, or people they knew well that they could answer some questions about.
 Participants were told that these names would only be used to assist them in reasoning through the second part of the experiment. 
@@ -1414,7 +1581,7 @@ The experiment can be viewed at \url{http://stanford.edu/~mtessler/generics-pape
   \label{fig:tjScatters}
 \end{figure*}
 
-### Data preprocessing
+#### Data preprocessing
 
 Every response for a frequency of a person doing an action is a sample from $P_{event}(h)$.
 We first transformed all responses onto the same scale of "times per year" (assuming 52 weeks per year; 12 months per year).
@@ -1426,7 +1593,7 @@ To avoid values of -Infinity, we set the responses of 0 to mean roughly "once ev
 We took the log-transformed (and "-Infinity"-adjusted) raw data and binned each response to the closest bins on a grid with binwidth of 0.5 in the log-"times per year" scale.
 This yields a grid of 23 points with frequencies ranging from "once every twenty years" (log-frequency = -3) to "twenty times per day" (log-frequency = 9).
 
-### Data analysis and results
+#### Data analysis and results
 
 We analyze the data using a Bayesian approach to allow for a consistent integration into the computational model.
 The data we would like to explain are: the bins $n_i \in \{-3, -2.5, ..., 8.5, 9\}$ that participants gave in response to items $i \in \{1, ..., 27\}$.
@@ -1481,7 +1648,7 @@ VIZ (as before)?
 <!-- Some items show substantial differences between the genders (e.g., *wears a bra*) and some show subtle differences (e.g., *watches professional football*).  -->
 <!-- We will explore the possibility of different truth conditions for habituals of different gendered characters in Experiment 2, for select items with priors that differ substantially by gender. -->
 
-## Experiment 2: Endorsing Habitual Language
+## Experiment 4b: Endorsing generalizations about events
 
 A present-tense habitual sentence is of the form \textsc{singular noun phrase} $+$ \textsc{present tense simple verb phrase} (e.g. \emph{Bill smokes cigarettes.}). 
 We next explore the endorsements of habituals of this form made from the items whose priors were measured the prior elicitation task. 
@@ -1570,7 +1737,7 @@ Regression alternative
 Only our pragmatic speaker model who reasons about a listener is able to capture the quantitative variability in our data.
 
 
-## Experiment 3: Interpreting Habitual Language
+## Experiment 4c: Interpreting generalizations about events
 
 The RSA models described in their paper make predictions both about how generalizations in language will be endorsed as well as how they will be interpreted.
 In this experiment, we explore participants' inferences about the likely rate of action upon hearing a habitual statement.
@@ -1586,7 +1753,7 @@ The experiment took on average 12 minutes and participants were compensated \$1.
 
 #### Procedure and materials
 
-The materials in this experiment are the same as used in Expts. 1 & 2.
+The materials in this experiment are the same as used in Expts. 4a & 4b.
 On each trial, participants were supplied a habitual statement (e.g., "John runs") made by randomly pairing the event (e.g., *runs*) with either a male or female character name.
 Participants were then asked how often they believed the person did the action (e.g., "How often do you think John runs?").
 The dependent measure was the same as in the Event Prior Elicitation experiment (Expt. 1): A text box and a drop-down menu to rate the number of times (text box) the person did the action in some time window (drop-down menu). 
@@ -1603,9 +1770,9 @@ The dependent measure was the same as in the Event Prior Elicitation experiment 
 
 + [RSA model criticisms and comparisons on joint data set.]
 
-## Experiment 4: Communicating predictive propensities
+## Experiment 5: Communicating predictive propensities
 
-In Experiment 2, we supplied participants with a statement about how often a person has done the action in the past and asked them to judge the correspoding habitual statement.
+In Experiment 4b, we supplied participants with a statement about how often a person has done the action in the past and asked them to judge the correspoding habitual statement.
 This raises an interesting question: Does the propensity communicated by a generalization indicate an objective, past frequency or a subjective, future expectation?
 
 While past frequency is often a good indicator of future tendency, people can change abruptly due to a variety of decisions and outside events.
@@ -1618,7 +1785,7 @@ In Expt. 4a, we measure *predictive frequency* both when past frequency alone is
 In Expt. 4b, we examine felicity judgments of the habitual sentence (e.g., \emph{John smokes cigarettes.}; \emph{Susan eats peanut butter.}) in the presence of these causal modifiers.
 This allows us to test whether habituals are best explained by a speaker $S_1$ who communicates the objective past frequency or the subjective future frequency.
 
-### Experiment 4a: Prediction elicitation
+### Experiment 5a: Prediction elicitation
 
 #### Methods
 
@@ -1649,7 +1816,7 @@ Critically, we observe the preventative information appreciably decreasing and t
 + MHT: Add some regression analysis here
 
 
-### Experiment 4b: Felicity judgments
+### Experiment 5b: Felicity judgments
 
 
 #### Methods
@@ -1717,7 +1884,7 @@ In Experiment 7, we test the influence of these manipulated priors on interpreta
 We conclude this section by comparing RSA models to the endorsement and interpretation data.
 
 
-## Experiment 5: Manipulating the Prevalence Prior for Causes
+## Experiment 6a: Manipulating the Prevalence Prior for Causes
 
 People have theories about how different casusal systems work. 
 Physical causation tends to have a deterministic bend to it: If one billiard ball hits a second with a certain force, the second will respond by moving with a certain force. 
@@ -1782,7 +1949,7 @@ For example, people's theories of physical causation tends to be more determinis
 
 ...
 
-## Experiment 6: Endorsing Causal Language
+## Experiment 6b: Endorsing Causal Language
 
 In this experiment, we tested whether the manipulated priors of Expt. 5 are causally related to the endorsement of casusal statements.
 
@@ -1812,7 +1979,7 @@ Participants saw 1 of 3 frequencies: 20\%, 50\%, or 80\%.
 
 ...
 
-## Experiment 7: Interpreting Causal Language
+## Experiment 7c: Interpreting Causal Language
 
 
 In this experiment, we tested whether the manipulated priors of Expt. 5 are causally related to the interpretation of casusal statements.
@@ -1845,15 +2012,33 @@ Partipants responded using a slider bar that ranged from 0 - 100.
 
 It is a remarkable fact that so much is learned from ideas expressed vaguely in words.
 Generalizations in language (e.g., *John runs.*, *Dogs are friendly.*, *The block makes the machine play music*) are a premier example of how simple statements --- statements understood by even the youngest language users --- can display complex sensitivity to context.
-We have argued that the meaning of such linguistic expressions is, in fact, simple but underspecified. 
+We have argued that the core meaning of such linguistic expressions is, in fact, simple, but underspecified. 
 To our knowledge, this is the first formal theory of genericity in language that makes accurate and precise quantitative predictions about human behavioral data. 
 It is also the first attempt in psychology to try to unify significant swaths of language that are seemingly quite different from one another: generalizations about events, causes, and categories.
-What these expressions have in common is *genericity*, the fact that these statements convey generalizations. 
+What these expressions have in common is not surface-level features but *genericity*, the fact that these statements convey generalizations. 
 Indeed we have been able to capture the context-sensivity of these statements by positing a single underlying scale defined by the *propensity*, or probability (Expts. 1, 3, \& 4).
 This scale is crucially defined by a subjective, predictive probability, not mere frequency (Expt. 2).
 We have shown that listeners' prior knowledge about this scale is causally related to their endorsement of statements of genericity (Expt. 3).
 Finally, our framework naturally accounts for a number of well-documented phenomena from cognitive and developmental psychology concerning *generic language*, or generalizations about categories (Expt. 5).
 In addition to unifying seemingly disparate parts of language, this paper provides a theoretical framework for asking further questions about genericity, which we outline below.
+
+The theory we present here has a number of desirable features that go beyond alternative theories.
+The first is that our theory is presented with a formal model, which makes precise quantitative predictions about production and comprehension of statements that convey generalizations.
+We used the most basic tests to validate our model: Production was examined in terms of *endorsement*, which can be seen as a special case of production when the only available alterantive utterances are the assertion or its negation.
+Comprehension was examined in terms of *implied prevalence*, which in our theory is most basic inference a hearer can make upon hearing a generalization.
+Though these are highly abstracted tests of the model, the modeling framework in principle allows for elaboration to a more complete production and comprehension model. 
+
+Our formal model provides a clean separation of the semantics of a generalization from background, world knowledge.
+This is critical to understand the contribution of a generalization in language above and beyond world knowledge.
+We believe this has been a stumbling block for formal semantic models that try to argue in one or another way for a probabilty based approach [@Pelletier; @Cohen1999; @Nickel].
+As @Nickel2014 notes, genericity has been particularly difficult to study because it intersects with many other phenomena in language.
+We argue that it also intersects with world knowledge in subtle ways, and it is critical to accurately measure and describe world knowledge before making claims about the implications of a generalization *per se*.
+Our separation of world knowledge from the semantics of generics allows a way for conceptual structure to influence generic production and comprehension (described in more detail below).
+This paves the way for articulating formal theories about conceptual structure and it's implications on generic language without having to posit adhoc rules governing the core meaning of a generic with different relations [c.f., @Leslie2008].
+It also allows for models to derive inferences about particular exemplars from generic statements, which is a key step towards advancing Natural Language Processing algorithms that feed off large corpora.
+
+In the rest of this discussion, we discuss some key features of the theory that warrant future investigation and the relationship of our theories to extant theories of genericity.
+We conclude by sketching out arguments for other philosophical puzzles in genericity.
 
 ## The Comparison Class and the Question Under Discussion
 
@@ -1894,6 +2079,101 @@ Future work should address the property-wise reading of generalizations, and exp
 <!-- Hearing that "Abigail is tall" means different things is Abigail is 20 years old or if she is 4.  -->
 <!-- Future work will be needed to explore whether a pragmatic inference approach is also relevant to establishing the comparison class, and what background knowledge about properties, categories, and context is relevant. -->
 
+## Structured prior knowledge and Implications for Conceptual Structure
+
+-- add tomasello about learning about how to take turns, as a generalization about an event type which is the event of how the game is supposed to be played
+
+Previous psychological and philosophical work on generics has looked beyond prevalence and focused on conceptual distinctions and relations [@Gelman2003; @Prasada2013; @Leslie2007; @Leslie2008]. 
+Prasada has argued for a distinction between \emph{characteristic} properties (e.g.~\emph{Diapers are absorbent.}) and \emph{statistical} properties (e.g.~\emph{Diapers are white.}).
+Leslie suggests information that is striking (e.g.~\emph{Tigers eat people.}) is useful and thus permitted to be a generic.
+Gelman outlines how generics tend to express \emph{essential} qualities that are relatively timeless and enduring. 
+Where in the prevalence-based semantics could such conceptual distinctions come into play?
+
+Our approach makes the strong claim that beliefs about predicted prevalence are the connective tissue between conceptual knowledge and generic language.
+That is, the effect of conceptually meaningful differences on generic language is predicted to be mediated by differences in corresponding prevalence distributions.
+It is important to note that our approach is based on \emph{subjective} probability, and not mere frequency.
+Indeed, we elucidated in Expt.~3 that using participants' \emph{predictions} of probability in our formal model perfectly track generic endorsement, when the present frequency would make the wrong prediction.
+
+The focus on subjective, predictive probability casts new light on puzzles surrounding accidentally-true situations.
+An example is the statement "Supreme Court Justices have even social security numbers", which is predicted by linguists to be rejected even if every single Supreme Court Justice has an even social security number [@Cohen1999].
+Our explanation is that abstract intuitive theories lead us to reject observed frequencies in forming our subjective probabilities.
+That is, because we may believe selection for the Supreme Court is not influenced by one's social security number, we would assign roughly 50\% subjective probability to the \emph{next} justice having an even number.
+Thus, we would still reject the generic \emph{Supreme Court Justices have even social security numbers}, because the predictive prevalence would not be any different for Supreme Court Justices than any other profession.^[Our perspective makes the intriguing prediction that if we learned much more surprising information, we might be compelled to revise our theory and then accept the generic. For instance, if every justice in history had \emph{prime numbered} social security numbers (a more suspicious coincidence), one might appeal to a conspiracy, which \emph{would} have predictive consequences.]
+
+Turning back to conceptual relations and structure, it is natural to ask when subjective probabilities might reflect conceptual knowledge?
+We found that empirical prevalence distributions are structured in a way that reflects intuitions about causal mechanisms underlying different properties; the differences in shape of these distributions in turn led to variable endorsements and interpretations of generic sentences. 
+It is plausible that richer conceptual knowledge also influences these distributions, such as higher-order conceptual knowledge about the nature of properties and categories [@Gelman2003; @Keil1992].
+Indeed, it has been argued that conceptual structure in general, including higher-order abstractions, can be captured by probabilisitic causal models and their generalizations [@pearl1988probabilistic; @Gopnik2003theory; @Goodmanconcepts].
+Future work will be needed to explore whether probabilistic representations of conceptual knowledge can capture the relations identified in other accounts of generics (such as characteristic, essential, and striking properties), and whether the effect of these relations can then be adequately captured via their impact on subjective prevalence.
+
+### The Problems with Communicating Generalizations
+
+Thus, in order to define a generalization about a category, there must be some corresponding concrete particular instance of that category from which the generalization is formed. 
+For example, if an agent observes $n$ instances of \textsc{dog} ($d_1, d_2, ..., d_n$)
+For example, if an observer forms a generalization about \textsc{dogs}, she must some way of determining when she is in an instance of the category \textsc{dogs}: She must be able to *individuate*.
+In Hume's words, generalizations are predictions about "instances of which we have had no experience resemble those of which we have had experience" [@HumeTHN].
+
+
+Generalizations can be made about almost anything.
+Here, we restrict our focus to generalizations about categories (whose linguistic expression is known as *generic language*), which have been the primary focus of psychologists, linguists, and philosophers.
+We posit that our analysis should expect to generalizations about events (habitual language) as well as generalizations about causal forces (causal language).
+
+
+
+Generics express a relation between a kind K (e.g., \textsc{robins}) and a property F (e.g., \textsc{lays eggs}), such that the property can also be said to be applicable of an individual (i.e., the bird in my backyard lays eggs).
+Bare plural statements (e.g., \emph{Robins lay eggs}) tend strongly to yield a generic meaning [@Carlson1977], though other forms can express such a meaning sometimes (e.g., \emph{A mongoose eats snakes.}).
+
+Given that generics express a property that can be applied to individuals, it would seem intuitive that the number of individuals with the property would be what makes the statement true or false.
+Counter-examples like \emph{Mosquitos carry malaria} and \emph{Birds lay eggs} v. \emph{Birds are female} stifle such intuition. 
+
+### Statistical Accounts of Generics
+
+Statistical accounts take the \textbf{property prevalence} to be fundamental: \emph{Birds lay eggs} means \emph{Birds, in general, lay eggs}. 
+Of course, birds do not in general lay eggs (it's only the adult, female ones that do).
+The primary way of dealing with such issues is to posit domain restrictions ("implicitly, we are only talking about the females") when there are "salient partitions" [@Carlson1995].
+The most fully-developed theory on this front is due to @Cohen1999. 
+Let's first introduce some notation:
+
+
+
+### Conceptual Accounts of Generics
+
+Conceptual accounts of generics emphasize the structure of generic knowledge [@Prasada2000], and view generic utterances as the way of expressing special mental relationships between kinds and properties [@Leslie2008; @Prasada2012].
+From this perspective, \emph{Bishops move diagonally} because those are the rules of the game, not because they \emph{tend to} move diagonally.
+How do we come to know the rules of the game, though?
+
+@Leslie2007's influential theory posits that generics are tied to a "default mode of generalization". 
+This "default mode" comes equipped with the ability to single-out \emph{striking properties} (e.g. properties which are dangerous or appalling) as particularly useful aspects of the world to know about. 
+Hence, \emph{Mosquitos carry malaria} is true because carrying malaria is striking, and thus, a useful bit of information to convey.
+The default mode can also distinguish "negative" counter-instances of a property   (e.g. a bird that doesn't lay eggs) from "positive" counter-instances (e.g. a hypothetical bird that bears live young).
+Generics are much less reasonable when positive counter-instances exist. Hence, \emph{Birds are female} seems weird because "being male" is a positive counter-instance of "being female", but since there are no birds that bear live young,  \emph{Birds lay eggs} is fine.
+
+Parallel work in the psychology of concepts supports this perspective.
+@Prasada2006 and later @Prasada2013 distinguish between \emph{principled}, \emph{statistical}, and \emph{causal} relations within concepts. 
+Generics like \emph{Birds lay eggs} (in which only a minority of K have F) exhibit characteristics of principled connections (operationalized by endorsement of the phrase \emph{In general, Ks have F}), supporting @Leslie2007's typology.
+Striking generics (e.g. \emph{Mosquitos carry malaria}) show characteristics of \emph{causal connections} (operationalized using the phrase \emph{There is something about Ks that cause them to F}). 
+The fact that generics about different properties license different kinds of inferences is taken as evidence that the generics themselves represent different kinds of relations. Statistical information takes a backseat to the conceptual structure.
+
+
+
+
+
+
+
+## Communicating Predictive Probabilities
+
+This paper puts forth the theory that the simplest language of abstractions (i.e., the language of generalizations) communicates predictive probabilities from speaker to hearer. 
+This might seem contrary to a basic tenet in cognitive psychology, that human cognition falters when reasoning about probabilities [@Tversky1974].
+In a multitude of demonstrations, Kahneman and Tversky observed that human reasoners perform poorly when reasoning about explicit probabilities.
+This has been taken to imply that people are bad with probabilties.
+
+We suggest that problems with communicating probabilities are a problem of the language used to convey *explicit* probabilties [cf., @Levinson1995]. 
+A host of development evidence suggests that even the youngest learners are actually quite good about reasoning about probabilities [@Gweon2010; @Dewar2010].
+In this work, we have shown that probabilities are central to even the most basic linguistic expressions.
+Indeed they are causally related to communicating generalizations, as evidenced by Expt. 3.
+We convey probabilities to each other using language, but the most basic ways we have of conveying them are *vague*. 
+
+
 ## Acquiring the Language of Generalizations
 
 The linguistic outlet for generalizations about categories---so called, *generic language*---has received tremendous attention from psychologists, linguists, and philosophers.
@@ -1919,21 +2199,6 @@ $$
 Given this mathematical equivalence, we can imagine the *more is better* soft semantics is what is acquired early.
 The difficulty in acquiring the meaning of quantifiers is then a difficulty in recognizing a fixed-threshold semantics as a special case of this *more is better* sematnics.
 This special case involves learning the value of the threshold (aspect 2) and not in recognizing that the utterance conveys something about the quantity (e.g., aspect 1).
-
-## Communicating Predictive Probabilities
-
-This paper puts forth the theory that the simplest language of abstractions (i.e., the language of generalizations) communicates predictive probabilities from speaker to hearer. 
-This might seem contrary to a basic tenet in cognitive psychology, that human cognition falters when reasoning about probabilities [@Tversky1974].
-In a multitude of demonstrations, Kahneman and Tversky observed that human reasoners perform poorly when reasoning about explicit probabilities.
-This has been taken to imply that people are bad with probabilties.
-
-We suggest that problems with communicating probabilities are a problem of the language used to convey *explicit* probabilties [cf., @Levinson1995]. 
-A host of development evidence suggests that even the youngest learners are actually quite good about reasoning about probabilities [@Gweon2010; @Dewar2010].
-In this work, we have shown that probabilities are central to even the most basic linguistic expressions.
-Indeed they are causally related to communicating generalizations, as evidenced by Expt. 3.
-We convey probabilities to each other using language, but the most basic ways we have of conveying them are *vague*. 
-
-
 
 ## Relationship to Other Theories
 
@@ -2027,87 +2292,6 @@ Further, since prevalence is a probability, our model can take information conve
 <!-- Other pragmatic factors, like knowledge of the identity of the speaker (e.g., a teacher vs. a veterinarian), can also disambiguate generic and non-generic meaning [@Cimpian2008]. -->
 <!-- Recent work suggests that utterances that fail to refer to specific entities or events could pragmatically imply generic meaning [@Crone2016cogsci]. -->
 <!-- Incorporating these insights about generic identification into an information-theoretic, communicative perspective is a natural extension of this work. -->
-
-## Implications for Conceptual Structure
-
--- add tomasello about learning about how to take turns, as a generalization about an event type which is the event of how the game is supposed to be played
-
-Previous psychological and philosophical work on generics has looked beyond prevalence and focused on conceptual distinctions and relations [@Gelman2003; @Prasada2013; @Leslie2007; @Leslie2008]. 
-Prasada has argued for a distinction between \emph{characteristic} properties (e.g.~\emph{Diapers are absorbent.}) and \emph{statistical} properties (e.g.~\emph{Diapers are white.}).
-Leslie suggests information that is striking (e.g.~\emph{Tigers eat people.}) is useful and thus permitted to be a generic.
-Gelman outlines how generics tend to express \emph{essential} qualities that are relatively timeless and enduring. 
-Where in the prevalence-based semantics could such conceptual distinctions come into play?
-
-Our approach makes the strong claim that beliefs about predicted prevalence are the connective tissue between conceptual knowledge and generic language.
-That is, the effect of conceptually meaningful differences on generic language is predicted to be mediated by differences in corresponding prevalence distributions.
-It is important to note that our approach is based on \emph{subjective} probability, and not mere frequency.
-Indeed, we elucidated in Expt.~3 that using participants' \emph{predictions} of probability in our formal model perfectly track generic endorsement, when the present frequency would make the wrong prediction.
-
-The focus on subjective, predictive probability casts new light on puzzles surrounding accidentally-true situations.
-An example is the statement "Supreme Court Justices have even social security numbers", which is predicted by linguists to be rejected even if every single Supreme Court Justice has an even social security number [@Cohen1999].
-Our explanation is that abstract intuitive theories lead us to reject observed frequencies in forming our subjective probabilities.
-That is, because we may believe selection for the Supreme Court is not influenced by one's social security number, we would assign roughly 50\% subjective probability to the \emph{next} justice having an even number.
-Thus, we would still reject the generic \emph{Supreme Court Justices have even social security numbers}, because the predictive prevalence would not be any different for Supreme Court Justices than any other profession.^[Our perspective makes the intriguing prediction that if we learned much more surprising information, we might be compelled to revise our theory and then accept the generic. For instance, if every justice in history had \emph{prime numbered} social security numbers (a more suspicious coincidence), one might appeal to a conspiracy, which \emph{would} have predictive consequences.]
-
-Turning back to conceptual relations and structure, it is natural to ask when subjective probabilities might reflect conceptual knowledge?
-We found that empirical prevalence distributions are structured in a way that reflects intuitions about causal mechanisms underlying different properties; the differences in shape of these distributions in turn led to variable endorsements and interpretations of generic sentences. 
-It is plausible that richer conceptual knowledge also influences these distributions, such as higher-order conceptual knowledge about the nature of properties and categories [@Gelman2003; @Keil1992].
-Indeed, it has been argued that conceptual structure in general, including higher-order abstractions, can be captured by probabilisitic causal models and their generalizations [@pearl1988probabilistic; @Gopnik2003theory; @Goodmanconcepts].
-Future work will be needed to explore whether probabilistic representations of conceptual knowledge can capture the relations identified in other accounts of generics (such as characteristic, essential, and striking properties), and whether the effect of these relations can then be adequately captured via their impact on subjective prevalence.
-
-### The Problems with Communicating Generalizations
-
-Thus, in order to define a generalization about a category, there must be some corresponding concrete particular instance of that category from which the generalization is formed. 
-For example, if an agent observes $n$ instances of \textsc{dog} ($d_1, d_2, ..., d_n$)
-For example, if an observer forms a generalization about \textsc{dogs}, she must some way of determining when she is in an instance of the category \textsc{dogs}: She must be able to *individuate*.
-In Hume's words, generalizations are predictions about "instances of which we have had no experience resemble those of which we have had experience" [@HumeTHN].
-
-
-Generalizations can be made about almost anything.
-Here, we restrict our focus to generalizations about categories (whose linguistic expression is known as *generic language*), which have been the primary focus of psychologists, linguists, and philosophers.
-We posit that our analysis should expect to generalizations about events (habitual language) as well as generalizations about causal forces (causal language).
-
-
-
-Generics express a relation between a kind K (e.g., \textsc{robins}) and a property F (e.g., \textsc{lays eggs}), such that the property can also be said to be applicable of an individual (i.e., the bird in my backyard lays eggs).
-Bare plural statements (e.g., \emph{Robins lay eggs}) tend strongly to yield a generic meaning [@Carlson1977], though other forms can express such a meaning sometimes (e.g., \emph{A mongoose eats snakes.}).
-
-Given that generics express a property that can be applied to individuals, it would seem intuitive that the number of individuals with the property would be what makes the statement true or false.
-Counter-examples like \emph{Mosquitos carry malaria} and \emph{Birds lay eggs} v. \emph{Birds are female} stifle such intuition. 
-
-### Statistical Accounts of Generics
-
-Statistical accounts take the \textbf{property prevalence} to be fundamental: \emph{Birds lay eggs} means \emph{Birds, in general, lay eggs}. 
-Of course, birds do not in general lay eggs (it's only the adult, female ones that do).
-The primary way of dealing with such issues is to posit domain restrictions ("implicitly, we are only talking about the females") when there are "salient partitions" [@Carlson1995].
-The most fully-developed theory on this front is due to @Cohen1999. 
-Let's first introduce some notation:
-
-
-
-### Conceptual Accounts of Generics
-
-Conceptual accounts of generics emphasize the structure of generic knowledge [@Prasada2000], and view generic utterances as the way of expressing special mental relationships between kinds and properties [@Leslie2008; @Prasada2012].
-From this perspective, \emph{Bishops move diagonally} because those are the rules of the game, not because they \emph{tend to} move diagonally.
-How do we come to know the rules of the game, though?
-
-@Leslie2007's influential theory posits that generics are tied to a "default mode of generalization". 
-This "default mode" comes equipped with the ability to single-out \emph{striking properties} (e.g. properties which are dangerous or appalling) as particularly useful aspects of the world to know about. 
-Hence, \emph{Mosquitos carry malaria} is true because carrying malaria is striking, and thus, a useful bit of information to convey.
-The default mode can also distinguish "negative" counter-instances of a property   (e.g. a bird that doesn't lay eggs) from "positive" counter-instances (e.g. a hypothetical bird that bears live young).
-Generics are much less reasonable when positive counter-instances exist. Hence, \emph{Birds are female} seems weird because "being male" is a positive counter-instance of "being female", but since there are no birds that bear live young,  \emph{Birds lay eggs} is fine.
-
-Parallel work in the psychology of concepts supports this perspective.
-@Prasada2006 and later @Prasada2013 distinguish between \emph{principled}, \emph{statistical}, and \emph{causal} relations within concepts. 
-Generics like \emph{Birds lay eggs} (in which only a minority of K have F) exhibit characteristics of principled connections (operationalized by endorsement of the phrase \emph{In general, Ks have F}), supporting @Leslie2007's typology.
-Striking generics (e.g. \emph{Mosquitos carry malaria}) show characteristics of \emph{causal connections} (operationalized using the phrase \emph{There is something about Ks that cause them to F}). 
-The fact that generics about different properties license different kinds of inferences is taken as evidence that the generics themselves represent different kinds of relations. Statistical information takes a backseat to the conceptual structure.
-
-
-
-
-
-
 
 ## Other philosophical puzzles
 
