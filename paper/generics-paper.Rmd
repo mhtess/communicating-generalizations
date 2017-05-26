@@ -756,8 +756,7 @@ all.simulations %>%
 <!-- $S_1$ thus seeks to minimize the surprisal of $s$ given $u$ for the naive listener, while bearing in the mind the utterance cost $C(u)$. -->
 
 
-
-## Alternative formulations
+## Alternative formulation
 
 The pair of speaker-listener models presented above correspond to the simplest possible communicative models with an underspecified threshold meaning for a generalization. 
 As a computational level theory, the Rational Speech Act framework defines models with potentially infinite levels of recursion.
@@ -1122,9 +1121,12 @@ To learn about the credible values of the parameters, we ran separate MCMC chain
 
 ```{r generic.endorsement.priors}
 d.gen.endorse.priors <- read.csv(paste(project.path, data.path, "naturalGenerics-prior-trials-n57.csv", sep = ""))
-
+gen.endorse.properties <- levels(d.gen.endorse.priors$Property)
 genericEndorsementPriorModel <- '
 var eps = Number.EPSILON;
+var log = function(x){ return Math.log(x) }
+var exp = function(x){ return Math.exp(x) }
+
 var avoidEndPoints = function(x){
   x == 0 ? eps : 
   x == 1 ? 1 - eps : 
@@ -1136,14 +1138,27 @@ var preprocessedResponses = map(function(d){
 }, data)
 
 var model = function(){
-  var phi = uniformDrift({a:0, b: 1, width:0.05})
-  var a = uniformDrift({a:0, b: 100, width:5})
-  var b = uniformDrift({a:0, b: 100, width:5})
+  var phi = uniformDrift({a:0, b: 1, width:0.05});
+  var a = uniformDrift({a:0, b: 100, width:5});
+  var b = uniformDrift({a:0, b: 100, width:5});
+  var stableComponent = Beta({a:a, b:b})
+  var transientComponent = Beta({a:1, b:100})
   mapData({data: preprocessedResponses}, function(d){
-    factor()
+    factor( log(
+      phi * exp(stableComponent.score(d)) +
+      (1 - phi) * exp(transientComponent.score(d))
+    ))
   })
+  return {a,b,phi}
 }
 '
+for (p in gen.endorse.properties){
+  priorData <- filter(d.gen.endorse.priors, Property == p)$prevalence
+  m.gen.endorse.priors <- webppl(genericEndorsementPriorModel, data = priorData, data_var = "data",
+         model_var = "model", inference_opts = list(method = "MCMC", samples = 1000, burn = 500, verbose = T))
+  
+}
+
 ```
 
 
