@@ -304,7 +304,7 @@ apa_table(df.tab,
 ```
 
 We can make particular statements about agents, objects, and events.
-We can say "My dog is friendly.", "John ran this afternoon.", or "My friend drank moonshine and it made him go blind."
+We can say "My dog is friendly.", "John ran this afternoon.", or "My grandfather drank moonshine and it made him go blind."
 To consider the corresponding generalizations (i.e., "Dogs are friendly", "John runs", "Drinking moonshines makes you go blind"), we must say exactly how the particular relates to the generalization.
 We consider the generalization to be about a *category* and the particular to correspond to *instances* of that category.
 Thus, *dog* is an instance of the category \textsc{dogs}, *John at a particular time* is an instance of the category of \textsc{john}, and *drinking moonshine at a particular time* is an instance of the category of \textsc{drinking moonshine} (see Table \ref{tabgenPart}).
@@ -343,7 +343,7 @@ For abstract, generalizable knowledge to remain in a culture, it must be able to
 
 # Communicating Generalizations with a Formal Model
 
-We will discuss communicating generalizations in the context of generalizations about categories (i.e., *generic language*), though the arguments will extend to events and causes as well. 
+We will discuss communicating generalizations in the context of generalizations about categories (i.e., *generic language*), though the arguments will extend to events and causes as well, following the formalization described in the previous section. 
 Generics express a relation between a kind K (e.g., \textsc{dogs}) and a property F (e.g., \textsc{is friendly}), such that the property can also be said to be applicable of an individual (i.e., "My dog is friendly"). 
 Bare plural statements (e.g., *Dogs are friendly*) strongly tend to yield a generic meaning, though other forms can express such a meaning [e.g., *A mongoose eats snakes.*; @Carlson1977] .
 
@@ -405,7 +405,6 @@ We assume this prior is uninformed: $\theta \sim \text{Uniform}(0, 1)$.
 \begin{eqnarray}
 L(h, \theta \mid u) &\propto& {\delta_{\denote{u}(h, \theta)} \cdot P(h) \cdot P(\theta)} \label{eq:L0}
 \end{eqnarray}
-
 
 This is a simple Bayesian model of interpreting a statement conveying a generalization.
 Figure \ref{fig:simulations} shows model $L$'s posterior distribution on $h$ upon hearing utterances corresponding to fixed thresholds at 0 and 0.5 ("some" and "most"), as well as the uncertain threshold (Eq. \ref{eq:L0}).
@@ -570,8 +569,8 @@ var meaning = function(utt,state, theta) {
          true
 }
 
-var mixture = data.mix[0];
-var priorParams = data.params[0];
+var mixture = data.prior.mix[0];
+var priorParams = data.prior.params[0];
 
 var statePrior = Infer({model: function(){
   var component = flip(mixture);
@@ -608,7 +607,11 @@ var continuousListener0 = function(utterance) {
     var state = sample(Beta( flip(mixture) ? priorParams : {a:1,b:100}))
     var state_prior = sample(Beta( flip(mixture) ? priorParams : {a:1,b:100}))
 //    var theta = uniform(0,1)
-    factor(Math.log(state))
+    factor(
+    (utterance == "generic") ? 
+      Math.log(state) : 
+    (state > 0) ? 0 : -Infinity
+    )
     return {
       state_Posterior: state, 
       state_Prior: state_prior
@@ -617,17 +620,19 @@ var continuousListener0 = function(utterance) {
 
 
 
-//var out = {generic: listener0("generic"), some: listener0("some"), most: listener0("most")}
+//var out = {generic: listener0("generic"), some: listener0("some")}
 //out
-continuousListener0("generic")
+continuousListener0(data.utt[0])
 '
 
 priorNames <- c(
   "uniform", #"uniformRare", 
-  "isFemale", "laysEggs", 
+  "isFemale", 
+  "laysEggs", 
   #"eatsFood", 
-  "hasWings"
-  #"carriesMalaria", "areSick"
+  "barks",
+  "carriesMalaria"#,
+ # "areSick"
   )
 priorShapes <- list(
   uniform =  list(params = data.frame(a = 1, b = 1), mix = 1), 
@@ -635,74 +640,78 @@ priorShapes <- list(
   isFemale =  list(params = data.frame(a = 10, b = 10), mix = 1), 
   laysEggs =  list(params = data.frame(a = 10, b = 10), mix = 0.4), 
   #eatsFood =  list(params = data.frame(a = 50, b = 1), mix = 1), 
-  hasWings =  list(params = data.frame(a = 50, b = 1), mix = 0.4)#, 
+  barks =  list(params = data.frame(a = 5, b = 1), mix = 0.4), 
   #areSick =  list(params = data.frame(a = 1, b = 5), mix = 1), 
-  #carriesMalaria =  list(params = data.frame(a = 1, b = 5), mix = 0.4)
+  carriesMalaria =  list(params = data.frame(a = 2, b = 10), mix = 0.4)
 )
 
 all.simulations <- data.frame()
 for (p in priorNames){
-  inputData = priorShapes[[p]]
-  
-  l0.rs <- webppl(l0.model, data = inputData, data_var = "data")
-  
-  # all.simulations <- bind_rows(all.simulations,
-  #                         bind_rows(
-  #                           data.frame(l0.rs$generic) %>%
-  #                             gather(key, val, -probs) %>%
-  #                              group_by(key, val) %>%
-  #                              summarize(prob = sum(probs)) %>%
-  #                             ungroup() %>%
-  #                               mutate(key = gsub("support.", "", key)) %>%
-  #                              separate(key, into = c("Parameter","Distribution")) %>%
-  #                               mutate(Distribution = gsub("Posterior", "Posterior_Generalization", Distribution)),
-  #                           data.frame(l0.rs$some) %>%
-  #                             gather(key, val, -probs) %>%
-  #                             group_by(key, val) %>%
-  #                             summarize(prob = sum(probs)) %>%
-  #                             ungroup() %>%
-  #                             mutate(key = gsub("support.", "", key)) %>%
-  #                             separate(key, into = c("Parameter","Distribution")) %>%
-  #                             mutate(Distribution = gsub("Posterior", "Posterior_0", Distribution)) %>%
-  #                             filter(Distribution != "Prior"),
-  #                           data.frame(l0.rs$most) %>%
-  #                             gather(key, val, -probs) %>%
-  #                             group_by(key, val) %>%
-  #                             summarize(prob = sum(probs)) %>%
-  #                             ungroup() %>%
-  #                             mutate(key = gsub("support.", "", key)) %>%
-  #                             separate(key, into = c("Parameter","Distribution")) %>%
-  #                             mutate(Distribution = gsub("Posterior", "Posterior_05", Distribution)) %>%
-  #                             filter(Distribution != "Prior")
-  #                         ) %>%
-  #                           mutate(PriorShape = p)
-  # )
-    all.simulations <- bind_rows(all.simulations,
-                                 l0.rs %>%
-                                separate(Parameter, into = c("Parameter","Distribution")) %>%
-                                mutate(Distribution = gsub("Posterior", "Posterior_Generalization", Distribution))
-                                %>%
-                            mutate(PriorShape = p)
-  )
-  #print(p)
+  for (u in c("generic", "some")){
+    
+    inputData = list(prior = priorShapes[[p]], utt = u)
+    l0.rs <- webppl(l0.model, data = inputData, data_var = "data")
+    
+    # all.simulations <- bind_rows(all.simulations,
+    #                         bind_rows(
+    #                           data.frame(l0.rs$generic) %>%
+    #                             gather(key, val, -probs) %>%
+    #                              group_by(key, val) %>%
+    #                              summarize(prob = sum(probs)) %>%
+    #                             ungroup() %>%
+    #                               mutate(key = gsub("support.", "", key)) %>%
+    #                              separate(key, into = c("Parameter","Distribution")) %>%
+    #                               mutate(Distribution = gsub("Posterior", "Posterior_Generalization", Distribution)),
+    #                           data.frame(l0.rs$some) %>%
+    #                             gather(key, val, -probs) %>%
+    #                             group_by(key, val) %>%
+    #                             summarize(prob = sum(probs)) %>%
+    #                             ungroup() %>%
+    #                             mutate(key = gsub("support.", "", key)) %>%
+    #                             separate(key, into = c("Parameter","Distribution")) %>%
+    #                             mutate(Distribution = gsub("Posterior", "Posterior_0", Distribution)) %>%
+    #                             filter(Distribution != "Prior"),
+    #                           data.frame(l0.rs$most) %>%
+    #                             gather(key, val, -probs) %>%
+    #                             group_by(key, val) %>%
+    #                             summarize(prob = sum(probs)) %>%
+    #                             ungroup() %>%
+    #                             mutate(key = gsub("support.", "", key)) %>%
+    #                             separate(key, into = c("Parameter","Distribution")) %>%
+    #                             mutate(Distribution = gsub("Posterior", "Posterior_05", Distribution)) %>%
+    #                             filter(Distribution != "Prior")
+    #                         ) %>%
+    #                           mutate(PriorShape = p)
+    # )
+      all.simulations <- bind_rows(all.simulations,
+                                   l0.rs %>%
+                                  separate(Parameter, into = c("Parameter","Distribution")) %>%
+                                  mutate(Distribution = gsub("Posterior", "Posterior_Generalization", Distribution))
+                                  %>%
+                              mutate(PriorShape = p, utterance = u)
+    )
+  }
+  print(p)
 }
 ```
 
 ```{r simulations, fig.width = 8, fig.height=5}
 all.simulations %>%
-  mutate(Distribution = factor(Distribution, levels = c("Prior", "Posterior_0", "Posterior_05", "Posterior_Generalization"),
-                               labels = c("Prior/Silence", "Some", "Most", "Generalization")),
-         PriorShape = fct_relevel(PriorShape, "uniform", "isFemale", 
+  mutate(Distribution = paste(Distribution, utterance, sep = "_")) %>%
+  filter(Distribution != "Some", Distribution != "Most", Distribution != "Prior_generic") %>%
+  mutate(Distribution = factor(Distribution, levels = 
+                             c("Prior_some", "Posterior_Generalization_some", "Posterior_Generalization_generic"),
+                                labels = c("Prior/Silence", "Some", "Generalization")),
+         PriorShape = fct_relevel(PriorShape, "uniform", "barks","laysEggs","carriesMalaria","isFemale"
                                   #"eatsFood","areSick", "uniformRare", 
-                                  "laysEggs",    "hasWings"
                                   #"carriesMalaria"
                                   )
          ) %>%
-  filter(Distribution != "Some", Distribution != "Most") %>%
   ggplot(., aes(x = value, #y = prob, 
                 #lty = Distribution, 
                 color = Distribution, fill = Distribution))+
     geom_density(#stat= 'identity', 
+                aes(y = ..scaled..),
                  size = 0.6, alpha = 0.7, adjust = 1.5)+
     #geom_bar(stat = 'identity', position = position_dodge(), color = 'black')+
     theme_few() +
@@ -710,10 +719,10 @@ all.simulations %>%
     #scale_fill_solarized()+
     #scale_fill_manual(values = c("#636363", "#abdda4", "#2b83ba", "#d7191c"))+
     #scale_color_manual(values = c("#636363", "#abdda4", "#2b83ba", "#d7191c"))+
-    scale_fill_manual(values = c("#636363", "#d7191c"))+
-    scale_color_manual(values = c("#636363", "#d7191c"))+
+   scale_fill_manual(values = c("#636363", "#2b83ba","#d7191c"))+
+    scale_color_manual(values = c("#636363","#2b83ba", "#d7191c"))+
     #scale_linetype_manual(values = c(3, 4, 2, 1))+
-    scale_linetype_manual(values = c(3, 1))+
+    scale_linetype_manual(values = c(3,4, 1))+
     scale_x_continuous(breaks = c(0, 0.5, 1), limits= c(0, 1))+
     xlab("Degree of propensity (probability)") +
     ylab("Probability density") +
