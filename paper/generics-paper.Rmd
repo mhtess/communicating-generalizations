@@ -99,8 +99,6 @@ hdi_lower<- function(s){
   return(m["var1","lower"])
 }
 project.path <- "~/Documents/research/communicating-generalizations/"
-data.path <- "data/generics/endorsement/"
-model.path <- "models/generics/"
 options("scipen"=10) 
 ```
 
@@ -1129,7 +1127,9 @@ To learn about the credible values of the parameters, we ran separate MCMC chain
 
 
 ```{r generic.endorsement.priors}
-d.gen.endorse.priors <- read.csv(paste(project.path, data.path, "naturalGenerics-prior-trials-n57.csv", sep = ""))
+d.gen.endorse.priors <- read.csv(paste(project.path, 
+                                       "data/generics/endorsement/",
+                                       data.path, "naturalGenerics-prior-trials-n57.csv", sep = ""))
 gen.endorse.properties <- levels(d.gen.endorse.priors$Property)
 genericEndorsementPriorModel <- '
 var eps = 0.01;//Number.EPSILON;
@@ -1236,10 +1236,10 @@ To test these predictions, we collect human endorsements for thirty generic stat
 #### Method
 
 ```{r generic.endorsement}
-d.gen.endorse.catch <- read.csv(paste(project.path, data.path, 
+d.gen.endorse.catch <- read.csv(paste(project.path, "data/generics/endorsement/",
                     "truth-judgments_catch-trials.csv", sep = ""))
 
-d.gen.endorse <- read.csv(paste(project.path, data.path, 
+d.gen.endorse <- read.csv(paste(project.path, "data/generics/endorsement/",
                     "truth-judgments.csv", sep = ""))
 
 
@@ -1778,7 +1778,6 @@ The study of *elemental causal induction* is itself very subtle, depending on an
 We design this last experiment with the goal of testing whether background knowledge that gives rise to the prevalence priors is causally related to the endorsement of causal statements.
 Also, by designing the experiments in the domain of causal language, we further demonstrate the generality of our theory of communicating generalizations.
 
-
 In Experiment 4a, we manipulate participants' beliefs about a causal system and measure their updated beliefs about system, serving a manipulation check.
 In Experiment 4b, we test whether these manipulated priors give rise to different endorsements of causal statements.
 
@@ -1849,24 +1848,24 @@ For example, people's theories of physical causation tends to be more determinis
 
 ## Experiment 4b: Endorsing Causal Language
 
-In this experiment, we tested whether the manipulated priors of Expt. 5 are causally related to the endorsement of casusal statements.
+In this experiment, we tested whether the manipulated priors of Expt. 4a are causally related to the endorsement of causal statements.
 
 ### Method
 
-Most of the experiment was identical to that of Experiment 5.
+Most of the experiment was identical to that of Experiment 4a.
 
 #### Participants
 
 We recruited N participants from Amazon's Mechanical Turk.
 Participants were restricted to those with U.S. IP addresses and who had at least a 95\% work approval rating.
-None of the participants had participated in Experiment 5. 
+None of the participants had participated in Experiment 4a. 
 The experiment took on average N minutes and participants were compensated \$N.NN for their work.
 
 #### Procedure and materials
 
-The materials were the same as in Experiment 5.
-Phase 1 of the experiment was identical to that of Experiment 5.
-In phase 2 of the endorsement task, the table and story were removed from the screen and the participant is told that the results of the "lost experiment" were found. 
+The materials were the same as in Experiment 4a.
+Phase 1 of the experiment was identical to that of Experiment 4a.
+In phase 2 of the endorsement task, the table of results and background story were removed from the screen and the participant is told that the results of the "lost experiment" were found. 
 The results are reported to the participant in terms of how many out of 100 of the attempts were successful. 
 Participants were then asked to judge the causal sentence: "Treatment X makes the effect happen". 
 Partipants responded by either clicking "Yes" or "No". 
@@ -1875,10 +1874,61 @@ Participants saw 1 of 3 frequencies: 20\%, 50\%, or 80\%.
 
 ### Results
 
-...
+
+```{r causals.endorsement}
+d.caus.endorse.catch.20 <- read.csv(paste(project.path, 
+                                       "data/causals/endorsement/",
+                                       "causals-8-20-catch_trials.csv", sep = ""))
+
+d.caus.endorse.catch.70 <- read.csv(paste(project.path, 
+                                       "data/causals/endorsement/",
+                                       "causals-8-70-catch_trials.csv", sep = "")) %>%
+  mutate(workerid = workerid + 1 +  max(d.caus.endorse.catch.20$workerid) )
+
+d.caus.endorse.catch <- bind_rows(d.caus.endorse.catch.20, d.caus.endorse.catch.70)
+
+d.caus.endorse.catch <- d.caus.endorse.catch %>% 
+  mutate(passBoth = ifelse(pass_numeric + pass_story == 2, 1, 0))
+
+d.caus.endorse.20 <- read.csv(paste(project.path, 
+                                "data/causals/endorsement/",
+                                "causals-8-20-trials.csv", sep = ""))
+
+d.caus.endorse.70 <- read.csv(paste(project.path, 
+                                "data/causals/endorsement/",
+                                "causals-8-70-trials.csv", sep = "")) %>%
+  mutate(workerid = workerid + 1 + max(d.caus.endorse.20$workerid))
+
+d.caus.endorse <- bind_rows(d.caus.endorse.20, d.caus.endorse.70)
+
+d.caus.endorse.summary <- left_join(
+  d.caus.endorse, 
+  d.caus.endorse.catch %>% select(workerid, passBoth)
+  ) %>%
+  filter(passBoth == 1) %>%
+  group_by(distribution, frequency) %>%
+  summarize(k = sum(response), n = n()) %>%
+  ungroup() %>%
+  mutate(a = 1 + k,
+         b = 1 + n - k,
+         low  = qbeta(.025, a, b),
+         high = qbeta(.975, a, b),
+         MAP_h = (a-1)/(a+b-2),
+         mean = a / (a + b))
+
+ggplot(d.caus.endorse.summary, aes( x = factor(frequency), y = MAP_h, ymin = low, ymax = high, fill = distribution,
+                        group = distribution))+
+  geom_bar(stat='identity', position = position_dodge(), width = 0.3, color = 'black')+
+  geom_errorbar(width = 0.2, position = position_dodge(0.3), color = 'black')+
+  theme(axis.text.x = element_text(angle = 0))+
+  geom_hline(yintercept = 0.5, lty = 3, color = 'black')+
+  scale_y_continuous(limits = c(0, 1), breaks = c(0,0.5, 1))+
+  scale_fill_solarized()+
+  xlab("Frequency")+
+  ylab("Proportion Causal Endorsement")
+```
 
 ## Discussion
-
 
 # General Discussion
 
