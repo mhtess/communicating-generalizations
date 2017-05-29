@@ -283,7 +283,7 @@ To generalize a feature $f$ to that category, it is also necessary to be able to
 That is, a speaker must be able to say "This $k$ (i.e., $x$) has $f$".
 We call this kind of statement a *particular*.
 
-```{r , results="asis"}
+```{r table-generalization, results="asis"}
 df.tab <- data.frame(
   Generalization = c("Dogs are friendly", "John smokes", "Drinking moonshine makes you go blind"),
   #x = c("an instance of K in space", "an instance of K in time", "an instance of a "),
@@ -536,7 +536,7 @@ $U(u; k) = {\mathbb E}_{h\sim P_{k}} \ln{ \int_{\theta} L_0(h, \theta \mid u)}  
 <!-- This is a simple Bayesian model of interpreting a statement conveying a generalization. -->
 
 
-```{r simluations, eval = T, cache = T}
+```{r simluationsModel, eval = T, cache = T}
 
 l0.model <- '
 var probability = function(Dist, x) {
@@ -692,7 +692,7 @@ for (p in priorNames){
                               mutate(PriorShape = p, utterance = u)
     )
   }
-  print(p)
+  #print(p)
 }
 ```
 
@@ -1228,7 +1228,7 @@ for (p in gen.endorse.properties){
                                                         cred_upper = hdi_upper(value),
                                                         cred_lower = hdi_lower(value))
                                               )
-  print(p)
+  #print(p)
 }
 
 ```
@@ -1420,12 +1420,161 @@ In accord with intuition, assigning a fixed semantics corresponding to "Some" is
 Even for patently false generics (e.g., "Mosquitos don't carry malaria"), the speaker model is unable to prefer staying silent than producing the generic (with a "some" semantics).
 It also doesn't strongly prefer producing the generic, possibly because the information content is so small.
 
+##### Uncertain threshold RSA model with universal priors
 
-##### Uncertain threshold RSA model
+##### Uncertain threshold RSA model with diverse priors
 
 Our underspecified threshold model is the same as the fixed-threshold RSA model described above, except that rather than having a fixed threshold at $\theta = 0.5$, it has *a priori* uncertainty over the threshold.
 We perform the same Bayesian data analysis as the "Some" model.
 As we see in Figure \ref{fig:commongenerics}b, the pragmatic speaker model $S_2$, using empirically measured priors, explains nearly all of the variance in human truth judgments ($r^2=0.98$; MSE=0.003; Figure \ref{fig:commongenerics}b). 
+
+
+```{r generic-fullmodel}
+# Look at KL model for what the prev distributions look like
+
+n_chains <- 1
+n_samples <- 100000
+burn <- n_samples
+
+model_prefix <- "results-fullModel-s1-allowUPriors-refinedPriors-fixedNull-prevPriorFactorBugFixed-smtncsgeneric-"
+
+m.samp <- data.frame()
+for (i in seq(1, n_chains)){
+  mi <- fread(paste(project.path,  "models/generics/results/", model_prefix, 
+                    n_samples, "_burn", burn, "_chain", i, ".csv", sep = ""))
+  m.samp.i <- mi %>% mutate(chain = i)
+  m.samp <- bind_rows(m.samp, m.samp.i)
+  #print(i)
+}
+
+
+example.generics.properties <- c("dont eat people", 
+                      "carry malaria", 
+                      "lay eggs", 
+                      "are female",
+                      "have spots")
+
+example.generics <- c("Tigers dont eat people", 
+                      "Mosquitos carry malaria", 
+                      "Robins lay eggs", 
+                      "Robins are female",
+                      "Leopards have spots")
+
+m.gen.fullmodel.prior.parameters <- m.samp %>%
+  filter(type == "prior", property %in% example.generics.properties) %>%
+  group_by(param, property, category) %>%
+  summarize(MAP = estimate_mode(val),
+            cred_upper = hdi_upper(val),
+            cred_lower = hdi_lower(val))
+
+# use MAP estimates to generate L(h | generic) & L(h | silence) predictions
+
+m.gen.fullmodel.prior.parameters.tidy <- m.gen.fullmodel.prior.parameters %>%
+  ungroup() %>%
+  select(param, property, category, MAP) %>%
+  mutate(param = paste(param, category, sep = "_")) %>%
+  select(-category) %>%
+  spread(param, MAP) %>%
+  rename(mix = isPresent_na, 
+         stable_mean = prevalenceGivenPresent_mean, 
+         stable_concentration = prevalenceGivenPresent_sampleSize) %>%
+  mutate( a = stable_mean * stable_concentration, 
+          b = (1 - stable_mean) * stable_concentration)
+
+gen.listener.predictions <- data.frame()
+  
+for (p in example.generics.properties){
+ priorParams <- m.gen.fullmodel.prior.parameters.tidy %>% filter(property == p) 
+ inputData = list(prior = list(params = data.frame(a = priorParams[["a"]],
+                                                   b = priorParams[["b"]]),
+                               mix = priorParams[["mix"]]), 
+                  utt = "generic")
+ l0.rs <- webppl(l0.model, data = inputData, data_var = "data")
+ gen.listener.predictions <- bind_rows(
+   gen.listener.predictions, 
+   l0.rs %>% select(Parameter,value) %>% mutate(property = p)
+   )
+}
+
+m.gen.fullmodel.target.prevalence <- m.samp %>%
+  filter(type == "withinKind") %>%
+  group_by(param, property, category) %>%
+  summarize(MAP = estimate_mode(val),
+            cred_upper = hdi_upper(val),
+            cred_lower = hdi_lower(val))
+
+
+
+m.gen.speakerBeliefs <- m.samp %>%
+  filter(type == "withinKind") %>%
+  mutate(Sentence = paste(category, property)) %>%
+  filter(Sentence %in% example.generics) 
+
+
+
+m.gen.fullmodel.endorsement <- m.samp %>%
+  filter(type == 'predictive') %>%
+  group_by(type, param, property, category) %>%
+  summarize(MAP = estimate_mode(val),
+            cred_upper = hdi_upper(val),
+            cred_lower = hdi_lower(val))
+
+
+left_join(
+  d.gen.endorse.bayes,
+  m.gen.fullmodel.endorsement %>%
+    mutate(sentence = paste(category, " ", property, ".", sep = "")) %>%
+    ungroup() %>%
+    select(-type, -param)
+) %>%
+  ggplot(., aes ( x = MAP, xmin = cred_lower, xmax = cred_upper,
+                  y = MAP_h, ymin = low, ymax = high ))+
+  geom_abline(intercept = 0, slope = 1, lty = 3)+
+  geom_point()+
+  geom_linerange()+
+  geom_errorbarh()+
+  scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1))+
+  scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1))+
+  coord_fixed()+
+  xlab("Model posterior predictive")+
+  ylab("Human generic endorsement")
+
+gen.inset.distributions <- bind_rows(
+  gen.listener.predictions %>%
+    mutate(category = NA),
+  m.gen.speakerBeliefs %>%
+    select(-type, -param, -chain, -Sentence) %>%
+    rename(value = val) %>%
+    mutate(Parameter = "speakerBeliefs")
+)
+```
+
+```{r generic.model.insets, fig.width = 4.75, fig.height = 1.5}
+gen.inset.distributions %>%
+  mutate(Parameter = factor(Parameter, levels = c("state_Prior",
+                                                  "state_Posterior",
+                                                  "speakerBeliefs"),
+                            labels = c("Silence / Prior", "Generic Posterior", "Speaker beliefs")),
+         property = fct_relevel(property,
+                                "have spots", "lay eggs","carry malaria", 
+                                "are female", "dont eat people") ) %>%
+  ggplot(., aes( x = value, fill = Parameter, color = Parameter, lty = Parameter, alpha = Parameter ))+
+  geom_density(aes(y = ..scaled..), adjust = 4, size = 1)+
+  facet_wrap(~property, nrow = 1)+
+    #scale_fill_manual(values = c("#636363", "#abdda4", "#2b83ba", "#d7191c"))+
+    #scale_color_manual(values = c("#636363", "#abdda4", "#2b83ba", "#d7191c"))+
+    scale_fill_manual(values = c("#636363", "#d7191c", "#2b83ba"))+
+    scale_color_manual(values = c("#636363", "#d7191c", "#2b83ba"))+
+    scale_alpha_manual(values = c(0.6, 0.4, 0))+
+    #scale_linetype_manual(values = c(3, 4, 2, 1))+
+    scale_linetype_manual(values = c(3, 4, 1))+
+    scale_x_continuous(breaks = c(0, 1), limits= c(0, 1))+
+    scale_y_continuous(breaks = c(0, 1), limits= c(0, 1))+
+    xlab("Prevalence") +
+    ylab("Scaled probability density")+
+    theme(legend.position = "bottom", legend.title = element_blank())
+```
+
 
 <!-- The above analysis provides a single estimate for model predictions, but it is based on noisy empirical measurements of $P(x)$. In order to estimate the impact of this empirical noise on our model predictions, we resampled the prior data (with replacement) for 57 participants worth of data, discretizing and binning as we did above and then inferring parameters. -->
 <!-- This procedure (re-sample prior, discretize and bin, infer parameters) was repeated 500 times to bootstrap the model predictions. -->
