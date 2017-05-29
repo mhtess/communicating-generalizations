@@ -84,6 +84,7 @@ library(data.table)
 library(coda)
 library(knitr)
 library(ggthemes)
+library(ggrepel)
 library(rwebppl)
 theme_set(theme_few())
 estimate_mode <- function(s) {
@@ -1550,17 +1551,28 @@ gen.inset.distributions <- bind_rows(
 ```
 
 ```{r generic.model.insets, fig.width = 4.75, fig.height = 1.5}
+category.text.labels <- data.frame(property = c("dont eat people", 
+                      "carry malaria", "lay eggs",  "are female", "have spots"),
+             category = c("Tigers", "Mosquitos", "Robins", "Robins", "Leopards"),
+             x = c(0.3, 0.3, 0.47, 0.05, 0.6),
+            y = c(0.45, 0.5, 0.45, 0.5, 0.26))
+
 gen.inset.distributions %>%
   mutate(Parameter = factor(Parameter, levels = c("state_Prior",
                                                   "state_Posterior",
                                                   "speakerBeliefs"),
-                            labels = c("Silence / Prior", "Generic Posterior", "Speaker beliefs")),
+                            labels = c("Listener Prior (Posterior given Silence)", 
+                                       "Listener Posterior given Generic", 
+                                       "Speaker Beliefs")),
          property = fct_relevel(property,
                                 "have spots", "lay eggs","carry malaria", 
                                 "are female", "dont eat people") ) %>%
   ggplot(., aes( x = value, fill = Parameter, color = Parameter, lty = Parameter, alpha = Parameter ))+
   geom_density(aes(y = ..scaled..), adjust = 4, size = 1)+
   facet_wrap(~property, nrow = 1)+
+  geom_text_repel(data = category.text.labels,
+                  aes(label = category, x = x , y = y),
+                  inherit.aes = F, color = "#2b83ba")+
     #scale_fill_manual(values = c("#636363", "#abdda4", "#2b83ba", "#d7191c"))+
     #scale_color_manual(values = c("#636363", "#abdda4", "#2b83ba", "#d7191c"))+
     scale_fill_manual(values = c("#636363", "#d7191c", "#2b83ba"))+
@@ -1573,6 +1585,7 @@ gen.inset.distributions %>%
     xlab("Prevalence") +
     ylab("Scaled probability density")+
     theme(legend.position = "bottom", legend.title = element_blank())
+
 ```
 
 
