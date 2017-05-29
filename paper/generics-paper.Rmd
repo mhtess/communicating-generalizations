@@ -1429,6 +1429,147 @@ Our underspecified threshold model is the same as the fixed-threshold RSA model 
 We perform the same Bayesian data analysis as the "Some" model.
 As we see in Figure \ref{fig:commongenerics}b, the pragmatic speaker model $S_2$, using empirically measured priors, explains nearly all of the variance in human truth judgments ($r^2=0.98$; MSE=0.003; Figure \ref{fig:commongenerics}b). 
 
+```{r generic.cuevalidity}
+d.cv <- read.csv(paste(project.path, "data/generics/endorsement/", "cue-validity-2-freeProduction-trials.csv", sep = ""))
+
+d.target.items <- fromJSON(paste(project.path, "data/generics/endorsement/", "originalStims_wrongDeployment.json", sep = "")) %>%
+  mutate(sentence = paste(category, property))
+
+
+### Preprocessing
+# - Force all responses to lower case. 
+# - Remove spaces.
+# - Fix mosquito mispellings.
+# - Count "deertick" as "tick".
+# - Remove plural "s".
+# 
+# Mark if the produced animal matches the generic of interest.
+
+mosquito.mispellings <- c("mosqu", "mesqu", "misqu", "mosiq")
+
+d.target.items <- fromJSON(paste(project.path, "data/generics/endorsement/", "originalStims.json", sep = "")) %>%
+  mutate(
+    property = gsub("'", "", property),
+    Property = gsub("'", "", Property),
+    sentence = paste(Category, Property),
+    item = paste(category, property))
+
+
+d.prev <- read.csv(paste(project.path, "data/generics/endorsement/",
+                       "naturalGenerics-prior-trials-n57.csv", sep = ""))
+
+
+d.prev.summary <- d.prev %>%
+  mutate(item = paste(Category, Property)) %>%
+  filter(item %in% d.target.items$sentence) %>%
+  mutate(prevalence = prevalence / 100) %>%
+  group_by(Category, Property, item) %>%
+  multi_boot_standard(column = "prevalence")
+
+# need to filter by TJ items (direct query cue-validity expt had 2 items misspecified)
+d.cv.summary <- left_join(
+  d.target.items %>% select(-sentence),
+  d.cv %>%
+    rename(category = response) %>%
+    group_by(property) %>%
+    mutate(n = n(),
+           item = paste(category, property)) %>%
+    filter(item %in% d.target.items$item) %>%
+    group_by(category, property) %>%
+    summarize(mentions = n(),
+              trials = mean(n), # mean(n) == n, because it's just the number of subjects
+              prop = mentions / trials)
+  ) %>%
+  mutate(prop = ifelse(is.na(prop), 0.01, prop))
+
+d.tj.w.prev.cue <- left_join(
+  left_join(
+    left_join(
+      d.gen.endorse, 
+      d.gen.endorse.catch %>% select(workerid, pass)
+      ) %>%
+      filter(pass == 1) %>%
+    rowwise() %>%
+    mutate(response = ifelse(response == "agree-key", 1, 0),
+         sentence = gsub('&quotechar', '', sentence),
+         sentence = gsub('lyme', 'Lyme', sentence),
+          sentence = gsub('[.]', '', sentence)
+    ),
+    d.prev.summary %>% 
+      rename(prevalence = mean,
+             sentence = item) %>% 
+      select(-ci_lower, -ci_upper)
+    ),
+  d.cv.summary %>% select(-item))
+
+
+
+rs.glm <- glm(response ~ prevalence, 
+              data = d.tj.w.prev.cue, family = 'binomial')
+
+glm.model.predictions <- unique(select(d.tj.w.prev.cue, Property, Category, sentence, prevalence, prop))
+
+glm.model.predictions <- glm.model.predictions %>%
+  mutate(prediction = predict(rs.glm, ., type = "response"))
+
+d.tj.w.glm <- left_join(
+  d.tj.w.prev.cue %>%
+       group_by(Property, Category, sentence) %>%
+       multi_boot_standard(column = "response"),
+  glm.model.predictions
+) %>% mutate(sqErr = (mean - prediction) ^ 2)
+
+ggplot(d.tj.w.glm %>% 
+         rename(cuevalidity = prop), 
+       aes (x = prediction, y = mean, ymin = ci_lower, ymax = ci_upper, color = cuevalidity))+
+  geom_errorbar(alpha = 0.3)+
+  geom_abline(intercept = 0, slope = 1, lty = 3)+
+  geom_text_repel(data = d.tj.w.glm %>% 
+                    rename(cuevalidity = prop) %>% 
+                    filter(sqErr > 0.04), 
+                  aes(label = sentence, color = cuevalidity), force = 1, size = 3)+
+  geom_point()+
+  xlim(0,1)+
+  ylim(0,1)+
+  coord_fixed()+
+  xlab("Prevalence only model prediction")+
+  ylab("Human generic endorsement")
+
+
+rs.glm.2 <- glm(response ~ prevalence + prop, 
+              data = d.tj.w.prev.cue, family = 'binomial')
+
+glm.model.predictions.2 <- unique(select(d.tj.w.prev.cue, Property, Category, sentence, prevalence, prop))
+
+glm.model.predictions.2 <- glm.model.predictions %>%
+  mutate(prediction = predict(rs.glm.2, ., type = "response"))
+
+d.tj.w.glm.2 <- left_join(
+  d.tj.w.prev.cue %>%
+       group_by(Property, Category, sentence) %>%
+       multi_boot_standard(column = "response"),
+  glm.model.predictions.2
+) %>% mutate(sqErr = (mean - prediction) ^ 2)
+
+ggplot(d.tj.w.glm.2 %>% 
+         rename(cuevalidity = prop), 
+       aes (x = prediction, y = mean, ymin = ci_lower, ymax = ci_upper, color = cuevalidity))+
+  geom_errorbar(alpha = 0.3)+
+  geom_abline(intercept = 0, slope = 1, lty = 3)+
+  geom_text_repel(data = d.tj.w.glm %>% 
+                    rename(cuevalidity = prop) %>% 
+                    filter(sqErr > 0.05), 
+                  aes(label = sentence, color = cuevalidity), force = 1, size = 3)+
+  geom_point()+
+  xlim(0,1)+
+  ylim(0,1)+
+  coord_fixed()+
+  xlab("Logistic model prediction")+
+  ylab("Human generic endorsement")
+
+View(d.tj.w.glm)
+```
+
 
 ```{r generic-fullmodel}
 # Look at KL model for what the prev distributions look like
