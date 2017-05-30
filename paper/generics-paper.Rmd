@@ -72,7 +72,7 @@ library("papaja")
 ```
 
 
-```{r helpers}
+```{r libraries}
 library(rwebppl)
 library(xtable)
 library(tidyverse)
@@ -86,6 +86,7 @@ library(knitr)
 library(ggthemes)
 library(ggrepel)
 library(rwebppl)
+library(jsonlite)
 theme_set(theme_few())
 estimate_mode <- function(s) {
   d <- density(s)
@@ -1550,7 +1551,7 @@ d.gen.endorse.regression <- bind_rows(
 ```
 
 
-```{r generic-fullmodel}
+```{r generic-fullmodel, fig.width = 8}
 n_chains <- 1
 n_samples <- 100000
 burn <- n_samples
@@ -1641,7 +1642,6 @@ generics.endorsement.models <- bind_rows(
 ```
 
 ```{r generic.model.insets, fig.width = 4.75, fig.height = 1.5}
-
 example.generics.properties <- c("dont eat people", 
                       "carry malaria", 
                       "lay eggs", 
@@ -1752,7 +1752,7 @@ generics.endorsement.insets <- gen.inset.distributions %>%
 ```
 
 
-```{r generics.endorsement.figure, fig.width=12, fig.height=10}
+```{r generics.endorsement.figure, fig.width=7, fig.height=5}
 grid.arrange(generics.endorsement.spectrum, 
              generics.endorsement.models,
              generics.endorsement.insets, ncol = 2,
@@ -1823,20 +1823,21 @@ continuing to measure the prior distributions.
 
 # Case Study 2: Habitual Language
 
-*Habitual* language (e.g,. "Mary smokes."; "My car won't start.") convey generalizations about events. 
+*Habitual* language (e.g,. "Mary smokes."; "My car won't start.") conveys generalizations about events. 
 In this case study, we focus on a particular class of events: people doing actions.
 We focus on present-tense habitual sentences of the form \textsc{singular noun phrase} $+$ \textsc{present tense simple verb phrase} (e.g., \emph{Mary smokes cigarettes.}). 
 
-Habituals are a particularly nice domain for manipulating the target probability that a speaker aims to communicate, as this is expressed in an easily-interpretable frequency with which a person does an action (e.g., "Last month, Mary smoked cigarettes 3 times.").^[
+Habituals are a particularly amenable domain to manipulating the target probability that a speaker aims to communicate, as this is expressed in an easily-interpretable frequency with which a person does an action (e.g., "Last month, Mary smoked cigarettes 3 times.").^[
 While target probability can be manipulated for generalizations about categories (generic language) (e.g., by stating the prevalence of feature in a kind), this may interact with domain knowledge in complex ways (e.g., it's *a priori* very unlikely that 90% of a hypothetical novel kind---lorches---have broken wings).
 ]
 In our first experiment concerning habitual language, we manipulate the target frequency as well as the kind of event (Expt. 2b), creating a data set of endorsements that is three times as large as the data from Expt. 1b (generic endorsement). 
 Again, we measure participants' latent prior belief distribution over the frequencies of people doing various actions (e.g., how often people *run*; Expt. 2a) in a way analagous to the prevalence prior elicitation for generics.
-In addition to directly manipulating the target propensity, these experiments provide the first test of the generality of our theory.
+In addition to directly manipulating the target propensity, these experiments provide the first test of the generality of our theory, that it can apply to both categories and events.
 
 If habituals (and generics) are truly language for conveying generalizations, it would be useful for them to reflect expectations, not merely observations. 
-Is the underlying scale for habituals the actual, past frequency of the event (e.g., how often Mary has actually smoked in the past week) or the predictive probability that this event will occur in the near future (e.g., how likely it is thatMary will smoke next week)? 
-In Expts. 3a \& 3b, we show that the object of communication is a speaker’s prediction about the future frequency of action, and not past frequency.
+Up to this point, we have been relatively agnostic as to the interpretation of $h$, the target propensity that the speaker aims to convey.
+Two possibilities for what $h$ could relfect are: the actual, past frequency of the event (e.g., how often Mary has actually smoked in the past week) or the predictive probability that this event will occur in the near future (e.g., how likely it is that Mary will smoke next week)? 
+In Expts. 3a \& 3b, we show that $h$, the target of communication, is a speaker’s prediction about the future frequency of action, and not past frequency.
 
 
 <!-- This set of experiments is organized as follows. -->
@@ -1928,6 +1929,50 @@ annualRates = list("5 years" = 1/5, "2 years" = 1/2,
 d.hab.priors <- read.csv(paste(project.path,
                            "data/habituals/priors/friends-and-family-2-trials.csv",
                            sep= ""))
+
+
+
+d.hab.priors.tidy <- d.hab.priors %>%
+  rowwise() %>%
+  mutate(annualRate = annualRates[[as.character(interval)]]*n_times,
+         never = ifelse(annualRate == 0, 1, 0),
+         action = as.character(action),
+         action = ifelse(action == "sell things on eBay", "sells things on eBay", action))
+
+d.hab.priors.distinctiveness <- d.hab.priors.tidy %>%
+  group_by(action) %>%
+  multi_boot_standard(column = 'never') %>%
+  ungroup() %>%
+  rename(distinctiveness = mean, 
+         distinct_low = ci_lower, distinct_high = ci_upper)
+d.hab.priors
+d.hab.priors.distinctiveness
+# 
+# 
+# df.out <- df.tidy %>%
+#   mutate(annualRate = ifelse(annualRate == 0, 0.15, annualRate),
+#          lograte = log(annualRate),
+#          binned_lograte = round(lograte*2)/2) %>%
+#   group_by(action, binned_lograte) %>%
+#   summarize(counts = n())
+# 
+# 
+# # make sure 0s are represented
+# df.out2 <- left_join(
+#   expand.grid(action = levels(df.out$action), binned_lograte = levels(factor(df.out$binned_lograte))),
+#   df.out %>% mutate(binned_lograte = factor(binned_lograte))) 
+# 
+# df.out2[is.na(df.out2)] <- 0
+# df.out2 <- df.out2 %>%
+#   mutate(binned_lograte = as.numeric(binned_lograte))
+#   
+# ggplot(df.out2, aes( x = binned_lograte, y = counts))+
+#   #geom_histogram()+
+#   geom_bar(stat = 'identity', position = position_dodge())+
+#   #geom_density()+
+#   facet_wrap(~action, scales = 'free')+
+#   xlim(-3.5, 8.5)
+# d.hab.priors.tidy
 ```
 
 Every response for a frequency of a person doing an action is a sample from $P_{event}(h)$.
@@ -2037,15 +2082,20 @@ d.hab.endorsement.catch <- read.csv(paste(project.path, "data/habituals/endorsem
 d.hab.endorsement <- read.csv(paste(project.path, "data/habituals/endorsement/", 
                     "habituals-endorsement.csv", sep = ""))
 
-d.hab.endorsement <- left_join(d.hab.endorsement, 
-                               d.hab.endorsement.catch %>% 
-                                 select(workerid, pass)) %>%
-  filter(pass == 1)
+d.hab.endorsement <- left_join(
+  left_join(d.hab.endorsement, 
+           d.hab.endorsement.catch %>% 
+             select(workerid, pass)
+           ) %>%
+  filter(pass == 1),
+  d.hab.priors.distinctiveness %>% rename(habitual = action)) %>%
+  mutate(response = as.character(response),
+         response = ifelse(response == "agree-key", 1, 0),
+         roundedFreq = round(log_times * 2) / 2)
+
 
 d.hab.endorsement.summary <- d.hab.endorsement %>% 
-  mutate(response = ifelse(response == "agree-key", 1, 0),
-         roundedFreq = round(log_times * 2) / 2) %>%
-  group_by(habitual, time_period, roundedFreq) %>%
+  group_by(habitual, time_period, log_times, roundedFreq) %>%
   summarize(k = sum(response), n = n()) %>%
   ungroup() %>%
   mutate(a = 1 + k,
@@ -2055,9 +2105,54 @@ d.hab.endorsement.summary <- d.hab.endorsement %>%
          MAP_h = (a-1)/(a+b-2),
          mean = a / (a + b))
 
-
 ggplot(d.hab.endorsement.summary, aes( x = roundedFreq, y = MAP_h, ymin = low, ymax = high, fill = roundedFreq))+
   geom_jitter(width = 0.1, shape = 21)
+d.hab.endorsement
+```
+
+```{r habituals.regression.models}
+
+glm.hab.endorse.freq <- glm(response ~ log_times, 
+              data = d.hab.endorsement, family = 'binomial')
+
+glm.hab.endorse.freq.distinct <- glm(response ~ log_times + distinctiveness, 
+              data = d.hab.endorsement, family = 'binomial')
+
+d.hab.endorse.regression.freq.distinct <- left_join(
+  d.hab.endorsement.summary,
+  unique(select(
+    d.hab.endorsement, habitual, log_times, roundedFreq, distinctiveness
+  )) %>%
+    mutate(regression_freq = predict(glm.hab.endorse.freq, ., type = "response"), 
+           regression_freq_distinct = predict(glm.hab.endorse.freq.distinct, ., type = "response"))
+) %>%
+  gather(src, prediction, regression_freq, regression_freq_distinct) %>%
+  mutate(sqErr = (MAP_h-prediction)^2)
+
+ggplot(d.hab.endorse.regression.freq.distinct,
+       aes (x = prediction, y = MAP_h, ymin = low, ymax = high, color = distinctiveness))+
+  geom_errorbar(alpha = 0.1)+
+  geom_abline(intercept = 0, slope = 1, lty = 3)+
+  # geom_text_repel(data = d.hab.endorse.regression.freq.distinct %>%
+  #                   filter(sqErr > 0.1),
+  #                 aes(label = paste(habitual, time_period)), force = 5, size = 3)+
+  geom_point()+
+  xlim(0,1)+
+  ylim(0,1)+
+  coord_fixed()+
+  xlab("Logistic model prediction")+
+  ylab("Human habitual endorsement")+
+  facet_wrap(~src)
+
+
+
+with(d.hab.endorse.regression.freq.distinct %>%
+       filter(src == "regression_freq"), 
+     cor(prediction, MAP_h, use = "pairwise.complete.obs"))^2
+
+with(d.hab.endorse.regression.freq.distinct %>%
+       filter(src == "regression_freq_distinct"), 
+     cor(prediction, MAP_h, use = "pairwise.complete.obs"))^2
 ```
 
 
