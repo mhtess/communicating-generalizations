@@ -1316,7 +1316,7 @@ d.gen.endorse.bayes <- left_join(
 
 # d.gen.endorse.summary %>%
 #   ggplot(., aes(x = sentence, y = mean, ymin = ci_lower, ymax = ci_upper))+
-d.gen.endorse.bayes %>%
+generics.endorsement.spectrum <- d.gen.endorse.bayes %>%
   #ggplot(., aes(x = sentence, y = MAP_h, ymin = low, ymax = high))+
   ggplot(., aes(x = sentence, y = MAP_h - 0.5, ymin = low - 0.5, ymax = high - 0.5))+
   geom_bar(stat = 'identity', position = position_dodge(),fill = 'grey')+
@@ -1421,15 +1421,13 @@ In accord with intuition, assigning a fixed semantics corresponding to "Some" is
 Even for patently false generics (e.g., "Mosquitos don't carry malaria"), the speaker model is unable to prefer staying silent than producing the generic (with a "some" semantics).
 It also doesn't strongly prefer producing the generic, possibly because the information content is so small.
 
-##### Uncertain threshold RSA model with universal priors
-
 ##### Uncertain threshold RSA model with diverse priors
 
 Our underspecified threshold model is the same as the fixed-threshold RSA model described above, except that rather than having a fixed threshold at $\theta = 0.5$, it has *a priori* uncertainty over the threshold.
 We perform the same Bayesian data analysis as the "Some" model.
 As we see in Figure \ref{fig:commongenerics}b, the pragmatic speaker model $S_2$, using empirically measured priors, explains nearly all of the variance in human truth judgments ($r^2=0.98$; MSE=0.003; Figure \ref{fig:commongenerics}b). 
 
-```{r generic.cuevalidity}
+```{r generic.regression.models}
 d.cv <- read.csv(paste(project.path, "data/generics/endorsement/", "cue-validity-2-freeProduction-trials.csv", sep = ""))
 
 d.target.items <- fromJSON(paste(project.path, "data/generics/endorsement/", "originalStims_wrongDeployment.json", sep = "")) %>%
@@ -1466,8 +1464,8 @@ d.prev.summary <- d.prev %>%
   group_by(Category, Property, item) %>%
   multi_boot_standard(column = "prevalence")
 
-# need to filter by TJ items (direct query cue-validity expt had 2 items misspecified)
-d.cv.summary <- left_join(
+# need to filter by items specified with endorsement
+d.gen.cv.summary <- left_join(
   d.target.items %>% select(-sentence),
   d.cv %>%
     rename(category = response) %>%
@@ -1482,7 +1480,7 @@ d.cv.summary <- left_join(
   ) %>%
   mutate(prop = ifelse(is.na(prop), 0.01, prop))
 
-d.tj.w.prev.cue <- left_join(
+d.gen.endorse.prev.cue <- left_join(
   left_join(
     left_join(
       d.gen.endorse, 
@@ -1500,80 +1498,59 @@ d.tj.w.prev.cue <- left_join(
              sentence = item) %>% 
       select(-ci_lower, -ci_upper)
     ),
-  d.cv.summary %>% select(-item))
+  d.gen.cv.summary %>% select(-item))
 
+glm.gen.endorse.prev <- glm(response ~ prevalence, 
+              data = d.gen.endorse.prev.cue, family = 'binomial')
 
+glm.gen.endorse.prev.cv <- glm(response ~ prevalence + prop, 
+              data = d.gen.endorse.prev.cue, family = 'binomial')
 
-rs.glm <- glm(response ~ prevalence, 
-              data = d.tj.w.prev.cue, family = 'binomial')
+d.gen.endorse.regression.prevalence <- left_join(
+  d.gen.endorse.bayes,
+  unique(select(
+    d.gen.endorse.prev.cue, Property, Category, sentence, prevalence, prop
+  )) %>%
+    mutate(prediction = predict(glm.gen.endorse.prev, ., type = "response")) %>%
+    mutate(sentence = paste(Category, " ", Property, ".", sep = ""))
+) %>% mutate(sqErr = (mean - prediction) ^ 2,
+             cuevalidity = prop)
 
-glm.model.predictions <- unique(select(d.tj.w.prev.cue, Property, Category, sentence, prevalence, prop))
+d.gen.endorse.regression.prevalence.cuevalidity <- left_join(
+  d.gen.endorse.bayes,
+   unique(select(
+    d.gen.endorse.prev.cue, Property, Category, sentence, prevalence, prop
+    )) %>% 
+    mutate(prediction = predict(glm.gen.endorse.prev.cv, ., type = "response"),
+           sentence = paste(Category, " ", Property, ".", sep = ""))
+) %>% mutate(sqErr = (mean - prediction) ^ 2,
+             cuevalidity = prop)
 
-glm.model.predictions <- glm.model.predictions %>%
-  mutate(prediction = predict(rs.glm, ., type = "response"))
-
-d.tj.w.glm <- left_join(
-  d.tj.w.prev.cue %>%
-       group_by(Property, Category, sentence) %>%
-       multi_boot_standard(column = "response"),
-  glm.model.predictions
-) %>% mutate(sqErr = (mean - prediction) ^ 2)
-
-ggplot(d.tj.w.glm %>% 
-         rename(cuevalidity = prop), 
-       aes (x = prediction, y = mean, ymin = ci_lower, ymax = ci_upper, color = cuevalidity))+
-  geom_errorbar(alpha = 0.3)+
-  geom_abline(intercept = 0, slope = 1, lty = 3)+
-  geom_text_repel(data = d.tj.w.glm %>% 
-                    rename(cuevalidity = prop) %>% 
-                    filter(sqErr > 0.04), 
-                  aes(label = sentence, color = cuevalidity), force = 1, size = 3)+
-  geom_point()+
-  xlim(0,1)+
-  ylim(0,1)+
-  coord_fixed()+
-  xlab("Prevalence only model prediction")+
-  ylab("Human generic endorsement")
-
-
-rs.glm.2 <- glm(response ~ prevalence + prop, 
-              data = d.tj.w.prev.cue, family = 'binomial')
-
-glm.model.predictions.2 <- unique(select(d.tj.w.prev.cue, Property, Category, sentence, prevalence, prop))
-
-glm.model.predictions.2 <- glm.model.predictions %>%
-  mutate(prediction = predict(rs.glm.2, ., type = "response"))
-
-d.tj.w.glm.2 <- left_join(
-  d.tj.w.prev.cue %>%
-       group_by(Property, Category, sentence) %>%
-       multi_boot_standard(column = "response"),
-  glm.model.predictions.2
-) %>% mutate(sqErr = (mean - prediction) ^ 2)
-
-ggplot(d.tj.w.glm.2 %>% 
-         rename(cuevalidity = prop), 
-       aes (x = prediction, y = mean, ymin = ci_lower, ymax = ci_upper, color = cuevalidity))+
-  geom_errorbar(alpha = 0.3)+
-  geom_abline(intercept = 0, slope = 1, lty = 3)+
-  geom_text_repel(data = d.tj.w.glm %>% 
-                    rename(cuevalidity = prop) %>% 
-                    filter(sqErr > 0.05), 
-                  aes(label = sentence, color = cuevalidity), force = 1, size = 3)+
-  geom_point()+
-  xlim(0,1)+
-  ylim(0,1)+
-  coord_fixed()+
-  xlab("Logistic model prediction")+
-  ylab("Human generic endorsement")
-
-View(d.tj.w.glm)
+d.gen.endorse.regression <- bind_rows(
+  d.gen.endorse.regression.prevalence.cuevalidity %>%
+    mutate(src = "regression_Prev_Cuevalidity"),
+  d.gen.endorse.regression.prevalence %>% 
+    mutate(src = "regression_Prev")
+  )
+# ggplot(d.gen.endorse.regression, 
+#        aes (x = prediction, y = MAP_h, ymin = low, ymax = high, color = cuevalidity))+
+#   geom_errorbar(alpha = 0.3)+
+#   geom_abline(intercept = 0, slope = 1, lty = 3)+
+#   # geom_text_repel(data = d.gen.endorse.regression.prevalence.cuevalidity %>% 
+#   #                   rename(cuevalidity = prop) %>% 
+#   #                   filter(sqErr > 0.05), 
+#   #                 aes(label = sentence, color = cuevalidity), force = 1, size = 3)+
+#   geom_point()+
+#   xlim(0,1)+
+#   ylim(0,1)+
+#   coord_fixed()+
+#   xlab("Logistic model prediction")+
+#   ylab("Human generic endorsement")+
+#   facet_wrap(~src)
 ```
 
 
 ```{r generic-fullmodel}
-# Look at KL model for what the prev distributions look like
-
 n_chains <- 1
 n_samples <- 100000
 burn <- n_samples
@@ -1589,6 +1566,81 @@ for (i in seq(1, n_chains)){
   #print(i)
 }
 
+m.gen.somemodel.endorsement <- fread(
+  paste(project.path,"models/generics/results/", 
+        "results-fullModel-s1-smtncssome-20000_burn10000_chain1.csv", sep = "")
+  ) %>% mutate(chain = 1) %>%
+  filter(type == 'predictive') %>%
+  group_by(type, param, property, category) %>%
+  summarize(MAP = estimate_mode(val),
+            cred_upper = hdi_upper(val),
+            cred_lower = hdi_lower(val))
+
+m.gen.fullmodel.endorsement <- m.samp %>%
+  filter(type == 'predictive') %>%
+  group_by(type, param, property, category) %>%
+  summarize(MAP = estimate_mode(val),
+            cred_upper = hdi_upper(val),
+            cred_lower = hdi_lower(val))
+
+m.gen.endorse.rsa <- bind_rows(
+  left_join(
+    d.gen.endorse.bayes,
+    m.gen.fullmodel.endorsement %>%
+      mutate(sentence = paste(category, " ", property, ".", sep = "")) %>%
+      ungroup() %>%
+      select(-type, -param)
+  ) %>%
+    mutate(src = "generics_model"),
+  left_join(
+    d.gen.endorse.bayes,
+    m.gen.somemodel.endorsement %>%
+      mutate(sentence = paste(category, " ", property, ".", sep = "")) %>%
+      ungroup() %>%
+      select(-type, -param)
+  ) %>%
+    mutate(src = "some_model")
+)
+
+generics.endorsement.models <- bind_rows(
+  d.gen.endorse.regression %>% 
+  mutate(prediction_lower = prediction,
+         prediction_upper = prediction),
+  left_join(
+    m.gen.endorse.rsa %>% 
+    rename(prediction = MAP, prediction_lower = cred_lower, prediction_upper = cred_upper),
+    d.gen.endorse.regression %>% 
+    select(sentence, Property, Category, prevalence, cuevalidity)
+  )
+) %>%
+  mutate(src = factor(src, levels = c( 
+                                      "generics_model",
+                                      "some_model",
+                                      "regression_Prev", 
+                                      "regression_Prev_Cuevalidity"
+                                     ),
+                      labels = c(
+                                 "Speaker model - uncertain semantics",
+                                 "Speaker model - fixed semantics",
+                                 "Prevalence alone", "Prevalence & Cue validity"
+                                 ))) %>%
+  ggplot(., aes ( x = prediction, xmin = prediction_lower, xmax = prediction_upper,
+                  y = MAP_h, ymin = low, ymax = high, fill = prevalence ))+
+  geom_abline(intercept = 0, slope = 1, lty = 3)+
+  geom_linerange(alpha = 0.7)+
+  geom_errorbarh(alpha = 0.7)+
+  geom_point(shape = 21)+
+  scale_x_continuous(limits = c(-0.01, 1.01), breaks = c(0,  1))+
+  scale_y_continuous(limits = c(-0.01, 1.01), breaks = c(0, 1))+
+  scale_fill_continuous(low = "#2b83ba", high = "#d7191c")+
+  coord_fixed()+
+  xlab("Model prediction")+
+  ylab("Human generic endorsement")+
+  facet_wrap(~src, nrow = 2)+
+  theme(legend.position = "bottom")
+```
+
+```{r generic.model.insets, fig.width = 4.75, fig.height = 1.5}
 
 example.generics.properties <- c("dont eat people", 
                       "carry malaria", 
@@ -1652,35 +1704,6 @@ m.gen.speakerBeliefs <- m.samp %>%
   mutate(Sentence = paste(category, property)) %>%
   filter(Sentence %in% example.generics) 
 
-
-
-m.gen.fullmodel.endorsement <- m.samp %>%
-  filter(type == 'predictive') %>%
-  group_by(type, param, property, category) %>%
-  summarize(MAP = estimate_mode(val),
-            cred_upper = hdi_upper(val),
-            cred_lower = hdi_lower(val))
-
-
-left_join(
-  d.gen.endorse.bayes,
-  m.gen.fullmodel.endorsement %>%
-    mutate(sentence = paste(category, " ", property, ".", sep = "")) %>%
-    ungroup() %>%
-    select(-type, -param)
-) %>%
-  ggplot(., aes ( x = MAP, xmin = cred_lower, xmax = cred_upper,
-                  y = MAP_h, ymin = low, ymax = high ))+
-  geom_abline(intercept = 0, slope = 1, lty = 3)+
-  geom_point()+
-  geom_linerange()+
-  geom_errorbarh()+
-  scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1))+
-  scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1))+
-  coord_fixed()+
-  xlab("Model posterior predictive")+
-  ylab("Human generic endorsement")
-
 gen.inset.distributions <- bind_rows(
   gen.listener.predictions %>%
     mutate(category = NA),
@@ -1689,16 +1712,15 @@ gen.inset.distributions <- bind_rows(
     rename(value = val) %>%
     mutate(Parameter = "speakerBeliefs")
 )
-```
 
-```{r generic.model.insets, fig.width = 4.75, fig.height = 1.5}
+
 category.text.labels <- data.frame(property = c("dont eat people", 
                       "carry malaria", "lay eggs",  "are female", "have spots"),
              category = c("Tigers", "Mosquitos", "Robins", "Robins", "Leopards"),
              x = c(0.3, 0.3, 0.47, 0.05, 0.6),
             y = c(0.45, 0.5, 0.45, 0.5, 0.26))
 
-gen.inset.distributions %>%
+generics.endorsement.insets <- gen.inset.distributions %>%
   mutate(Parameter = factor(Parameter, levels = c("state_Prior",
                                                   "state_Posterior",
                                                   "speakerBeliefs"),
@@ -1727,6 +1749,14 @@ gen.inset.distributions %>%
     ylab("Scaled probability density")+
     theme(legend.position = "bottom", legend.title = element_blank())
 
+```
+
+
+```{r generics.endorsement.figure, fig.width=12, fig.height=10}
+grid.arrange(generics.endorsement.spectrum, 
+             generics.endorsement.models,
+             generics.endorsement.insets, ncol = 2,
+             layout_matrix = cbind(c(1,1,3), c(2,2,3)))
 ```
 
 
