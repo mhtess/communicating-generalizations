@@ -74,7 +74,7 @@ var meaning = function(utt,state, theta) {
 var model = function(){
 
 	var speakerOptimality = {
-		s1: uniformDrift({a: 0, b: 5, width:1})
+		s1: uniformDrift({a: 0, b: 20, width:2})
 	}
 
 	var nullDist = Delta({v: _.min(midBins)})
