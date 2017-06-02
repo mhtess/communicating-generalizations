@@ -33,7 +33,7 @@ betaMean = function(a, b){
 betaSDev = function(a, b){
   return( sqrt ( ( a * b) / ( ( a + b ) ^ 2 * (a + b + 1) ) ) ) 
 }
-project.path <- "~/Documents/research/generics-paper/"
+project.path <- "~/Documents/research/communicating-generalizations/"
 data.path <- "models/habituals/data/"
 model.path <- "models/habituals/"
 ```
@@ -52,15 +52,14 @@ d.hab.prior.e <- d.hab.prior.e %>%
   mutate(avoided_endval = ifelse(val==1, 0.999,
                                  ifelse(val==0, 0.001, val)))
 
-ggplot(d.hab.prior.e, aes( x= avoided_endval, fill = gender))+
-  facet_wrap(~item, scales = 'free')+
-  geom_histogram(position = position_dodge())
+# ggplot(d.hab.prior.e, aes( x= avoided_endval, fill = gender))+
+#   facet_wrap(~item, scales = 'free')+
+#   geom_histogram(position = position_dodge())
 
 d.hab.prior.f <- read.csv(paste(project.path, data.path, 
                       "prior2-timesper5yr.csv", sep = "")) %>%
-  mutate(log_dayRate = log(val / (365*5)))
-
-
+  mutate(log_dayRate = log(val / (365*5)),
+         annualRate = val / 5)
 
 # 
 # ggplot(d.hab.prior.f, aes( x= log(val / (365*5)), fill = gender ))+
@@ -111,69 +110,298 @@ dh.prior.filtered <- filter(dh.prior,
 #write.csv(dh.prior, file = paste(project.path, data.path, "prior2.csv", sep = ""))
 ```
 
+Marginal distribution on frequency
 
-
-
-
-
-#### Model posteriors on prior parameter
-
-
-```{r}
-m.samp <- fread(paste(project.path, model.path,
-                    "results/results-habituals-priorParams-cdfPrior-10000_burn5000_chain0.csv"
-, sep  = ""))
-
-m.param.summary <- m.samp %>%
-  group_by(item, cat, param, gender) %>%
-  summarize(MAP = estimate_mode(val),
-            cred_upper = hdi_upper(val),
-            cred_lower = hdi_lower(val))
+```{r fig.width = 8, fig.height = 12}
+dh.prior.samples <- data.frame()
+for (i in 1:10){
   
-```
-
-
-```{r fig.width = 12, fig.height = 5}
-m.samp <- fread(paste(project.path, model.path,
-                    "results/results-habituals-S2-cdfPrior-10000_burn5000_chain0.csv", sep  = ""))
-  
-  
-
-m.samp %>%
-  filter(type == "prior", param == "mixture") %>% 
-  ggplot(., aes( x = val, fill = gender))+
-  geom_histogram(position = position_dodge())+
-  scale_fill_solarized()+
-  facet_wrap(~ item, scales = 'free')+
-  theme(strip.text.y = element_text(angle = 0))
-
-
-m.samp %>%
-  filter(type == "prior", param == "frequency") %>% 
-  ggplot(., aes( x = val, fill = gender))+
-  geom_histogram(position = position_dodge())+
-  scale_fill_solarized()+
-  facet_wrap(~ item, scales = 'free')+
-  theme(strip.text.y = element_text(angle = 0))
-
-
-#ggsave("~/Desktop/s2_habituals_priors_170326.pdf", height = 14, width = 8)
-```
-
-```{r}
-rs <- webppl(
-  program_file = paste(project.path, model.path, "hab.wppl", sep = "" ),
-  packages = c(paste(project.path, model.path, "node_modules/utils", sep = "")))
-
-ps <- c()
-for (i in 2:length(rs)){
-  ps[i-1] = punif(rs[i], min = 0, max = last(rs)) - punif(rs[i - 1], min = 0, max = last(rs)) 
+  dh.prior.samples <- bind_rows(
+    dh.prior.samples,
+    dh.prior.filtered %>% 
+    select(workerid, item, starts_with("annualRate"), 
+           starts_with("mixture")) %>%
+    rowwise() %>%
+    mutate(
+      stable_male = rbinom(n = 1, size = 1, prob = mixture_male),
+       freq_male = ifelse(stable_male == 1, annualRate_male, 0.01),
+       stable_female = rbinom(n = 1, size = 1, prob = mixture_female),
+       freq_female = ifelse(stable_female == 1, annualRate_female, 0.01)
+       ) %>%
+    select(item, freq_male, freq_female) %>%
+    gather(gender, val, freq_male, freq_female) %>%
+  mutate(gender = gsub("freq_", "", gender))
+  )
+  print(i)
 }
-ggplot(rs, aes ( x = support, y = prob))+
-  geom_bar(stat='identity', position = position_dodge())+
-  scale_x_continuous(trans = "log2")
 
-+
-  scale_y_continuous(trans = "log2")
 ```
 
+
+Density plots
+
+```{r}
+ggplot(dh.prior.samples, aes( x = log(val), fill = gender))+
+  geom_density(alpha = 0.3, aes( y = ..scaled.. ))+
+  facet_wrap(~item)+
+  scale_fill_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+CDFs
+
+```{r}
+ggplot(dh.prior.samples, aes( x = log(val), color = gender))+
+  stat_ecdf()+
+  facet_wrap(~item)+
+  scale_color_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+
+# BDA of prior data
+
+```{r}
+hab.prior.bda.model <- '
+var betaShape = function(p){
+  return {a: p.g * p.d, b: (1-p.g) * p.d}
+};
+
+var model = function(){
+	var mixtureParams = {
+		male: {
+      g: uniformDrift({a: 0, b: 1, width: 0.2}),
+      d: uniformDrift({a: 0, b: 100, width: 5})
+    },
+		female: {
+      g: uniformDrift({a: 0, b: 1, width: 0.2}),
+      d: uniformDrift({a: 0, b: 100, width: 5})
+    }
+	};
+
+	var mixtureShapes = {
+		male: betaShape(mixtureParams.male),
+		female: betaShape(mixtureParams.female)
+	};
+
+	mapData({data: data.mixture}, function(d){
+    Beta(mixtureShapes[d.gender]).score(d.val) == -Infinity ? display(JSON.stringify(d)) : null
+     // display(Beta(mixtureShapes[d.gender]).score(d.val))
+		observe(Beta(mixtureShapes[d.gender]), d.val)
+	})
+
+	var stableFrequency = {
+		male: {
+			mu: uniformDrift({a: -5, b:10, width: 2}),
+			sigma: uniformDrift({a:0, b:5, width: 1})
+		},
+		female: {
+			mu: uniformDrift({a:-5, b:10, width: 2}),
+			sigma: uniformDrift({a:0, b:5, width: 1})
+		}
+	}
+
+	mapData({data: data.frequency}, function(d){
+    Gaussian(stableFrequency[d.gender]).score(d.logval) == -Infinity ? 
+        display(JSON.stringify(d)) : null
+    // display(Gaussian(stableFrequency[d.gender]).score(d.logval))
+		observe(Gaussian(stableFrequency[d.gender]), d.logval)
+	})
+
+	var existenceProb = {
+		male: beta(mixtureShapes.male),
+		female: beta(mixtureShapes.female)
+	};
+
+	var freqWhenPresent = {
+		male: gaussian(stableFrequency.male),
+		female: gaussian(stableFrequency.female)
+	}
+
+  var marginalFreq = {
+    male: flip(existenceProb.male) ? freqWhenPresent.male : -5,
+    female: flip(existenceProb.female) ? freqWhenPresent.female : -5,
+  }
+
+  return marginalFreq
+}
+'
+```
+
+
+
+```{r}
+items <- levels(dh.prior.filtered$item)
+n_samples <- 5000
+rs.bda.prior <- data.frame()
+
+for (it in items){
+  
+ df.prior.toPass <- list(
+   frequency = dh.prior.filtered %>%
+      filter(item == it) %>%
+      select(item, starts_with("annualRate")) %>%
+      gather(gender, val, -item) %>%
+      mutate(gender = gsub("annualRate_", "", gender),
+             logval = log(val)),
+   mixture = dh.prior.filtered %>% 
+      filter(item == it) %>%
+      select(item, starts_with("mixture")) %>%
+      gather(gender, val, -item) %>%
+      mutate(gender = gsub("mixture_", "", gender)) %>%
+      rowwise() %>%
+      mutate(val = ifelse(val == 1, 0.9999, 
+                          ifelse(val == 0, 0.000001, val)))
+  )
+ 
+  rs <- webppl(program_code = hab.prior.bda.model,
+       model_var = "model",
+       inference_opts = list(method = "MCMC", samples = n_samples,
+                             burn = n_samples / 2),
+       data = df.prior.toPass,
+       data_var = "data")
+  
+  rs.bda.prior <- bind_rows(rs.bda.prior, 
+                            rs %>% mutate(item = it)
+  )
+
+
+}
+
+```
+
+
+
+Density plots
+
+```{r fig.width = 6, fig.height = 6}
+bind_rows(
+  dh.prior.samples %>% 
+    mutate(src = 'data', 
+           val = log(val)),
+  rs.bda.prior %>%
+    rename(gender = Parameter, val = value) %>%
+    select(-Iteration, -Chain) %>%
+    mutate(src = 'model')
+  ) %>%
+ggplot(. , aes( x = val, fill = src, lty = src))+
+  geom_density(alpha = 0.3, aes( y = ..scaled.. ))+
+  facet_wrap(~item)+
+  scale_fill_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+CDFs
+
+```{r fig.width = 6, fig.height = 6}
+bind_rows(
+  dh.prior.samples %>% 
+    mutate(src = 'data', 
+           val = log(val)),
+  rs.bda.prior %>%
+    rename(gender = Parameter, val = value) %>%
+    select(-Iteration, -Chain) %>%
+    mutate(src = 'model')
+  ) %>%
+ggplot(. , aes( x = val, color = src, lty = src))+
+  stat_ecdf()+
+  facet_wrap(~item)+
+  scale_color_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+## Friends and family
+
+```{r}
+df.ff.future <- read.csv(paste(project.path, "data/habituals/priors/friends-and-family-2-trials.csv", sep= ""))
+
+df.ff.past <- read.csv(paste(project.path, "data/habituals/priors/friends-and-family-3-trials.csv", sep= ""))
+```
+
+
+```{r}
+annualRates = list("5 years" = 1/5, "2 years" = 1/2,
+                   "year" = 1, "6 months" = 2, "2 months" = 6,
+                   "month" = 12, "2 weeks" = 26 ,"week" = 52)
+
+df.ff.future <- df.ff.future %>%
+  rowwise() %>%
+  mutate(annualRate = annualRates[[as.character(interval)]]*n_times,
+         logAnnualRate = ifelse(annualRate == 0, -5, log(annualRate)))
+
+
+df.tidy.13 <- bind_rows(
+  df.tidy %>% 
+    mutate(src = 'future'),
+  df3.tidy %>% 
+    mutate(src = 'past')
+  ) %>%
+    mutate(annualRate = ifelse(annualRate == 0, 0.05, annualRate),
+           logAnnual  = log(annualRate))
+
+```
+
+```{r}
+hab.prior.ff.bda.model <- '
+var model = function(){
+
+	var theta = uniformDrift({a: 0, b: 1, width: 0.1});
+
+	var priorParams = {
+		mu: uniformDrift({a: -2.5, b: 9, width: 0.5}),
+		sigma: uniformDrift({a: 0, b: 10, width: 0.5})
+	}
+
+	mapData({data: data}, function(d){
+		var scr = util.logsumexp([
+			 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
+			 Math.log(1- theta) + Delta({v: -5}).score(d.logAnnualRate)
+		 ])
+		 // display(scr)
+		 factor(scr)
+	})
+
+  var marginalFreq = flip(theta) ? gaussian(priorParams) : -5
+
+  return marginalFreq
+}
+'
+```
+
+```{r}
+items <- levels(dh.prior.filtered$item)
+n_samples <- 500
+rs.bda.prior.ff <- data.frame()
+
+for (it in items){
+  
+ df.prior.toPass <- df.ff.future %>%
+   filter(action == it) %>%
+   select(logAnnualRate)
+
+  rs <- webppl(program_code = hab.prior.ff.bda.model,
+       model_var = "model",
+       inference_opts = list(method = "MCMC", 
+                             samples = n_samples,
+                             burn = n_samples / 2,
+                             verbose = T),
+       data = df.prior.toPass,
+       data_var = "data")
+  
+  rs.bda.prior.ff <- bind_rows(
+    rs.bda.prior.ff, 
+    rs %>% mutate(item = it)
+  )
+
+  print(it)
+  
+}
+
+```
