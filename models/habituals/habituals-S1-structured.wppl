@@ -18,7 +18,7 @@ var intervals = {
 var dataPath = "data/"
 var targetUtterance = "habitual"
 
-var priorFile = dataPath + "friends-and-family-2-trials.csv";
+var priorFile = dataPath + "friends-and-family-3-trials.csv";
 var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
 
 var d0 = dataFrame(utils.readCSV(priorFile).data, ["n_times"]);
@@ -190,8 +190,8 @@ var model = function(){
 		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
 		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
 
-		var predictive_on_prior_freq = sample(flip(theta) ? Gaussian(priorParams) : nullDist)
-		query.add(["prior", i, "marginalFreq","NA", "NA"], predictive_on_prior_freq)
+		// var predictive_on_prior_freq = sample(flip(theta) ? Gaussian(priorParams) : nullDist)
+		// query.add(["prior", i, "marginalFreq","NA", "NA"], predictive_on_prior_freq)
 
 		// query.add(["prior", i, "mu","2", "NA"], priorParams[2].mu)
 		// query.add(["prior", i, "sigma","2", "NA"], priorParams[2].sigma)
@@ -278,7 +278,7 @@ var model = function(){
 var totalIterations = 200000, lag = 100;
 var mhiter = totalIterations/lag, burn = totalIterations;
 // var lag = 0;
-var outfile = 'results-habituals-S1-ffPrior2-softMax-normalPrior-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S1-ffPrior3-softMax-normalPrior-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 //var outfile = 'results-habituals-inferPrior-factorHabitual-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
@@ -288,12 +288,12 @@ var posterior = Infer({
 	// kernel: {HMC: {steps:5, stepSize: 0.01}},
   samples: mhiter, burn: burn, lag: lag, verbose: T,
 	verboseLag: totalIterations/100,
-	stream: {
-		path: "results/" + outfile,
-		header: [
-			"type", "B", "C", "D", "E", "val"
-		]
-	}
+	// stream: {
+	// 	path: "results/" + outfile,
+	// 	header: [
+	// 		"type", "B", "C", "D", "E", "val"
+	// 	]
+	// }
 })
 
 // utils.writeQueryERP(posterior, "results/" + outfile,
