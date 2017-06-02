@@ -18,7 +18,7 @@ var intervals = {
 var dataPath = "data/"
 var targetUtterance = "habitual"
 
-var priorFile = dataPath + "friends-and-family-3-trials.csv";
+var priorFile = dataPath + "friends-and-family-2-trials.csv";
 var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
 
 var d0 = dataFrame(utils.readCSV(priorFile).data, ["n_times"]);
@@ -29,19 +29,22 @@ var d2 = dataFrame(utils.readCSV(truthJudgmentDataFile).data,
 var data = {
 	speaker: map(function(d){
 			extend(d, {
-				rate: d.n_times / 5,
-				roundedRate: utils.closest(midBins, d.n_times / 5),
-				// rate: Math.log(d.n_times / 5),
-				// roundedRate: utils.closest(midBins, Math.log(d.n_times / 5)),
+				// rate: d.n_times / 5,
+				// roundedRate: utils.closest(midBins, d.n_times / 5),
+				rate: Math.log(d.n_times / 5),
+				roundedRate: utils.closest(midBins, Math.log(d.n_times / 5)),
 				alignedResponse : responseDictionary[d.response]
 			})
 		}, d2.slice(0, d2.length - 1)),
 		prior: map(function(d){
 			var annualRate = intervals[d.interval] * d.n_times
+			var logAnnualRate = annualRate == 0 ?
+			-5.25 : // if a person never does it, set to low freq
+			Math.log(annualRate)
 				return extend(d, {
 					annualRate: annualRate,
-					logAnnualRate: annualRate == 0 ? -99 : Math.log(annualRate),
-					roundedRate: utils.closest(midBins, annualRate)
+					logAnnualRate: logAnnualRate,
+					roundedRate: utils.closest(midBins, logAnnualRate)
 				})
 			}, d0.slice(0, d0.length -1))
 };
@@ -62,7 +65,7 @@ var meaning = function(utt,state, theta) {
         utt=="habitual is false"? state <= theta :
 				 utt=="opposite habitual"? state < theta :
          utt=='silence'? true :
-         utt=='some'? state > 0 :
+         utt=='sometimes'? state > _.min(thetaBins) :
          true
 }
 
@@ -71,10 +74,15 @@ var meaning = function(utt,state, theta) {
 var model = function(){
 
 	var speakerOptimality = {
-		s1: uniformDrift({a: 0.5, b: 5, width:1})
+		s1: uniformDrift({a: 0, b: 5, width:1})
 	}
 
-	var nullDist = Delta({v: -99})
+	var nullDist = Delta({v: _.min(midBins)})
+
+	// var nullParams = {
+	// 	mu: uniformDrift({a: -4, b:  0, width: 0.5}),
+	// 	sigma: uniformDrift({a: 0, b: 2, width: 0.2})
+	// }
 
 	// var alpha = 1
 	var alpha = sample(Gamma({shape: 2, scale: 1}), {
@@ -92,6 +100,17 @@ var model = function(){
 
 		var itemPriorData = _.filter(data.prior, {action: i})
 		// display(i + " prior data " + itemPriorData.length)
+
+		// var mixtureHyperParameters = {
+		// 	g: uniformDrift({a: 0, b: 1, width: 0.1}),
+		// 	d: uniformDrift({a: 0, b: 50, width: 0.5})
+		// }
+
+		// var mix = beta(betaShape(mixtureHyperParameters));
+		// var thetas = normalize(repeat(3, function(){
+		// 	return uniformDrift({a: 0, b: 1, width: 0.1})
+		// }));
+
 		var theta = uniformDrift({a: 0, b: 1, width: 0.1});
 
 		var priorParams = {
@@ -99,14 +118,33 @@ var model = function(){
 			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
 		}
 
-		var statePrior = Infer({model: function(){
+		// var priorParams = append([nullParams],
+		// 	repeat(2, function(){
+		// 		return {
+		// 			mu: uniformDrift({a: -2, b: 8, width: 0.5}),
+		// 			sigma: uniformDrift({a: 0, b: 10, width: 0.5})
+		// 		}
+		// 	})
+		// );
+
+		// var statePrior = Infer({model: function(){
+		// 	sample(DiscretizedGaussian(
+		// 		categorical({vs: priorParams, ps: thetas})
+		// 	))
+		// }})
+
+			var statePrior = Infer({model: function(){
 			sample(
 				flip(theta) ?
-					DiscretizedLognormal(priorParams) :
-					Delta({v: _.min(midBins)})
+					DiscretizedGaussian(priorParams) :
+					nullDist
+					// Delta({v: _.min(midBins)})
+					// DiscretizedLognormal(nullParams)
 				)
 			}
 		})
+
+
 
 		var scaledPrior = Categorical({
 			vs: statePrior.support(),
@@ -115,16 +153,48 @@ var model = function(){
 			}, statePrior.support()))
 		})
 
+		// displayObj(scaledPrior)
+		//
 		mapData({data: itemPriorData}, function(d){
 			// display(scaledPrior.score(d.roundedRate))
+			// displayObj(d)
 			observe(scaledPrior, d.roundedRate)
 			// observe(statePrior, d.roundedRate)
 		})
 
-		query.add(["prior", i, "theta","NA", "NA"], theta)
+		// mapData({data: data}, function(d){
+		// 	var scr = util.logsumexp([
+		// 		 Math.log(theta) + Gaussian(priorParams).score(d.logAnnualRate),
+		// 		 Math.log(1- theta) + Delta({v: -5}).score(d.logAnnualRate)
+		// 	 ])
+		// 	 // display(scr)
+		// 	 factor(scr)
+		// })
+
+
+		// mapData({data: itemPriorData}, function(d){
+		// 	var scr = util.logsumexp([
+		// 		 Math.log(thetas[0]) + Gaussian(priorParams[0]).score(d.logAnnualRate),
+		// 		 Math.log(thetas[1]) + Gaussian(priorParams[1]).score(d.logAnnualRate),
+		// 		 Math.log(thetas[2]) + Gaussian(priorParams[2]).score(d.logAnnualRate)
+		// 	 ])
+		// 	//  display(scr)
+		// 	 factor(scr)
+		// })
+
+
+		query.add(["prior", i, "mix","NA", "NA"], theta)
+		// query.add(["prior", i, "mix","1", "NA"], thetas[1])
+		// query.add(["prior", i, "mix","2", "NA"], thetas[2])
+
 		query.add(["prior", i, "mu","NA", "NA"], priorParams.mu)
 		query.add(["prior", i, "sigma","NA", "NA"], priorParams.sigma)
 
+		var predictive_on_prior_freq = sample(flip(theta) ? Gaussian(priorParams) : nullDist)
+		query.add(["prior", i, "marginalFreq","NA", "NA"], predictive_on_prior_freq)
+
+		// query.add(["prior", i, "mu","2", "NA"], priorParams[2].mu)
+		// query.add(["prior", i, "sigma","2", "NA"], priorParams[2].sigma)
 		// var postpred = flip(Math.pow(theta, alpha)) ? Math.exp(sample(Gaussian(priorParams))) : 0
 		// query.add(["prior", i, "postPred", "NA", "NA"], postpred)
 
@@ -185,12 +255,14 @@ var model = function(){
 
 	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+	// query.add(["param","nullDist","mu","NA", "NA"], nullParams.mu)
+	// query.add(["param","nullDist","sigma","NA", "NA"], nullParams.sigma)
 	// query.add(["param","habUttPrior","NA","NA", "NA"], c)
 	query.add(["param","alpha","NA","NA", "NA"], alpha)
 
 	// query.add(["param", "speakerOptimality", "s1"], [
 	// 	 speakerOptimality.s1, "NA", "NA",
-	// 	"nullParams_mu",  nullParams.mu,
+		// "nullParams_mu",  nullParams.mu,
 	// 	"nullParams_sigma",  nullParams.sigma])
 
 	return query
@@ -203,10 +275,10 @@ var model = function(){
 // // }))}})
 //
 //
-var totalIterations = 500000, lag = 50;
-var mhiter = totalIterations/lag, burn = totalIterations / 2;
+var totalIterations = 200000, lag = 100;
+var mhiter = totalIterations/lag, burn = totalIterations;
 // var lag = 0;
-var outfile = 'results-habituals-S1-ffPrior3Structured-SoftmaxDiscretized-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S1-ffPrior2-softMax-normalPrior-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 //var outfile = 'results-habituals-inferPrior-factorHabitual-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
@@ -219,7 +291,7 @@ var posterior = Infer({
 	stream: {
 		path: "results/" + outfile,
 		header: [
-			"type", "item", "cat", "param", "gender", "val"
+			"type", "B", "C", "D", "E", "val"
 		]
 	}
 })
@@ -228,3 +300,4 @@ var posterior = Infer({
 	// ["type", "item", "cat", "param", 'freq', "val"])
 //
 display("written to " + outfile)
+// midBins
