@@ -288,12 +288,12 @@ var posterior = Infer({
 	// kernel: {HMC: {steps:5, stepSize: 0.01}},
   samples: mhiter, burn: burn, lag: lag, verbose: T,
 	verboseLag: totalIterations/100,
-	// stream: {
-	// 	path: "results/" + outfile,
-	// 	header: [
-	// 		"type", "B", "C", "D", "E", "val"
-	// 	]
-	// }
+	stream: {
+		path: "results/" + outfile,
+		header: [
+			"type", "B", "C", "D", "E", "val"
+		]
+	}
 })
 
 // utils.writeQueryERP(posterior, "results/" + outfile,
