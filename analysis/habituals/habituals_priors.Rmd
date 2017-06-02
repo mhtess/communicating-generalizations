@@ -3,6 +3,10 @@ title: "Habituals priors"
 output: html_notebook
 ---
 
+```{r}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
 
 ```{r}
 library(langcog)
@@ -40,7 +44,9 @@ model.path <- "models/habituals/"
 
 
 
-## Propensity priors
+# Modeling Priors
+
+## Decomposed prior formulation (2-stage)
 
 Load prior data
 
@@ -124,9 +130,9 @@ for (i in 1:10){
     rowwise() %>%
     mutate(
       stable_male = rbinom(n = 1, size = 1, prob = mixture_male),
-       freq_male = ifelse(stable_male == 1, annualRate_male, 0.01),
+       freq_male = ifelse(stable_male == 1, annualRate_male, 0.007),
        stable_female = rbinom(n = 1, size = 1, prob = mixture_female),
-       freq_female = ifelse(stable_female == 1, annualRate_female, 0.01)
+       freq_female = ifelse(stable_female == 1, annualRate_female, 0.007)
        ) %>%
     select(item, freq_male, freq_female) %>%
     gather(gender, val, freq_male, freq_female) %>%
@@ -140,8 +146,8 @@ for (i in 1:10){
 
 Density plots
 
-```{r}
-ggplot(dh.prior.samples, aes( x = log(val), fill = gender))+
+```{r fig.width = 6 , fig.height = 6}
+ggplot(dh.prior.samples, aes( x = log(val)))+
   geom_density(alpha = 0.3, aes( y = ..scaled.. ))+
   facet_wrap(~item)+
   scale_fill_solarized()+
@@ -150,9 +156,8 @@ ggplot(dh.prior.samples, aes( x = log(val), fill = gender))+
   theme(strip.text.y = element_text(angle = 0))
 ```
 
-CDFs
 
-```{r}
+```{r raw.structured.cdfs, eval = F}
 ggplot(dh.prior.samples, aes( x = log(val), color = gender))+
   stat_ecdf()+
   facet_wrap(~item)+
@@ -163,9 +168,9 @@ ggplot(dh.prior.samples, aes( x = log(val), color = gender))+
 ```
 
 
-# BDA of prior data
+### Model of 2-stage data
 
-```{r}
+```{r echo = T}
 hab.prior.bda.model <- '
 var betaShape = function(p){
   return {a: p.g * p.d, b: (1-p.g) * p.d}
@@ -234,7 +239,7 @@ var model = function(){
 
 
 
-```{r}
+```{r cache = T}
 items <- levels(dh.prior.filtered$item)
 n_samples <- 5000
 rs.bda.prior <- data.frame()
@@ -288,10 +293,10 @@ bind_rows(
     select(-Iteration, -Chain) %>%
     mutate(src = 'model')
   ) %>%
-ggplot(. , aes( x = val, fill = src, lty = src))+
-  geom_density(alpha = 0.3, aes( y = ..scaled.. ))+
+ggplot(. , aes( x = val, color = src))+
+  geom_density(size = 1.1, aes( y = ..scaled.. ))+
   facet_wrap(~item)+
-  scale_fill_solarized()+
+  scale_color_solarized()+
   scale_x_continuous(limits = c(-5,10)) +
   scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
   theme(strip.text.y = element_text(angle = 0))
@@ -317,7 +322,192 @@ ggplot(. , aes( x = val, color = src, lty = src))+
   theme(strip.text.y = element_text(angle = 0))
 ```
 
-## Friends and family
+### RSA model with 2-stage priors
+
+Load truth judgment data
+
+```{r}
+d.hab <- read.csv(paste(project.path, data.path, 
+                    "tj-2-logtimes.csv", sep = ""))
+
+d.hab.summary <- d.hab %>% 
+  mutate(response = ifelse(response == "agree-key", 1, 0),
+         roundedFreq = round(log_times * 2) / 2) %>%
+  group_by(habitual, time_period, log_times, roundedFreq) %>%
+  multi_boot_standard(column = "response")
+
+d.hab.summary %>% View()
+```
+
+
+
+```{r rsa.model.structureddata}
+m.samp <- fread(paste(project.path, 
+                      model.path,
+                    "results/results-habituals-S1-decomposedPrior-normalPrior-200000_burn200000_lag100_chain1.csv", 
+                    sep = ""))
+```
+
+
+#### Priors
+
+
+```{r density.marginals.from.wppl, fig.width = 6, fig.height = 6, eval = F}
+ggplot(m.samp %>% 
+         filter(C == "marginalFreq"), aes( x = val))+
+  geom_density(alpha = 0.3, aes( y = ..scaled.. ))+
+  facet_wrap(~B)+
+  scale_fill_solarized()+
+  #scale_x_continuous(limits = c(-5,10)) +
+  #scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+##### Parameters for priors
+
+..Output suppressed..
+
+```{r fig.width = 6, fig.height = 6, eval = F}
+ggplot(m.samp %>% 
+         rename(item = B, variable = C, gender = D, param =  E) %>%
+         filter(type == "prior", variable != "marginalFreq"), 
+         aes( x = val, fill = gender))+
+  geom_density(alpha = 0.3, aes( y = ..scaled.. ))+
+  facet_grid(item~param+variable, scales = 'free')+
+  scale_fill_solarized()+
+  #scale_x_continuous(limits = c(-5,10)) +
+  #scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+##### Forward sampled marginal on frequency
+
+```{r}
+m.samp.indexed <- m.samp %>% 
+     rename(item = B, variable = C, gender = D, param =  E) %>%
+     filter(type == "prior", variable != "marginalFreq") %>%
+      mutate(item = paste(type, item, variable, gender, param, sep = "_")) %>%
+    select(-type, -variable, -param, -gender) %>%
+    group_by(item) %>%
+    mutate(iteration = ave(item == item, item, FUN = cumsum)) %>%
+    separate(item, into = c("type", "action","variable", "gender", "param"), 
+             sep = "_") %>% 
+    mutate(param = paste(variable, param, sep = "")) %>%
+    select(-variable) %>%
+    spread(param, val) 
+
+m.prior.samples <- data.frame()
+for (i in 1:1){
+  m.prior.samples <- bind_rows(
+    m.prior.samples,
+    m.samp.indexed %>%
+    rowwise() %>%
+    mutate(
+      a = mixturemean * mixturesamplesize,
+      b = (1 - mixturemean) * mixturesamplesize,
+      theta = rbeta(n = 1, shape1 = a, shape2 = b),
+      stable = rbinom(n = 1, size = 1, prob = theta),
+      logannualRate = ifelse(stable == 1, 
+                             rnorm(n = 1, 
+                                   mean = stableFreqmean, 
+                                   sd = stableFreqsamplesize), -5),
+       annualRate = ifelse(logannualRate == -5, 0, exp(logannualRate))
+    )
+  )
+  print(i)
+}
+  
+```
+```{r fig.width = 6, fig.height = 6, eval = F}
+ggplot(m.prior.samples, aes( x = logannualRate))+
+  geom_density(alpha = 0.3, aes( y = ..scaled.. ))+
+  facet_wrap(~action)+
+  scale_fill_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  #scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+
+
+
+```{r fig.width = 6, fig.height = 6}
+bind_rows(
+  m.prior.samples %>% 
+    select(action, gender, logannualRate) %>%
+    rename(item = action) %>%
+    mutate(src = 'model'),
+  dh.prior.samples %>%
+    mutate(logannualRate = log(val),
+           src = 'data') %>%
+    select(-val)
+) %>%  mutate(item = as.character(item),
+         item = ifelse(item == 'sell things on eBay',
+                         "sells things on eBay", item)) %>%
+ggplot(., aes( x = logannualRate, color = src))+
+  geom_density(alpha = 0.3, size = 1.1, aes( y = ..scaled.. ))+
+  facet_wrap(~item)+
+  scale_color_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  #scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+```{r fig.width = 6, fig.height = 6, eval=F}
+ggplot(., aes( x = logAnnualRate))+
+  stat_ecdf()+
+  facet_wrap(~action)+
+  scale_color_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+
+## Predictive endorsements
+
+```{r}
+m.pp <- m.samp %>%
+  filter(type == "predictive") %>%
+  rename(habitual = B, 
+         time_period = D) %>% 
+  group_by(habitual, time_period) %>%
+  summarize(MAP = estimate_mode(val),
+            cred_upper = hdi_upper(val),
+            cred_lower = hdi_lower(val))
+
+md <- left_join(m.pp, 
+                d.hab.summary %>% ungroup())
+
+ggplot(md, aes(x = MAP, xmin = cred_lower, xmax = cred_upper,
+               y = mean, ymin = ci_lower, ymax = ci_upper))+
+  geom_point()+
+  xlim(0, 1)+
+  ylim(0, 1)+
+  geom_abline(intercept = 0, slope = 1, lty = 3)+
+  geom_errorbar(alpha = 0.3)+
+  geom_errorbarh(alpha = 0.3)+
+  coord_fixed()
+```
+
+```{r}
+print(paste("r2 = ", round(with(md, cor(MAP, mean))^2,4)))
+```
+
+### Speaker optimality parameter
+
+```{r}
+m.samp %>% 
+  filter(type == "param") %>% 
+  ggplot(., aes(x = val))+
+  geom_histogram(position = position_dodge())+
+  facet_wrap(~ B + C + D + E, scales = 'free')
+```
+
+
+
+
+## Unstructured priors (friends and family)
 
 ```{r}
 df.ff.future <- read.csv(paste(project.path, "data/habituals/priors/friends-and-family-2-trials.csv", sep= ""))
@@ -336,17 +526,40 @@ df.ff.future <- df.ff.future %>%
   mutate(annualRate = annualRates[[as.character(interval)]]*n_times,
          logAnnualRate = ifelse(annualRate == 0, -5, log(annualRate)))
 
-
-df.tidy.13 <- bind_rows(
-  df.tidy %>% 
-    mutate(src = 'future'),
-  df3.tidy %>% 
-    mutate(src = 'past')
-  ) %>%
-    mutate(annualRate = ifelse(annualRate == 0, 0.05, annualRate),
-           logAnnual  = log(annualRate))
-
+# df.tidy.13 <- bind_rows(
+#   df.tidy %>% 
+#     mutate(src = 'future'),
+#   df3.tidy %>% 
+#     mutate(src = 'past')
+#   ) %>%
+#     mutate(annualRate = ifelse(annualRate == 0, 0.05, annualRate),
+#            logAnnual  = log(annualRate))
 ```
+
+Density plots
+
+```{r fig.width = 6, fig.height = 6}
+ggplot(df.ff.future, aes( x = logAnnualRate))+
+  geom_density(alpha = 0.3, aes( y = ..scaled.. ))+
+  facet_wrap(~action)+
+  scale_fill_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+```{r fig.width = 6, fig.height = 6, echo = F}
+ggplot(df.ff.future, aes( x = logAnnualRate))+
+  stat_ecdf()+
+  facet_wrap(~action)+
+  scale_color_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+
+### Model of unstructured data
 
 ```{r}
 hab.prior.ff.bda.model <- '
@@ -375,9 +588,9 @@ var model = function(){
 '
 ```
 
-```{r}
+```{r cache = T}
 items <- levels(dh.prior.filtered$item)
-n_samples <- 500
+n_samples <- 5000
 rs.bda.prior.ff <- data.frame()
 
 for (it in items){
@@ -405,3 +618,134 @@ for (it in items){
 }
 
 ```
+
+### RSA model with unstructured prior data
+
+```{r rsa.model.unstructureddata}
+m.samp <- data.frame()
+model_prefix <- "results-habituals-S1-ffPrior2-softMax-normalPrior-silenceAlt-"
+n_samples = 200000
+burn = 200000
+lag = 100
+n_chains = 3
+for (i in seq(1, n_chains)){
+  mi <- fread(paste(project.path, model.path,
+                    "results/",
+                    model_prefix, n_samples, "_burn", burn, "_lag", lag,
+                    "_chain", i, ".csv", sep = "")) %>% 
+    mutate(chain = i)
+  m.samp <- bind_rows(m.samp, mi)
+  print(i)
+}
+
+```
+
+
+#### Priors
+
+##### Forward sampled marginal on frequency
+
+```{r}
+m.samp.indexed <- m.samp %>% 
+     rename(item = B, variable = C) %>%
+     filter(type == "prior", variable != "marginalFreq") %>%
+      mutate(item = paste(type, item, variable, sep = "_")) %>%
+    select(-type, -variable, -D, -E) %>%
+    group_by(item) %>%
+    mutate(iteration = ave(item == item, item, FUN = cumsum)) %>%
+    separate(item, into = c("type", "action","variable"), 
+             sep = "_") %>% 
+    spread(variable, val) 
+
+m.prior.samples <- data.frame()
+for (i in 1:1){
+  m.prior.samples <- bind_rows(
+    m.prior.samples,
+    m.samp.indexed %>%
+    rowwise() %>%
+    mutate(
+      stable = rbinom(n = 1, size = 1, prob = mix),
+      logannualRate = ifelse(stable == 1, 
+                             rnorm(n = 1, 
+                                   mean = mu, 
+                                   sd = sigma), -5),
+     annualRate = ifelse(logannualRate == -5, 0, exp(logannualRate))
+    )
+  )
+  print(i)
+}
+  
+```
+
+```{r fig.width = 6, fig.height = 6, eval = F}
+ggplot(m.prior.samples, aes( x = logannualRate))+
+  geom_density(alpha = 0.3, aes( y = ..scaled.. ))+
+  facet_wrap(~action)+
+  scale_fill_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  #scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+
+```{r fig.width = 6, fig.height = 6}
+bind_rows(
+  m.prior.samples %>% 
+    select(action, logannualRate) %>%
+    rename(logAnnualRate = logannualRate) %>%
+    mutate(src = 'model'),
+  df.ff.future %>%
+    select(action, logAnnualRate) %>%
+    mutate(src = 'data')
+) %>%
+  mutate(action = as.character(action),
+         action = ifelse(action == 'sell things on eBay',
+                         "sells things on eBay", action)) %>%
+ggplot(., aes( x = logAnnualRate, color = src))+
+  geom_density(alpha = 0.3, size = 1.1, aes( y = ..scaled.. ))+
+  facet_wrap(~action)+
+  scale_color_solarized()+
+  scale_x_continuous(limits = c(-5,10)) +
+  #scale_y_continuous(limits = c(0,1), breaks = c(0, 0.5, 1)) +
+  theme(strip.text.y = element_text(angle = 0))
+```
+
+## Predictive endorsements
+
+```{r}
+m.pp <- m.samp %>%
+  filter(type == "predictive") %>%
+  rename(habitual = B, 
+         time_period = D) %>% 
+  group_by(habitual, time_period) %>%
+  summarize(MAP = estimate_mode(val),
+            cred_upper = hdi_upper(val),
+            cred_lower = hdi_lower(val))
+
+md <- left_join(m.pp, 
+                d.hab.summary %>% ungroup())
+
+ggplot(md, aes(x = MAP, xmin = cred_lower, xmax = cred_upper,
+               y = mean, ymin = ci_lower, ymax = ci_upper))+
+  geom_point()+
+  xlim(0, 1)+
+  ylim(0, 1)+
+  geom_abline(intercept = 0, slope = 1, lty = 3)+
+  geom_errorbar(alpha = 0.3)+
+  geom_errorbarh(alpha = 0.3)+
+  coord_fixed()
+```
+```{r}
+print(paste("r2 = ", round(with(md, cor(MAP, mean))^2,4)))
+```
+
+### Speaker optimality parameter
+
+```{r}
+m.samp %>% 
+  filter(type == "param") %>% 
+  ggplot(., aes(x = val))+
+  geom_histogram(position = position_dodge())+
+  facet_wrap(~ B + C + D, scales = 'free')
+```
+
