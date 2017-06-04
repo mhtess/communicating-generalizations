@@ -53,9 +53,9 @@ var items = levels(data.speaker, "habitual");
 // var genders = levels(data.prior.existence, "gender");
 // var priorQuestions = ["Q1","Q2"];
 //
-var utterancePrior = Infer({model: function(){
-	return uniformDraw([targetUtterance,"silence"])
-}});
+// var utterancePrior = Infer({model: function(){
+// 	return uniformDraw([targetUtterance,"silence"])
+// }});
 
 
 // var thetaPrior = Infer({model: function(){
