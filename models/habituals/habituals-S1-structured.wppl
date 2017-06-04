@@ -18,7 +18,7 @@ var intervals = {
 var dataPath = "data/"
 var targetUtterance = "habitual"
 
-var priorFile = dataPath + "friends-and-family-3-trials.csv";
+var priorFile = dataPath + "friends-and-family-2-trials.csv";
 var truthJudgmentDataFile = dataPath+"tj-2-logtimes.csv";
 
 var d0 = dataFrame(utils.readCSV(priorFile).data, ["n_times"]);
@@ -90,11 +90,11 @@ var model = function(){
 			  return Gamma({shape: prevVal, scale: 1});
 	}});
 
-	// var c = 0.5;//uniformDrift({a: 0 , b: 1, width: 0.1});
+	var c = uniformDrift({a: 0 , b: 1, width: 0.1});
 	//
-	// var utterancePrior = Infer({model: function(){
-	// 	return flip(c) ? "habitual" : "silence"//"habitual is false"
-	// }});
+	var utterancePrior = Infer({model: function(){
+		return flip(c) ? "habitual" : "silence"//"habitual is false"
+	}});
 
 	foreach(items, function(i){
 
@@ -257,7 +257,7 @@ var model = function(){
 	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
 	// query.add(["param","nullDist","mu","NA", "NA"], nullParams.mu)
 	// query.add(["param","nullDist","sigma","NA", "NA"], nullParams.sigma)
-	// query.add(["param","habUttPrior","NA","NA", "NA"], c)
+	query.add(["param","habUttPrior","NA","NA", "NA"], c)
 	query.add(["param","alpha","NA","NA", "NA"], alpha)
 
 	// query.add(["param", "speakerOptimality", "s1"], [
@@ -278,7 +278,7 @@ var model = function(){
 var totalIterations = 200000, lag = 100;
 var mhiter = totalIterations/lag, burn = totalIterations;
 // var lag = 0;
-var outfile = 'results-habituals-S1-ffPrior3-softMax-normalPrior-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S1-ffPrior2-softMax-normalPrior-silenceAltCost-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 //var outfile = 'results-habituals-inferPrior-factorHabitual-S1-ffPriorStructured-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
