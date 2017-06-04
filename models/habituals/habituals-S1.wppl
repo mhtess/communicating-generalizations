@@ -87,6 +87,13 @@ var model = function(){
 	// 	sigma: uniformDrift({a: 0, b: 2, width: 0.2})
 	// }
 
+	var c = uniformDrift({a: 0 , b: 1, width: 0.1});
+	//
+	var utterancePrior = Infer({model: function(){
+		return flip(c) ? "habitual" : "silence"//"habitual is false"
+	}});
+
+
 	foreach(items, function(i){
 
 		var itemData = {
@@ -259,6 +266,9 @@ var model = function(){
 
 	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 		query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+
+		query.add(["param","habUttPrior","NA","NA", "NA"], c)
+
 		// var nullPred = gaussian(nullParams);
 
 		// query.add(["param","nullDistribution","predictive","NA", "NA"], nullPred)
@@ -271,9 +281,9 @@ var model = function(){
 	return query
 }
 
-var totalIterations = 200000, lag = 100;
+var totalIterations = 100000, lag = 50;
 var mhiter = totalIterations/lag, burn = totalIterations;
-var outfile = 'results-habituals-S1-decomposedPrior-normalPrior-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S1-decomposedPrior-normalPrior-silenceAltCost-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
