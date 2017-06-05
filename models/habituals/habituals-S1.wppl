@@ -42,7 +42,11 @@ var data = {
 					})
 			}, d0.slice(0, d0.length - 1)),
 			frequency: map(function(d){
-				return d
+				return extend(d, {
+					logAnnualRate: d.val == 0 ?
+					Math.log(1 / 5) :
+					Math.log(d.val/5)
+				})
 			}, d1.slice(0, d1.length - 1))
 		}
 };
@@ -53,9 +57,9 @@ var items = levels(data.speaker, "habitual");
 // var genders = levels(data.prior.existence, "gender");
 // var priorQuestions = ["Q1","Q2"];
 //
-// var utterancePrior = Infer({model: function(){
-// 	return uniformDraw([targetUtterance,"silence"])
-// }});
+var utterancePrior = Infer({model: function(){
+	return uniformDraw([targetUtterance,"silence"])
+}});
 
 
 // var thetaPrior = Infer({model: function(){
@@ -87,11 +91,11 @@ var model = function(){
 	// 	sigma: uniformDrift({a: 0, b: 2, width: 0.2})
 	// }
 
-	var c = uniformDrift({a: 0 , b: 1, width: 0.1});
+	// var c = uniformDrift({a: 0 , b: 1, width: 0.1});
 	//
-	var utterancePrior = Infer({model: function(){
-		return flip(c) ? "habitual" : "silence"//"habitual is false"
-	}});
+	// var utterancePrior = Infer({model: function(){
+	// 	return flip(c) ? "habitual" : "silence"//"habitual is false"
+	// }});
 
 
 	foreach(items, function(i){
@@ -143,7 +147,7 @@ var model = function(){
 		}
 
 		mapData({data: itemData.prior.frequency}, function(d){
-			observe(Gaussian(frequencyWhenPresent[d.gender]), d.logval)
+			observe(Gaussian(frequencyWhenPresent[d.gender]), d.logAnnualRate)
 		})
 
 		query.add(["prior", i, "stableFreq", "male", "mean"], frequencyWhenPresent.male.mu);
@@ -267,7 +271,7 @@ var model = function(){
 	// query.add(["param","speakerOptimality","s1","na"], speakerOptimality.s1)
 		query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
 
-		query.add(["param","habUttPrior","NA","NA", "NA"], c)
+		// query.add(["param","habUttPrior","NA","NA", "NA"], c)
 
 		// var nullPred = gaussian(nullParams);
 
@@ -283,7 +287,7 @@ var model = function(){
 
 var totalIterations = 100000, lag = 50;
 var mhiter = totalIterations/lag, burn = totalIterations;
-var outfile = 'results-habituals-S1-decomposedPrior-normalPrior-silenceAltCost-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-S1-decomposedPrior-normalPrior-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
@@ -299,3 +303,6 @@ var posterior = Infer({
 })
 
 display("written to " + outfile)
+//
+// _.filter(
+// 	data.prior.frequency, {val:0 })
