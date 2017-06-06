@@ -1783,22 +1783,22 @@ This is strong evidence that the puzzling flexibility of generic truth condition
 
 <!-- basic communicative principles (\emph{be truthful}, \emph{be informative}) operating over diverse prior beliefs about the properties, all of which are at play in understanding language.  -->
 
-\begin{figure}
-\centering
-    \includegraphics[width=\columnwidth]{figs/generics-prior-prevalence-tj.pdf}
-    \caption{Endorsing familiar generics. (a) 
-    Prevalence prior distributions empirically elicited for twenty-one animal properties.
-    Prior distributions summarized by two parameters of a structured Bayesian model: $\phi$----a property's potential to be present in a category----and $\gamma$----the mean prevalence when it is possible for the property to be present in a category.
-    Inset plots display example empirical prior distributions over prevalence and corresponding $L_1$ model predictions: the posterior after hearing a generic utterance. 
-    Intervals on the top of insets show human judgments about the prevalence of the property within a target category.
-    (b)
-    Human acceptability judgments compared with model predictions (left) and the target-category prevalence (right) for thirty generic utterances about familiar animals and properties. 
-    Color denotes target-category prevalence of the property, with lighter colors indicating higher prevalence. 
-     Error bars denote 95\% Bayesian credible intervals.
-    }
-  \label{fig:commongenerics}
+<!-- \begin{figure} -->
+<!-- \centering -->
+<!--     \includegraphics[width=\columnwidth]{figs/generics-prior-prevalence-tj.pdf} -->
+<!--     \caption{Endorsing familiar generics. (a)  -->
+<!--     Prevalence prior distributions empirically elicited for twenty-one animal properties. -->
+<!--     Prior distributions summarized by two parameters of a structured Bayesian model: $\phi$----a property's potential to be present in a category----and $\gamma$----the mean prevalence when it is possible for the property to be present in a category. -->
+<!--     Inset plots display example empirical prior distributions over prevalence and corresponding $L_1$ model predictions: the posterior after hearing a generic utterance.  -->
+<!--     Intervals on the top of insets show human judgments about the prevalence of the property within a target category. -->
+<!--     (b) -->
+<!--     Human acceptability judgments compared with model predictions (left) and the target-category prevalence (right) for thirty generic utterances about familiar animals and properties.  -->
+<!--     Color denotes target-category prevalence of the property, with lighter colors indicating higher prevalence.  -->
+<!--      Error bars denote 95\% Bayesian credible intervals. -->
+<!--     } -->
+<!--   \label{fig:commongenerics} -->
 
-\end{figure}
+<!-- \end{figure} -->
 
 
 ## Discussion
@@ -1811,12 +1811,11 @@ By measuring listeners' prior beliefs about the prevalence of the property acros
 The key theoretical claim is that the threshold must be *underspecified* in the semantics and inferred in context by the listener.
 The decision of whether or not to endorse the generic comes down to whether or not the generic would make the listener's belief distribution more in line with the speaker's.
 
-In explaining the variable endorsements of generics, we measured the prior distribution over the prevalence of the features across categories in addition to the prevalence of the feature in the target category (e.g., the percentage of robins that lay eggs) to model the endorsement data.
-Thus, we show how these measurements are related via our model. 
-Yet, the evidence is still correlational in nature.
-We do not yet know if these variables that we are measuring are causally related to endorsement and interpretation.
-In our second case study, we manipulate the target propensity that the speaker aims to communicate, while
-continuing to measure the prior distributions.
+In explaining the variable endorsements of generics, we measured the prior distribution over the prevalence of features across categories in addition to the prevalence of the feature in the target category (e.g., the percentage of robins that lay eggs) to model the endorsement data.
+Thus, we have shown how these measurements are related to generic endorsement via our model. 
+Yet, this evidence is still correlational in nature.
+We do not yet know if the variables that we are measuring are causally related to endorsement.
+In our second case study, we extend our theory to a new domain and provide the first causal evidence for our theory by manipulating the target propensity that the speaker aims to communicate.
 
 <!-- In addition, why generics often imply the property is widespread has also been puzzling [@Gelman2004]. -->
 <!-- We show that this is the result of the shape of listener's prior knowledge and that when that shape differs, the implied prevalence is much weaker (e.g., with accidental properties). -->
@@ -1832,17 +1831,25 @@ continuing to measure the prior distributions.
 In this case study, we focus on a particular class of events: people doing actions.
 We focus on present-tense habitual sentences of the form \textsc{singular noun phrase} $+$ \textsc{present tense simple verb phrase} (e.g., \emph{Mary smokes cigarettes.}). 
 
-Habituals are a particularly amenable domain to manipulating the target probability that a speaker aims to communicate, as this is expressed in an easily-interpretable frequency with which a person does an action (e.g., "Last month, Mary smoked cigarettes 3 times.").^[
+Habituals about people are of particularly importance because they are likely central to intuitive theories of personality and behavior. 
+\citeA{McGuire1986} explored 5th to 12th graders' responses to open ended probes such as ``Tell us about your school / family''. 
+A surprisingly large number of utterances (over 85\% in their study) were about people, and roughly two-thirds of those utterances used action verbs (e.g. ``My brother works part-time at the restaurant.''). 
+Young children can use actors' behaviors to make inferences about what the actors are like more generally \cite<e.g.>{Repacholi1997, Seiver2013}.
+Habitual language may be a more conservative form of trait language (e.g. \emph{Bill is a smoker.}) and convey that behaviors are relatively enduring \cite{Gelman1999, Gelman2004}.
+
+Habituals are a particularly amenable domain to manipulating the target propensity that a speaker aims to communicate.
+People are often in the situation of being introduced to new people and learning new information about them.
+In addition, the propensity information can be expressed in an easily-interpretable frequency with which a person does an action (e.g., "Last month, Mary smoked cigarettes 3 times.").^[
 While target probability can be manipulated for generalizations about categories (generic language) (e.g., by stating the prevalence of feature in a kind), this may interact with domain knowledge in complex ways (e.g., it's *a priori* very unlikely that 90% of a hypothetical novel kind---lorches---have broken wings).
 ]
 In our first experiment concerning habitual language, we manipulate the target frequency as well as the kind of event (Expt. 2b), creating a data set of endorsements that is three times as large as the data from Expt. 1b (generic endorsement). 
-Again, we measure participants' latent prior belief distribution over the frequencies of people doing various actions (e.g., how often people *run*; Expt. 2a) in a way analagous to the prevalence prior elicitation for generics.
-In addition to directly manipulating the target propensity, these experiments provide the first test of the generality of our theory, that it can apply to both categories and events.
+To measure participants' latent prior belief distribution over the frequencies of people doing various actions (e.g., how often people *run*; Expt. 2a), we take advantage of the structured representation discovered in Expt. 1a, and learn about the prior by asking questions about the parameters of this model.
+In addition to directly manipulating the target propensity, these experiments provide the first test of the generality of our theory, that it can apply to generalizations about events as well as categories.
 
-If habituals (and generics) are truly language for conveying generalizations, it would be useful for them to reflect expectations, not merely observations. 
+Finally, if habituals (and generics) are truly language for conveying generalizations, it would be useful for them to reflect expectations, not merely observations. 
 Up to this point, we have been relatively agnostic as to the interpretation of $h$, the target propensity that the speaker aims to convey.
-Two possibilities for what $h$ could relfect are: the actual, past frequency of the event (e.g., how often Mary has actually smoked in the past week) or the predictive probability that this event will occur in the near future (e.g., how likely it is that Mary will smoke next week)? 
-In Expts. 3a \& 3b, we show that $h$, the target of communication, is a speaker’s prediction about the future frequency of action, and not past frequency.
+In our first investigation of the degree scale, we ask whether $h$ represents the actual, past frequency of the event (e.g., how often Mary has actually smoked in the past week) or the predictive probability that this event will occur in the near future (e.g., how likely it is that Mary will smoke next week)? 
+In Expts. 3a \& 3b, we show that $h$, the target of communication, is a speaker’s prediction about the future frequency of action, and not past frequency, tying the phenomenon of *genericity* even more to subjective beliefs.
 
 
 <!-- This set of experiments is organized as follows. -->
@@ -1867,25 +1874,42 @@ In Expts. 3a \& 3b, we show that $h$, the target of communication, is a speaker�
 
 ## Experiment 2: Endorsing generalizations about events
 
+We follow the same general experimental structure as in Experiment 1. 
+First, we measure the prior distribution over the frequency of events, for different kinds of events.
+Then, we test endorsements of habitual sentences, manipulating the actual frequency with which a person does an action.
+
 ### Experiment 2a: Measuring the propensity prior for event knowledge
 
 In this experiment we elicit the prior $P(h)$ for different events in order to generate model predictions for corresponding habitual statements.
 For the case of statements about the behaviors of people, $P(h)$ can be conceived as a distribution over *different people*, each of whom do the behavior with a different frequency.
-To better understand what frequencies should be expected for different actions, we had participants judge the frequency of action for people they were familiar with.
+To better understand what frequencies should be expected for different actions, we took advantage of the 
+structured representation of the prior discovered in Expt. 1.
 
+In Expt. 1a, we discovered that prior distribution over the prevalence of a feature across different categories can be modeled by a mixture model with two components.
+The first component (the "stable cause" component) represents the normal, stable frequencies of the property, among those that normally have the property.
+The second component (the "unstable" or "transient cause" component) represents the frequencies of the property among those categories who do not typically have the property. This second component will usually result in frequencies of 0\% (e.g., 0\% of lions have lay eggs), but could produce non-zero frequencies (e.g., in some hypothetical world, a lion who has undergone weird genetic mutations may lay eggs). 
+
+For the case of background knowledge over the frequency with which people do actions, we consider again two components.
+To a first approximation, the first component represents the frequencies of the event among the people who have done the action before (e.g., how often a person hikes, given that they have hiked before).
+The second component represents the frequencies of the event among the people who have not done the action before. 
+We will assume for these experiments, that those people who have never done the action before will almost never do the action (expected frequency: once every hundred years). 
+In this experiment, we measure the relative contribution of these two components to the prior, as well as the expected frequency among those people who have done the action before.^[
+In the case of event knowledge about people, we might expect there to be several more than just these two possibilities represented in the prior, corresponding to individuals with different traits or demographics.
+We assume here a simple structure so as to not make the specification of the prior overly complex.
+]
 
 #### Method
 
 ##### Participants
 
-We recruited 50 participants from Amazon's Mechanical Turk.
+We recruited 40 participants from Amazon's Mechanical Turk.
 Participants were restricted to those with U.S. IP addresses and who had at least a 95\% work approval rating.
 The experiment took on average 12 minutes and participants were compensated \$1.25 for their work.
 
 ##### Materials
 
-<!-- We created thirty-one events organized into pairs or triplets from 5 different conceptual categories:  -->
-We created twenty-seven events organized into pairs or triplets from 5 different conceptual categories: 
+We created thirty-one events organized into pairs or triplets from 5 different conceptual categories:
+<!-- We created twenty-seven events organized into pairs or triplets from 5 different conceptual categories:  -->
 food and drug (e.g. \emph{eats caviar}, \emph{eats peanut butter}), 
 work (e.g. \emph{sells things on eBay}, \emph{sells companies}), 
 clothing (e.g. \emph{wears a suit}, \emph{wears a bra}), 
@@ -1895,21 +1919,40 @@ Items were chosen to intuitively cover a range of likely frequencies of action, 
 
 ##### Procedure
 
-The experiment began by having participants input the names of eight friends, family members, or people they knew well that they could answer some questions about.
-Participants were told that these names would only be used to assist them in reasoning through the second part of the experiment. 
+For each event, participants were asked two questions, with associated dependent measures:
 
-In the second phase of the experiment, participants were asked: "For each of the following people, how often does he or she \textsc{do action}?"
-Participants had to fill in the blanks in sentences of the form: "\text{friend does action} ___ times per ___".
-The first blank was a text box where participants could enter a number.
-The second blank was a drop-down menu where participants could select a time interval from the following options: \{week, 2 weeks, month, 2 months, 6 months, year, 2 years, 5 years\}
-They completed this task for each of their eight listed friends or family members.
-To make the task slightly less tedious, there was an option where participants could set the time window for all eight of their responses.
+\begin{enumerate}
+\item ``How many \{men, women\} have \textsc{done action} before?'' \\
+\newline
+Participants responded ``N out of every J.'' by entering a number for N and choosing J from a drop-down menu (options: \{1000 - 10 million\}; default: 1000).
+\item ``For a typical \{man, woman\} who has \textsc{done action}  before, how frequently does he or she \textsc{do action}?''\\  
+\newline
+Participants responded ``M times in K.'' by entering a number for M and choosing K from a drop-down menu (options: \{week, month, year, 5 years\}; default: year).
+\end{enumerate}
 
-In order to get sufficient data for actions that are relatively uncommon (e.g., *climbs mountains*, *writes novels*), if participants responded that all of their friends do the action with a frequency of "0 times" (in some interval), a follow-up question appeared that read: "Do you know anybody who has \textsc{done action} before?". 
-If they responded "Yes", another follow-up question appeared that read: "How often do you think that person \textsc{does action}?", with the same dependent measure format as before.
+For example, one set of prompts read: ``How many men have smoked cigarettes before?''; ``For a typical man who has smoked cigarettes before, how frequently does he smoke cigarettes?''
 
-Participants completed these elicitation trials for a random subset of 15 items, presented in a randomized order.
-The experiment can be viewed at \url{http://stanford.edu/~mtessler/generics-paper/experiments/habituals/priors/friends-and-family-1.html}
+We anticipated there might be different beliefs about the frequency of events depending on whether the actor is male or female, so we asked about both genders. Participants answered both questions for both genders on each slide (4 questions total per slide, order of male / female randomized between-subjects), and every participant completed all 31 items in a randomized order.
+The experiment can be viewed at \url{http://stanford.edu/~mtessler/habituals/experiments/priors/priors-2.html}.
+
+
+
+
+<!-- The experiment began by having participants input the names of eight friends, family members, or people they knew well that they could answer some questions about. -->
+<!-- Participants were told that these names would only be used to assist them in reasoning through the second part of the experiment.  -->
+
+<!-- In the second phase of the experiment, participants were asked: "For each of the following people, how often does he or she \textsc{do action}?" -->
+<!-- Participants had to fill in the blanks in sentences of the form: "\text{friend does action} ___ times per ___". -->
+<!-- The first blank was a text box where participants could enter a number. -->
+<!-- The second blank was a drop-down menu where participants could select a time interval from the following options: \{week, 2 weeks, month, 2 months, 6 months, year, 2 years, 5 years\} -->
+<!-- They completed this task for each of their eight listed friends or family members. -->
+<!-- To make the task slightly less tedious, there was an option where participants could set the time window for all eight of their responses. -->
+
+<!-- In order to get sufficient data for actions that are relatively uncommon (e.g., *climbs mountains*, *writes novels*), if participants responded that all of their friends do the action with a frequency of "0 times" (in some interval), a follow-up question appeared that read: "Do you know anybody who has \textsc{done action} before?".  -->
+<!-- If they responded "Yes", another follow-up question appeared that read: "How often do you think that person \textsc{does action}?", with the same dependent measure format as before. -->
+
+<!-- Participants completed these elicitation trials for a random subset of 15 items, presented in a randomized order. -->
+<!-- The experiment can be viewed at \url{http://stanford.edu/~mtessler/generics-paper/experiments/habituals/priors/friends-and-family-1.html} -->
 
 \begin{figure*}[t]
 \centering
@@ -1924,7 +1967,7 @@ The experiment can be viewed at \url{http://stanford.edu/~mtessler/generics-pape
   \label{fig:tjScatters}
 \end{figure*}
 
-#### Data preprocessing
+<!-- #### Data preprocessing -->
 
 ```{r habituals-prior}
 annualRates = list("5 years" = 1/5, "2 years" = 1/2,
@@ -1980,36 +2023,80 @@ d.hab.priors.distinctiveness
 # d.hab.priors.tidy
 ```
 
-Every response for a frequency of a person doing an action is a sample from $P_{event}(h)$.
-We first transformed all responses onto the same scale of "times per year" (assuming 52 weeks per year; 12 months per year).
-An empirical distribution can be found by making a histogram of these responses. 
-The empirical distributions follows a kind-of log-normal distribution, with the additional feature of having a substantial probability mass at the frequency of 0 (for those individuals who never do the action). 
-We thus log-transformed the empirical data. 
-To avoid values of -Infinity, we set the responses of 0 to mean roughly "once every twenty years".
+<!-- Every response for a frequency of a person doing an action is a sample from $P_{event}(h)$. -->
+<!-- We first transformed all responses onto the same scale of "times per year" (assuming 52 weeks per year; 12 months per year). -->
+<!-- An empirical distribution can be found by making a histogram of these responses.  -->
+<!-- The empirical distributions follows a kind-of log-normal distribution, with the additional feature of having a substantial probability mass at the frequency of 0 (for those individuals who never do the action).  -->
+<!-- We thus log-transformed the empirical data.  -->
+<!-- To avoid values of -Infinity, we set the responses of 0 to mean roughly "once every twenty years". -->
 
-We took the log-transformed (and "-Infinity"-adjusted) raw data and binned each response to the closest bins on a grid with binwidth of 0.5 in the log-"times per year" scale.
-This yields a grid of 23 points with frequencies ranging from "once every twenty years" (log-frequency = -3) to "twenty times per day" (log-frequency = 9).
+<!-- We took the log-transformed (and "-Infinity"-adjusted) raw data and binned each response to the closest bins on a grid with binwidth of 0.5 in the log-"times per year" scale. -->
+<!-- This yields a grid of 23 points with frequencies ranging from "once every twenty years" (log-frequency = -3) to "twenty times per day" (log-frequency = 9). -->
 
 #### Data analysis and results
 
+We built a Bayesian data analysis model for this prior elicitation task.
+In addition to specifying the correct way to combine our two prior-elicitation questions, using this inferred prior resolves two technical difficulties.
+(1) It smooths effects that are clearly results of the response format. For example, a very common rating for certain events is \emph{1 time per year}. Presumably participants would be just as happy reporting \emph{approximately} 1 time per year (e.g., on average, 1.2 times per year); the raw data does not reflect this due to demands of the dependent measure.
+(2) It better captures the tails of the prior distribution (e.g., the probability of a rate of going to the movies two times every five years) which have relatively little data and need to be regularized by the analysis.
+
+Question 1 elicits the proportion of people who have done an action before. 
+This number can be interpreted as a probability coming from a Beta distribution: $d_{mixture} \sim \text{Beta}(\gamma_{mixture}, \xi_{mixture})$. 
+Question 2 elicits the rate, or relative frequency, with which a person does the action.
+This was modeled by a log-normal distribution: $\ln d_{stable} \sim \text{Gaussian}(\mu_{stable}, \sigma_{stable})$. 
+Each item was modeled independently for each gender.
+
+We implemented this model using the probabilistic programming language WebPPL \cite{dippl}, and found the credible values of the parameters by running MCMC for 100,000 iterations, discarding the first 50,000 for burnin.
+
+The priors elicited cover a range of possible parameter values as intended (Figure \ref{fig:priorScatter}, scatter), resulting in parametrized distributions of dramatically different shapes (insets).  
+We observe a correlation in our items between the mean \% of Americans who have \textsc{done action} before (Question 1) and the mean log-frequency of action (Question 2) ($r_{1,2} = 0.74$).
+Items in our data set that tend to be more popular actions also tend to be more frequent actions (e.g., \emph{wears socks}) and visa-versa (e.g., \emph{steals cars}), though there are notable exceptions (e.g., \emph{plays the banjo} is not popular but done frequently when done at all, as is \emph{smokes cigarettes}; \emph{goes to the movies} is a popular activity though not done particularly often). 
+This diversity is relevant because the speaker model (Eq.~\ref{eq:S1}) will endorse habitual sentences (e.g., \emph{Sam goes to the movies vs. the ballet.}) contingent on the shape of the prior distribution. 
+
+From the inferred parameters and the assumed functional forms (i.e., the mixture distribution), we can generate $P(h)$ modeled as a mixture of individuals who have done the action before and those that haven't.
+That is, $P(h)$ was constructed by sampling $\lambda$ as follows:
+
+\begin{align}
+\phi & \sim \text{Beta}(\gamma_{mixture}, \xi_{mixture}) \nonumber \\ 
+\ln h & \sim \begin{cases}
+		\text{Gaussian}(\mu_{stable}, \sigma_{stable}) &\mbox{if } \text{Bernoulli}(\phi) = \textsc{true} \label{eq:priorModel}  \\
+				\text{Delta}(h=0.01) &\mbox{if } \text{Bernoulli}(\phi) = \textsc{false} \\
+		\end{cases}
+\end{align}
+
+We first sample a mixture weight $\phi$ from the posterior distribution over the mixture component hyperparameters $\text{Beta}(\gamma_{mixture}, \xi_{mixture})$, inferred from the first question of the experiment.
+We then flip a coin weighted by $\phi$: $\text{Bernoulli}(\phi)$.
+If the coin comes up heads (i.e., $\text{Bernoulli}(\phi) = \textsc{true}$), a frequency $h$ is sampled from the distribution of people who have done the action before. This distribution is a log-normal distribution with parameters inferred from the second question of the experiment $\ln h \sim \text{Gaussian}(\mu_{stable}, \sigma_{stable})$.
+If the coin comes up tails, a frequency $h$ is sampled from the distribution of people who have not done the action before.
+We make the simplifying assumption that people who have not done the action before will probably never do the action (expected frequency: once every hundred years).
 
 
-We analyze the data using a Bayesian approach to allow for a consistent integration into the computational model.
-The data we would like to explain are: the bins $n_i \in \{-3, -2.5, ..., 8.5, 9\}$ that participants gave in response to items $i \in \{1, ..., 27\}$.
-The data is explained as a function of subjective beliefs $P_i$, with $P_{ij}$ being participants' (as a collective) belief about the relative likelihood for bin $j$ for item $i$. 
-Each $P_i$ defines a likelihood for our data, assuming an appropriate linking function.
+Figure \ref{fig:priorScatter} (right) shows example inferred priors.
 
-Following @Franke2016, the linking function for this data treats each bin $n_{i}$ as a draw from a categorical distribution where the probability of bin $j$ is proportional to $\exp{(a\cdot P_i)}$, i.e., a soft-max choice from $P_{i}$. 
-The higher parameter $a$, the more likely $n_{i}$ is the mode of $P_{i}$. 
-For $a \rightarrow 0$, all bins become equiprobable.
+Some items show substantial differences between the genders (e.g. \emph{wears a bra}) and some show subtle differences (e.g. \emph{watches professional football}). 
+%It is \emph{a priori} unclear whether or not $P(x)$ in Eqs.~\ref{eq:L1}, \ref{eq:L0} is the distribution over frequency of action with respect to \emph{all people}, or if it is restricted to be gender specific.
+%For example, are the frequency conditions by which a man would qualify to ``wear a bra'' (habitually) different than those by which a woman would qualify to ``wear a bra''?
+We will explore the possibility of different truth conditions for habituals of different gendered characters in Experiment 2, for select items with priors that differ substantially by gender.
+%In order to explore this possibility, we will select items with priors that differ by gender to explore more closely in Experiment 2.
 
-\begin{eqnarray}
-P_{i} &\sim& \text{Dirichlet}(1, ..., 1) \\ 
-a & \sim & \text{Gamma}(2,1) \\
-n_{i} &\sim & \text{Categorical}(\exp(a \cdot P_i))
-\end{eqnarray}
 
-VIZ (as before)?
+
+<!-- We analyze the data using a Bayesian approach to allow for a consistent integration into the computational model. -->
+<!-- The data we would like to explain are: the bins $n_i \in \{-3, -2.5, ..., 8.5, 9\}$ that participants gave in response to items $i \in \{1, ..., 27\}$. -->
+<!-- The data is explained as a function of subjective beliefs $P_i$, with $P_{ij}$ being participants' (as a collective) belief about the relative likelihood for bin $j$ for item $i$.  -->
+<!-- Each $P_i$ defines a likelihood for our data, assuming an appropriate linking function. -->
+
+<!-- Following @Franke2016, the linking function for this data treats each bin $n_{i}$ as a draw from a categorical distribution where the probability of bin $j$ is proportional to $\exp{(a\cdot P_i)}$, i.e., a soft-max choice from $P_{i}$.  -->
+<!-- The higher parameter $a$, the more likely $n_{i}$ is the mode of $P_{i}$.  -->
+<!-- For $a \rightarrow 0$, all bins become equiprobable. -->
+
+<!-- \begin{eqnarray} -->
+<!-- P_{i} &\sim& \text{Dirichlet}(1, ..., 1) \\  -->
+<!-- a & \sim & \text{Gamma}(2,1) \\ -->
+<!-- n_{i} &\sim & \text{Categorical}(\exp(a \cdot P_i)) -->
+<!-- \end{eqnarray} -->
+
+<!-- VIZ (as before)? -->
 
 <!-- We assume each "binned" response is a sample from a multinomial distribution with unknown probability vector. -->
 <!-- We put a Dirichlet-prior over this probability vector. -->
@@ -2900,8 +2987,7 @@ In this section, we consider other previously-discussed troubling examples of ge
 1. Books are paperbacks.
 2. Mary handles the mail from Antarctica.
 3. Elephants live in Africa and Asia.
-4. Birds lay eggs and are female.
-5. Women are submissive.
+4. Women are submissive.
 
 (1) is often used to demonstrate that the property prevalence is not sufficient for a generic to be true.
 The vast majority of books that exist are paperbacks; nonetheless *Books are paperbacks* sounds weird.
@@ -2918,19 +3004,18 @@ Our framework takes the fundamental currency of a generalizatoin in language to 
 In Expt. 3, we manipulate predictive probability and saw the endorsements for habitual language were affected. 
 This example bears similarity to the *enabling* condition of that experiment, wherein causal events increased the propensity of the event in the future, and also resulted in an increase in endorsements of habitual language.
 
-(3) and (4) show subtle interactions of generic language with another linguistic device: conjunction. 
-(3) sounds true but why it is true is not obvious.
-We don't think there to be international elephants (i.e., individual elephants who live in Africa part time and Asia part time); thus, the statement can only be glossed as *some elephants live in Africa* and *some elephants live in Asia*, and perhaps taken collectively, *most elephants live in either Africa or Asia* [@Nickel2008]. 
+(3) shows a subtle interaction of generic language with another linguistic device: conjunction. 
+(3) sounds true but if one takes the conjunction to apply to the properties, it is not true.
+That is, we don't think there to be international elephants (i.e., individual elephants who live in Africa part time and Asia part time).
+Instead, the statement should be glossed as *some elephants live in Africa* and *some elephants live in Asia*, and perhaps taken collectively, *most elephants live in either Africa or Asia* [@Nickel2008]. 
 This reading of (3) gives it the same semantic content as two statements: "Elephants live in Africa. Elephants live in Asia."
-Our model is able to flexibly accomodate this statement by having a distribution over possible thresholds. 
+Our model is able to flexibly accomodate this statement by having uncertainty about the truth-conditional threshold. 
+
 With reasonable assumptions about the prior (e.g., assuming international elephants are unlikely), upon the hearing "Elephants live in Africa", the moddel infers that most elephants live in Africa.
 When the model then hears "Elephants live in Asia", the model updates its beliefs to accomodate this second statement, inferring that some live in Africa and other lives in Asia. 
 This is a nice feature of the uncertain threshold semantics: flexibility in accomodating new evidence that might otherwise contradict previous statements.
 
-(4) highlights that simple models of conjunction are not sufficient for generic language.
-If we take the conjunction to imply the conjunctive property (i.e., *lays eggs and is female*), then our model would incorrectly endorse this statement, which is judged intuitively to be false [@Leslie2007].
-
-(5) is used to argue that even if the property is widespread (perhaps in a soft sense, as in our model, relative to other kinds or groups), we might find it avervise to actually assert the generic.
+Finally, (4) is used to argue that even if the property is widespread (perhaps in a soft sense, as in our model, relative to other kinds or groups), we might find it avervise to actually assert the generic.
 That is, even if it were the case that, because of a variety socio-cultural reasons, women tend to be submissive, we might still not want to say *Women are submissive* [@Haslanger]. 
 In our Model Simulations section, we showed that the generic often can imply the property is widespread, even with uninformed prior beliefs about the property. 
 If the generic conveys the property is in fact more widespread than the speaker herself might believe, this can lead to a distortion of the truth [cf., @Cimpian2010].
