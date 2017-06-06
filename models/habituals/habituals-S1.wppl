@@ -6,7 +6,7 @@ var responseDictionary = { "agree-key": 1, "disagree-key": 0 };
 
 
 var dataPath = "data/"
-var targetUtterance = "habitual"
+var targetUtterance = "some"
 
 var prior_existenceFile = dataPath + "prior2-existence.csv";
 var prior_waitFile = dataPath + "prior2-timesper5yr.csv";
@@ -70,7 +70,7 @@ var meaning = function(utt,state, theta) {
   return utt=="habitual"? state > theta :
          utt=="habitual is false"? state<=theta :
          utt=='silence'? true :
-         utt=='some'? state > 0 :
+         utt=='some'? state > _.min(thetaBins) :
          true
 }
 
@@ -285,9 +285,9 @@ var model = function(){
 	return query
 }
 
-var totalIterations = 100000, lag = 50;
+var totalIterations = 100, lag = 50;
 var mhiter = totalIterations/lag, burn = totalIterations;
-var outfile = 'results-habituals-S1-decomposedPrior-normalPrior-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'results-habituals-fixedTheta-S1-decomposedPrior-normalPrior-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
 
 var posterior = Infer({
   model: model,
@@ -303,6 +303,9 @@ var posterior = Infer({
 })
 
 display("written to " + outfile)
+
+// _.min(thetaBins)
+// _.min(midBins)
 //
 // _.filter(
 // 	data.prior.frequency, {val:0 })
