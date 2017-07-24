@@ -76,6 +76,12 @@ var model = function(){
 	var speakerOptimality = {
 		s1: uniform({a: 0, b: 5})
 	}
+	var contamination = uniform({a: 0, b: 1});
+
+	var globalLatentLike = Uniform({a: 0, b: 5}).score(speakerOptimality.s1)+
+	Uniform({a: 0, b: 1}).score(contamination)
+
+	// query.add(["logLikelihood", "globalLatents", "NA", "NA", "NA"], globalLatentLike)
 
 	var nullDist = Delta({v: -99})
 
@@ -151,10 +157,10 @@ var model = function(){
 				female: gaussian(frequencyWhenPresent.female)
 			};
 
-			query.add(["prior", i, "predictive", "mixture", "male"], existenceProb.male);
-			query.add(["prior", i, "predictive", "mixture", "female"], existenceProb.female);
-			query.add(["prior", i, "predictive", "frequency", "male"], freqWhenPresent.male);
-			query.add(["prior", i, "predictive", "frequency", "female"], freqWhenPresent.female);
+			// query.add(["prior", i, "predictive", "mixture", "male"], existenceProb.male);
+			// query.add(["prior", i, "predictive", "mixture", "female"], existenceProb.female);
+			// query.add(["prior", i, "predictive", "frequency", "male"], freqWhenPresent.male);
+			// query.add(["prior", i, "predictive", "frequency", "female"], freqWhenPresent.female);
 /// RSA model
 		var listener0 = cache(function(utterance) {
 		  Infer({model: function(){
@@ -182,10 +188,11 @@ var model = function(){
       // display(freqData)
 			var s1prediction = speaker1(freq);
       // displayObj(s1prediction)
+			var s1predictionWithNoise = addNoise(s1prediction, contamination);
 
       var logLike = sum(map(function(d){
         // display(s1prediction.score(d.alignedResponse))
-        return s1prediction.score(d.alignedResponse)
+        return s1predictionWithNoise.score(d.alignedResponse)
       }, freqData))
 
       return logLike
@@ -197,7 +204,7 @@ var model = function(){
 
 	})
 
-	query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
+	// query.add(["param","speakerOptimality","s1","NA", "NA"], speakerOptimality.s1)
 
 	// var nullPred = gaussian(nullParams);
 	//
@@ -205,10 +212,10 @@ var model = function(){
 
 	return query
 }
-
-var totalIterations = 100000, lag = 20;
+// 1000 total Iter in 1.5 minutes
+var totalIterations = 1000, lag = 20;
 var mhiter = totalIterations/lag, burn = totalIterations / 2;
-var outfile = 'logLikelihood-habituals-S1-structuredPriorData-logSpace-silenceAlt-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv'
+var outfile = 'logLikelihood-habituals-S1-structuredPriorData-logSpace-silenceAlt-wContamination-'+ totalIterations+'_burn'+burn+'_lag'+lag+'_chain'+chain+'.csv';
 
 var posterior = Infer({
   model: model,
