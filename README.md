@@ -1,3 +1,3 @@
 # Communicating generalizations
 
-Experiments, models, data, analyses, and writeup of "communicating generalizations about categories, events, and causes"
+This is an old version of the genlang repo: https://github.com/mhtess/genlang-paper 
